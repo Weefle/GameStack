@@ -1,0 +1,20 @@
+# GameStack instances cloud-config (for deployment on new instances)
+users:
+  - name: %USER%
+  groups: sudo
+  shell: /bin/bash
+  sudo: ['ALL=(ALL) NOPASSWD:ALL']
+  ssh-authorized-keys: %KEYS%
+
+package_update: true
+package_upgrade: true
+packages:
+  - python3
+  - python-pip
+  - openjdk-8-jdk
+
+runcmd:
+  -
+
+manage_etc_hosts: true
+disable_root: true

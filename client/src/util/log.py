@@ -8,19 +8,39 @@ def prefix():
     return log_format_time()
 
 
+class LogLevel(object):
+    def __init__(self, name):
+        self.name = name
+
+    def get_name(self):
+        return self.name
+
+
 class Logger(object):
 
     def __init__(self, log_file):
         self.log_file = log_file
         self.log_stream = None
 
-    def log(self, message, to_file=True, console=True):
+    def info(self, message, to_file=True, console=True):
+        self.log(message, to_file, console)
+
+    def warn(self, message, to_file=True, console=True):
+        self.log(message, to_file, console, LogLevel(name="WARNING"))
+
+    def error(self, message, to_file=True, console=True):
+        self.log(message, to_file, console, LogLevel(name="ERROR"))
+
+    def fatal(self, message, to_file=True, console=True):
+        self.log(message, to_file, console, LogLevel(name="FATAL"))
+
+    def log(self, message, to_file=True, console=True, level=LogLevel(name="INFO")):
         """Logs to file and to console."""
         if not message:
             return
         if not to_file and not console:
             return
-        output = prefix() + message
+        output = "{} {}: {}".format(prefix(), level.get_name(), message)
         if to_file:
             self.put_to_file(output)
         if console:

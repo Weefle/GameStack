@@ -9,7 +9,7 @@ def current_time_millis():
 
 def log_format_time():
     """Returns the current time in a log format."""
-    return strftime('[%H:%M] ', gmtime())
+    return strftime('[%H:%M]', gmtime())
 
 
 def log_header_time():

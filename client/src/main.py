@@ -1,24 +1,26 @@
 # -*- coding: utf8 -*-
-from util.timehelper import current_time_millis
-import redis
-from util import stackredis
+from util.timehelper import current_time_millis, log_file_name
+from util import log
+import gamestack
 
 version = "1.0.0"
 
 
-def startup():
-    r = redis.Redis()
-    stack = stackredis.StackRedis(r)
-    stack.connect()
-    stack.register_listener('something')
-
-
 def main():
-    print('Starting up GameStack client version ', version)
+    logger = log.Logger(log_file=log_file_name())
+    logger.log('Starting up GameStack client version ', version)
     start_time = current_time_millis()
-    startup()
+
+    # begin
+
+    core = gamestack.GameStack(logger)
+
+    # end
+
     time_diff = current_time_millis() - start_time
-    print('Done in {0}ms (~{1}s).'.format(time_diff, round(time_diff / 1000, 1)))
+    logger.log('Done in {0}ms (~{1}s).'.format(time_diff, round(time_diff / 1000, 1)))
+
 
 # Run
-main()
+if __name__ == "__main__":
+    main()

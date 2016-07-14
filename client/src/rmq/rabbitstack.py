@@ -75,7 +75,6 @@ class RabbitStack(object):
         if body is None:
             return
         if method.exchange is None:
-            print 'None exchange'
             return
         if method.exchange not in self.listeners.keys():
             return
@@ -109,11 +108,14 @@ class RabbitPacket(object):
     def get_message(self):
         return self.message
 
+    def __str__(self):
+        return "RabbitPacket[topic:{},message:{}]".format(self.topic, self.message)
+
 
 class PublisherThread(Thread):
     def __init__(self, channel):
         self.packets = Queue.Queue()
-        Thread.__init__(self, target=self.packets.join())
+        Thread.__init__(self)
         self.channel = channel
         self.do_run = True
 
@@ -121,18 +123,13 @@ class PublisherThread(Thread):
         self.packets.put_nowait(packet)
 
     def finish(self):
-        while not self.packets.empty():
-            self.packets.task_done()
         self.do_run = False
-        print 'doing it right'
 
     def run(self):
         while self.do_run:
             try:
-                packet = self.packets.get(True, 500)
+                packet = self.packets.get(False, 500)
                 self.channel.basic_publish(exchange=packet.get_topic(), routing_key='', body=packet.get_message())
-                self.packets.task_done()
-                print self.packets.empty()
             except Queue.Empty:
                 # we don't care, we just need to loop through and checkout if the publisher is still running
                 continue

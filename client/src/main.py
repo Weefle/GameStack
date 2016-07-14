@@ -30,12 +30,15 @@ def main():
 
 
 def test():
-    rmq = rabbitstack.RabbitStack(gamestack.GameStack(log.Logger(log_file_name())), host='192.168.99.100', port=32782)
+    rmq = rabbitstack.RabbitStack(gamestack.GameStack(log.Logger(log_file_name())), host='192.168.99.100', port=5672)
     rmq.connect()
     rmq.register_listener(MyListener('test'))
-    rmq.publish(rabbitstack.RabbitPacket('test', 'message'))
+    i = 0
+    while i < 1000:
+        rmq.publish(rabbitstack.RabbitPacket('test', 'message' + str(i)))
+        i += 1
     import time
-    time.sleep(1)
+    time.sleep(2)
     rmq.close()
     sys.exit(0)
 

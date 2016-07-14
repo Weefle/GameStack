@@ -3,7 +3,7 @@ from util.timehelper import current_time_millis, log_file_name
 from util import log
 import gamestack
 from rmq import rabbitstack
-import sys
+from config import configuration
 
 
 version = "1.0.0"
@@ -21,6 +21,7 @@ def main():
 
     # begin
 
+    configured = configuration.load('config.yml')
     core = gamestack.GameStack(logger)
 
     # end
@@ -29,19 +30,6 @@ def main():
     logger.log('Done in {0}ms (~{1}s).'.format(time_diff, round(time_diff / 1000, 1)))
 
 
-def test():
-    rmq = rabbitstack.RabbitStack(gamestack.GameStack(log.Logger(log_file_name())), host='192.168.99.100', port=5672)
-    rmq.connect()
-    rmq.register_listener(MyListener('test'))
-    i = 0
-    while i < 1000:
-        rmq.publish(rabbitstack.RabbitPacket('test', 'message' + str(i)))
-        i += 1
-    import time
-    time.sleep(2)
-    rmq.close()
-    sys.exit(0)
-
 # Run
 if __name__ == "__main__":
-    test()
+    main()

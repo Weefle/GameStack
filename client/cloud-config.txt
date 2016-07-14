@@ -9,7 +9,7 @@ users:
 package_update: true
 package_upgrade: true
 packages:
-  - python3
+  - python2.7
   - python-pip
   - openjdk-8-jdk
 

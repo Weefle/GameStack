@@ -33,7 +33,9 @@ public abstract class ConnectionContainer<T>
     @Override
     public final void initialize()
     {
-        if (connectionState.get() != ConnectionState.CLOSED) // cannot open the connection when it opened, closing or opening
+        if (connectionState.get() == ConnectionState.CLOSING
+                || connectionState.get() == ConnectionState.OPENING
+                || connectionState.get().isUsable()) // cannot open the connection
             return;
 
         connectionState.set(ConnectionState.OPENING);

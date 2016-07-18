@@ -1,8 +1,8 @@
 package fr.creart.gamestack.common.test;
 
-import fr.creart.gamestack.common.Validation;
-import fr.creart.gamestack.common.Validation.Failure;
-import fr.creart.gamestack.common.Validation.Success;
+import fr.creart.gamestack.common.lang.Validation;
+import fr.creart.gamestack.common.lang.Validation.Failure;
+import fr.creart.gamestack.common.lang.Validation.Success;
 import org.junit.Assert;
 import org.junit.Test;
 

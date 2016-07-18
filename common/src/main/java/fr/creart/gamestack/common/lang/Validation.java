@@ -1,4 +1,4 @@
-package fr.creart.gamestack.common;
+package fr.creart.gamestack.common.lang;
 
 import java.util.Optional;
 
@@ -53,7 +53,7 @@ public abstract class Validation<E, T> {
      */
     public abstract Validation<T, E> swap();
 
-    public static class Success<E, T> extends Validation<E, T> {
+    public static class Success<T, E> extends Validation<E, T> {
         private final T value;
 
         public Success(T value)

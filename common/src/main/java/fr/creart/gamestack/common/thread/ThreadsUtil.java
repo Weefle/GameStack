@@ -40,7 +40,7 @@ public class ThreadsUtil {
      */
     public static ThreadFactory createFactory(String newGroup)
     {
-        return (runnable) -> new Thread(new ThreadGroup(currentGroup, newGroup), runnable);
+        return runnable -> new Thread(new ThreadGroup(currentGroup, newGroup), runnable);
     }
 
 }

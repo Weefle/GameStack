@@ -5,7 +5,12 @@ package fr.creart.gamestack.common.lang;
  *
  * @author Creart
  */
-public class MoreArrays {
+public final class MoreArrays {
+
+    private MoreArrays()
+    {
+
+    }
 
     /**
      * Returns the last object of the given array

@@ -18,6 +18,7 @@ public abstract class ConnectionContainer<T>
 
     private static final byte MAX_THREADS = 10;
 
+    protected T connection; // contained connection
     protected final Wrapper<ConnectionState> connectionState = new AtomicWrapper<>(ConnectionState.CLOSED);
     private final TaskHandler taskHandler;
 
@@ -72,7 +73,7 @@ public abstract class ConnectionContainer<T>
      */
     public final boolean isEstablished()
     {
-        return connectionState.get() == ConnectionState.OPENED;
+        return connectionState.get().isUsable();
     }
 
     /**
@@ -90,7 +91,7 @@ public abstract class ConnectionContainer<T>
         private ConnectionContainer<T> container;
         private ExecutorService service;
 
-        public TaskHandler(ExecutorService service, ConnectionContainer<T> container)
+        TaskHandler(ExecutorService service, ConnectionContainer<T> container)
         {
             Preconditions.checkNotNull(service, "service can't be null");
             Preconditions.checkNotNull(container, "container can't be null");

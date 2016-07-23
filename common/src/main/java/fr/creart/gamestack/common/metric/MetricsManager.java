@@ -22,7 +22,6 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     private static final byte MAX_THREADS = 4;
     private static MetricsManager instance;
 
-    private final ThreadFactory factory = ThreadsUtil.createFactory("Metrics");
     private byte threads;
     private ScheduledExecutorService scheduler;
     private boolean initialized;
@@ -50,12 +49,12 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     public void registerProvider(MetricProvider provider)
     {
         Preconditions.checkNotNull(provider, "provider can't be null");
-
     }
 
     @Override
     public void initialize()
     {
+        ThreadFactory factory = ThreadsUtil.createFactory("Metrics");
         scheduler = threads <= 1 ? Executors.newSingleThreadScheduledExecutor(factory)
                 : Executors.newScheduledThreadPool(Math.min(MAX_THREADS, threads), factory);
 

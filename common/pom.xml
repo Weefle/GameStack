@@ -11,6 +11,13 @@
 
     <artifactId>common</artifactId>
 
+    <repositories>
+        <repository> <!-- For my maven projects from GitHub (eg: ProtoColt) -->
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.rabbitmq</groupId>
@@ -41,6 +48,17 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.17</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.devcreart</groupId>
+            <artifactId>ProtoColt</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- sms -->
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio-java-sdk</artifactId>
+            <version>6.3.0</version>
         </dependency>
     </dependencies>
 

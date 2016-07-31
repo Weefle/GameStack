@@ -1,4 +1,4 @@
-package fr.creart.gamestack.common.rmq;
+package fr.creart.gamestack.common.connection.rmq;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
@@ -29,6 +29,7 @@ public class RabbitContainer extends AbstractBrokerManager<Connection> {
 
     private Channel channel;
     private Set<String> declaredExchanges = new HashSet<>();
+    private Set<String> listenedQueues = new HashSet<>();
 
     public RabbitContainer(int threads)
     {
@@ -110,13 +111,21 @@ public class RabbitContainer extends AbstractBrokerManager<Connection> {
         super.registerListener(packetId, listener);
 
         String chann = packetChannelName(packetId);
-        if (!declaredExchanges.contains(chann)) {
+        boolean exchange = declaredExchanges.contains(chann);
+        boolean listened = listenedQueues.contains(chann);
+        if (!exchange || !listened) {
             try {
-                channel.exchangeDeclare(chann, "fanout");
-                String queue = channel.queueDeclare().getQueue();
-                channel.queueBind(queue, chann, "");
-                channel.basicConsume(queue, new RabbitConsumer(channel, ProtocolWrap.getPacketById(packetId)));
-                declaredExchanges.add(chann);
+                if (!exchange) {
+                    channel.exchangeDeclare(chann, "fanout");
+                    declaredExchanges.add(chann);
+                }
+
+                if (!listened) {
+                    String queue = channel.queueDeclare().getQueue();
+                    channel.queueBind(queue, chann, "");
+                    channel.basicConsume(queue, new RabbitConsumer(channel, ProtocolWrap.getPacketById(packetId)));
+                    declaredExchanges.add(chann);
+                }
             } catch (Exception e) {
                 CommonLogger.error("Could not create a new channel: " + chann + ".", e);
             }

@@ -64,7 +64,7 @@ public abstract class Validation<E, T> {
         @Override
         public Optional<T> toOptional()
         {
-            return null;
+            return Optional.ofNullable(value);
         }
 
         @Override

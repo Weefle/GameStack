@@ -1,5 +1,6 @@
 package fr.creart.gamestack.server;
 
+import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.lang.Decimals;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.Chrono;
@@ -13,6 +14,7 @@ public class Main {
     {
         CommonLogger.createLogger("Server");
         CommonLogger.info("Starting up GameStack server...");
+        Commons.initialize("Server");
         Chrono chrono = new Chrono();
 
         chrono.markStart(null);

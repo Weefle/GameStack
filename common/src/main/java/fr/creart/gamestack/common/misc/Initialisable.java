@@ -5,6 +5,7 @@ package fr.creart.gamestack.common.misc;
  *
  * @author Creart
  */
+@FunctionalInterface
 public interface Initialisable {
 
     /**

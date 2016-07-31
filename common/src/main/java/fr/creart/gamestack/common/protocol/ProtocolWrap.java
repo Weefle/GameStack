@@ -32,9 +32,20 @@ public final class ProtocolWrap {
      * @return the packet associated to the id
      */
     @SuppressWarnings("unchecked")
-    public static <T> ByteArrayPacket<T> getPacketById(int id)
+    public static <T extends ByteArrayPacket<?>> T getPacketById(int id)
     {
-        return (ByteArrayPacket<T>) protocol.getPacketById(id);
+        return (T) protocol.getPacketById(id);
+    }
+
+    /**
+     * Returns {@code true} if the packet has been declared
+     *
+     * @param packetId packet's id
+     * @return {@code true} if the packet has been declared
+     */
+    public static boolean hasPacket(int packetId)
+    {
+        return protocol.getPacketById(packetId) != null;
     }
 
 }

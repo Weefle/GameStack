@@ -3,6 +3,8 @@ package fr.creart.gamestack.common.connection;
 import com.google.common.base.Preconditions;
 import fr.creart.gamestack.common.lang.AtomicWrapper;
 import fr.creart.gamestack.common.lang.Wrapper;
+import fr.creart.gamestack.common.misc.ConnectionData;
+import fr.creart.gamestack.common.misc.Destroyable;
 import fr.creart.gamestack.common.misc.Initialisable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,14 +12,17 @@ import java.util.concurrent.Executors;
 /**
  * This class represents an object which contains a connection.
  * It is thread-safe.
+ * <p>
+ * /!\ Set the {@link ConnectionData} before you connect /!\
  *
  * @author Creart
  */
 public abstract class ConnectionContainer<T>
-        implements AutoCloseable, Initialisable {
+        implements AutoCloseable, Initialisable, Destroyable {
 
     private static final byte MAX_THREADS = 10;
 
+    protected ConnectionData connectionData;
     protected T connection; // contained connection
     protected final Wrapper<ConnectionState> connectionState = new AtomicWrapper<>(ConnectionState.CLOSED);
     private final TaskHandler taskHandler;
@@ -26,6 +31,19 @@ public abstract class ConnectionContainer<T>
     {
         ExecutorService service = threads <= 1 ? Executors.newSingleThreadExecutor() : Executors.newFixedThreadPool(Math.min(threads, MAX_THREADS));
         taskHandler = new TaskHandler(service, this);
+    }
+
+    /**
+     * Sets the connection data
+     *
+     * @param connectionData New connection data
+     */
+    public final void setConnectionData(ConnectionData connectionData)
+    {
+        if (this.connectionData != null)
+            return;
+
+        this.connectionData = connectionData;
     }
 
     /**
@@ -42,7 +60,7 @@ public abstract class ConnectionContainer<T>
         connectionState.set(ConnectionState.OPENING);
 
         synchronized (this) {
-            connect();
+            connect(connectionData);
         }
 
         connectionState.set(ConnectionState.OPENED);
@@ -53,6 +71,12 @@ public abstract class ConnectionContainer<T>
      */
     @Override
     public final void close()
+    {
+        destroy();
+    }
+
+    @Override
+    public final void destroy()
     {
         if (!isEstablished())
             return;
@@ -79,7 +103,7 @@ public abstract class ConnectionContainer<T>
     /**
      * Establishes the contained connection
      */
-    protected abstract void connect();
+    protected abstract void connect(ConnectionData connectionData);
 
     /**
      * Closes everything.

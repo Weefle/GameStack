@@ -21,12 +21,12 @@ public final class MoreStrings {
      */
     public static String repeat(char c, int times)
     {
+        if (times == 0)
+            return "";
         StringBuilder builder = new StringBuilder();
         int fixed = times;
         if (fixed < 0)
             fixed = -fixed;
-        if (fixed == 0)
-            return "";
         for (int i = 0; i < fixed; i++)
             builder.append(c);
         return builder.toString();

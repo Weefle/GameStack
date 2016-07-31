@@ -42,6 +42,7 @@ public final class CommonLogger {
                     format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss")) + ".txt");
             if (log.delete())
                 info("Log file already existed. Removed it.");
+
             try {
                 if (log.getParentFile().mkdirs() && log.createNewFile())
                     info("Successfully created new log file.");

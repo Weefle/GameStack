@@ -54,11 +54,14 @@ public class Translator {
     public static String translate(String path, Object... objects)
     {
         String ret;
+
         try {
             ret = MessageFormat.format(resourceBundle.getString(path), objects);
         } catch (Exception e) {
+            CommonLogger.error(String.format("Could not get String %s in %s.", path, MESSAGES_FILE), e);
             ret = e.toString();
         }
+
         return ret;
     }
 

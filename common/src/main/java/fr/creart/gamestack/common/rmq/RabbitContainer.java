@@ -12,7 +12,8 @@ import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.broking.AbstractBrokerManager;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.ConnectionData;
-import fr.creart.gamestack.common.misc.PacketListener;
+import fr.creart.gamestack.common.protocol.PacketListener;
+import fr.creart.gamestack.common.protocol.ProtocolWrap;
 import fr.creart.protocolt.bytestreams.ByteArrayDataSource;
 import fr.creart.protocolt.bytestreams.ByteArrayDataWriter;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
@@ -27,7 +28,7 @@ import java.util.Set;
 public class RabbitContainer extends AbstractBrokerManager<Connection> {
 
     private Channel channel;
-    private Set<String> declaredChannels = new HashSet<>();
+    private Set<String> declaredExchanges = new HashSet<>();
 
     public RabbitContainer(int threads)
     {
@@ -87,6 +88,20 @@ public class RabbitContainer extends AbstractBrokerManager<Connection> {
         ByteArrayDataWriter writer = new ByteArrayDataWriter();
         packet.write(writer, output);
         // send to channel
+        String chann = packetChannelName(packet.getId());
+        if (!declaredExchanges.contains(chann))
+            try {
+                channel.exchangeDeclare(chann, "fanout");
+            } catch (Exception e) {
+                CommonLogger.error("Could not declare exchange and because of that, publish a packet.", e);
+                return;
+            }
+
+        try {
+            channel.basicPublish(chann, "", null, writer.result().toByteArray());
+        } catch (Exception e) {
+            CommonLogger.error("Failed to publish packet.", e);
+        }
     }
 
     @Override
@@ -95,14 +110,14 @@ public class RabbitContainer extends AbstractBrokerManager<Connection> {
         super.registerListener(packetId, listener);
 
         String chann = packetChannelName(packetId);
-        if (!declaredChannels.contains(chann)) {
+        if (!declaredExchanges.contains(chann)) {
             try {
                 channel.exchangeDeclare(chann, "fanout");
                 String queue = channel.queueDeclare().getQueue();
                 channel.queueBind(queue, chann, "");
-
-                declaredChannels.add(chann);
-            } catch (IOException e) {
+                channel.basicConsume(queue, new RabbitConsumer(channel, ProtocolWrap.getPacketById(packetId)));
+                declaredExchanges.add(chann);
+            } catch (Exception e) {
                 CommonLogger.error("Could not create a new channel: " + chann + ".", e);
             }
         }

@@ -1,4 +1,4 @@
-package fr.creart.gamestack.common.misc;
+package fr.creart.gamestack.common.protocol;
 
 import fr.creart.protocolt.data.DataResult;
 

@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import fr.creart.gamestack.common.connection.ConnectionContainer;
-import fr.creart.gamestack.common.misc.PacketListener;
+import fr.creart.gamestack.common.protocol.PacketListener;
 import fr.creart.gamestack.common.protocol.ProtocolWrap;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
 

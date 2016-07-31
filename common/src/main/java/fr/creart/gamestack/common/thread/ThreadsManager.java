@@ -1,11 +1,9 @@
 package fr.creart.gamestack.common.thread;
 
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.Destroyable;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -17,7 +15,6 @@ public final class ThreadsManager implements Destroyable, AutoCloseable {
 
     private final ThreadGroup currentGroup;
     private boolean initialized;
-    private Set<Thread> activeThreads = Sets.newConcurrentHashSet();
 
     public ThreadsManager(String softName)
     {
@@ -77,10 +74,8 @@ public final class ThreadsManager implements Destroyable, AutoCloseable {
                     @Override
                     public void run()
                     {
-                        ThreadsManager.this.activeThreads.add(this);
                         if (runnable != null)
                             runnable.run();
-                        ThreadsManager.this.activeThreads.remove(this);
                     }
                 })
                 .setUncaughtExceptionHandler(new DefaultExceptionHandler())

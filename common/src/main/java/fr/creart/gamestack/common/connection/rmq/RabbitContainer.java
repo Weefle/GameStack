@@ -113,7 +113,7 @@ public class RabbitContainer extends AbstractBrokerManager<Connection> {
         String chann = packetChannelName(packetId);
         boolean exchange = declaredExchanges.contains(chann);
         boolean listened = listenedQueues.contains(chann);
-        if (!exchange || !listened) {
+        if (!exchange || !listened)
             try {
                 if (!exchange) {
                     channel.exchangeDeclare(chann, "fanout");
@@ -124,12 +124,11 @@ public class RabbitContainer extends AbstractBrokerManager<Connection> {
                     String queue = channel.queueDeclare().getQueue();
                     channel.queueBind(queue, chann, "");
                     channel.basicConsume(queue, new RabbitConsumer(channel, ProtocolWrap.getPacketById(packetId)));
-                    declaredExchanges.add(chann);
+                    listenedQueues.add(chann);
                 }
             } catch (Exception e) {
                 CommonLogger.error("Could not create a new channel: " + chann + ".", e);
             }
-        }
     }
 
     private String packetChannelName(int packetId)

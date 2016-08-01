@@ -6,6 +6,8 @@ import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.ConnectionData;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -70,7 +72,32 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
         Validate.notEmpty(request.getRequest(), "the sql request can't be empty or null");
         Validate.notNull(request.getType(), "request's type can't be null");
 
-
+        enqueueTask((conn) -> {
+            PreparedStatement statement = null;
+            ResultSet result = null;
+            try {
+                statement = conn.prepareStatement(request.getRequest());
+                switch (request.getType()) {
+                    case QUERY:
+                        result = statement.executeQuery();
+                        request.getQueryCallback().call(result);
+                        break;
+                    case INSERT:
+                    case UPDATE:
+                        statement.executeUpdate();
+                        break;
+                    default:
+                        break;
+                }
+            } catch (Exception e) {
+                CommonLogger.error("Encountered an exception during the execution of the following SQL request: " + request.toString() + ".", e);
+            } finally {
+                if (result != null && !result.isClosed())
+                    result.close();
+                if (statement != null && !statement.isClosed())
+                    statement.close();
+            }
+        });
     }
 
     @Override

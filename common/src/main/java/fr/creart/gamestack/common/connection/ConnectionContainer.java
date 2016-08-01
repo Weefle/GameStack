@@ -1,9 +1,9 @@
 package fr.creart.gamestack.common.connection;
 
-import com.google.common.base.Preconditions;
 import fr.creart.gamestack.common.lang.AtomicWrapper;
 import fr.creart.gamestack.common.lang.Wrapper;
 import fr.creart.gamestack.common.log.CommonLogger;
+import fr.creart.gamestack.common.misc.Callback;
 import fr.creart.gamestack.common.misc.ConnectionData;
 import fr.creart.gamestack.common.misc.Destroyable;
 import fr.creart.gamestack.common.misc.Initialisable;
@@ -27,12 +27,12 @@ public abstract class ConnectionContainer<T>
     protected ConnectionData connectionData;
     protected T connection; // contained connection
     protected final Wrapper<ConnectionState> connectionState = new AtomicWrapper<>(ConnectionState.CLOSED);
-    private final TaskHandler taskHandler;
+    private final ConnectionTasksManager<T> taskHandler;
 
     public ConnectionContainer(int threads)
     {
         ExecutorService service = threads <= 1 ? Executors.newSingleThreadExecutor() : Executors.newFixedThreadPool(Math.min(threads, MAX_THREADS));
-        taskHandler = new TaskHandler(service, this);
+        taskHandler = new ConnectionTasksManager<>(service, this);
     }
 
     /**
@@ -100,6 +100,18 @@ public abstract class ConnectionContainer<T>
     }
 
     /**
+     * Enqueues a new task
+     *
+     * @param callback task
+     */
+    protected final void enqueueTask(Callback<T> callback)
+    {
+        synchronized (taskHandler) {
+            taskHandler.enqueueTask(callback);
+        }
+    }
+
+    /**
      * Returns {@code true} if the connection has been established
      *
      * @return {@code true} if the connection has been established
@@ -107,6 +119,16 @@ public abstract class ConnectionContainer<T>
     public boolean isConnectionEstablished()
     {
         return connectionState.get().isUsable();
+    }
+
+    /**
+     * Returns the connection
+     *
+     * @return the connection
+     */
+    T getConnection()
+    {
+        return connection;
     }
 
     /**
@@ -132,27 +154,5 @@ public abstract class ConnectionContainer<T>
      * @return the name of the service
      */
     protected abstract String getServiceName();
-
-    private class TaskHandler {
-
-        private ConnectionContainer<T> container;
-        private ExecutorService service;
-
-        TaskHandler(ExecutorService service, ConnectionContainer<T> container)
-        {
-            Preconditions.checkNotNull(service, "service can't be null");
-            Preconditions.checkNotNull(container, "container can't be null");
-            Preconditions.checkArgument(!service.isShutdown(), "service should not be shutdown");
-
-            this.service = service;
-            this.container = container;
-        }
-
-        public void shutdown()
-        {
-            service.shutdown();
-        }
-
-    }
 
 }

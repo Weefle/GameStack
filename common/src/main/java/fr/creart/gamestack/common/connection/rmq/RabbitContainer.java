@@ -1,5 +1,6 @@
 package fr.creart.gamestack.common.connection.rmq;
 
+import com.google.common.collect.Sets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -19,7 +20,6 @@ import fr.creart.protocolt.bytestreams.ByteArrayDataWriter;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
 import fr.creart.protocolt.data.DataResult;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -28,8 +28,8 @@ import java.util.Set;
 public class RabbitContainer extends AbstractBrokerManager<Connection> {
 
     private Channel channel;
-    private Set<String> declaredExchanges = new HashSet<>();
-    private Set<String> listenedQueues = new HashSet<>();
+    private Set<String> declaredExchanges = Sets.newConcurrentHashSet();
+    private Set<String> listenedQueues = Sets.newConcurrentHashSet();
 
     public RabbitContainer(int threads)
     {
@@ -37,7 +37,7 @@ public class RabbitContainer extends AbstractBrokerManager<Connection> {
     }
 
     @Override
-    protected void connect(ConnectionData connectionData)
+    protected boolean connect(ConnectionData connectionData)
     {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(connectionData.getHost());
@@ -46,31 +46,28 @@ public class RabbitContainer extends AbstractBrokerManager<Connection> {
         factory.setPassword(connectionData.getPassword());
         factory.setThreadFactory(Commons.getThreadsManager().newThreadFactory("RabbitMQ"));
 
-        while (!connection.isOpen())
+        if (!connection.isOpen())
             try {
                 connection = factory.newConnection();
+                return true;
             } catch (Exception e) {
-                CommonLogger.error("Could not connect to RabbitMQ server, trying again in 5 seconds.");
-                try {
-                    Thread.sleep(5000L);
-                } catch (Exception ex) {
-                }
+                return false;
             }
-
-        CommonLogger.info("Successfully connected to the RabbitMQ server.");
 
         // Creating the channel
         try {
             channel = connection.createChannel();
+            return true;
         } catch (Exception e) {
             CommonLogger.fatal("Could not create RabbitMQ channel.", e);
+            return false;
         }
     }
 
     @Override
     protected void end()
     {
-        if (isEstablished())
+        if (isConnectionEstablished())
             try {
                 connection.close();
 
@@ -111,24 +108,36 @@ public class RabbitContainer extends AbstractBrokerManager<Connection> {
         super.registerListener(packetId, listener);
 
         String chann = packetChannelName(packetId);
-        boolean exchange = declaredExchanges.contains(chann);
-        boolean listened = listenedQueues.contains(chann);
-        if (!exchange || !listened)
-            try {
-                if (!exchange) {
-                    channel.exchangeDeclare(chann, "fanout");
-                    declaredExchanges.add(chann);
-                }
 
-                if (!listened) {
-                    String queue = channel.queueDeclare().getQueue();
-                    channel.queueBind(queue, chann, "");
-                    channel.basicConsume(queue, new RabbitConsumer(channel, ProtocolWrap.getPacketById(packetId)));
-                    listenedQueues.add(chann);
-                }
+        if (!declaredExchanges.contains(chann))
+            try {
+                channel.exchangeDeclare(chann, "fanout");
+                declaredExchanges.add(chann);
             } catch (Exception e) {
-                CommonLogger.error("Could not create a new channel: " + chann + ".", e);
+                CommonLogger.error("Could not declare exchange: " + chann + ".", e);
             }
+
+        if (!listenedQueues.contains(chann))
+            try {
+                String queue = channel.queueDeclare().getQueue();
+                channel.queueBind(queue, chann, "");
+                channel.basicConsume(queue, new RabbitConsumer(channel, ProtocolWrap.getPacketById(packetId)));
+                listenedQueues.add(chann);
+            } catch (Exception e) {
+                CommonLogger.error("Could not create queue: " + chann + ".", e);
+            }
+    }
+
+    @Override
+    protected String getServiceName()
+    {
+        return "RabbitMQ";
+    }
+
+    @Override
+    public boolean isConnectionEstablished()
+    {
+        return super.isConnectionEstablished() && connection != null && connection.isOpen();
     }
 
     private String packetChannelName(int packetId)
@@ -152,8 +161,7 @@ public class RabbitContainer extends AbstractBrokerManager<Connection> {
             ByteArrayDataInput input = ByteStreams.newDataInput(body);
             ByteArrayDataSource source = new ByteArrayDataSource(input);
             DataResult<?> result = packet.read(source);
-            RabbitContainer.this.listeners.get(packet.getId()).stream().forEach(listener ->
-                    listener.handlePacket(packet.getId(), result));
+            listeners.get(packet.getId()).stream().forEach(listener -> listener.handlePacket(packet.getId(), result));
             source.release();
         }
 

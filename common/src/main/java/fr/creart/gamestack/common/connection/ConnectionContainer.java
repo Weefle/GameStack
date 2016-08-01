@@ -3,9 +3,11 @@ package fr.creart.gamestack.common.connection;
 import com.google.common.base.Preconditions;
 import fr.creart.gamestack.common.lang.AtomicWrapper;
 import fr.creart.gamestack.common.lang.Wrapper;
+import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.ConnectionData;
 import fr.creart.gamestack.common.misc.Destroyable;
 import fr.creart.gamestack.common.misc.Initialisable;
+import fr.creart.gamestack.common.thread.ThreadsUtil;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -57,13 +59,20 @@ public abstract class ConnectionContainer<T>
                 || connectionState.get().isUsable()) // cannot open the connection
             return;
 
+        initializeDriver();
+
         connectionState.set(ConnectionState.OPENING);
 
         synchronized (this) {
-            connect(connectionData);
+            while (!connect(connectionData)) {
+                CommonLogger.error("Could not connect to the " + getServiceName() + " server. Trying again in 5 seconds.");
+                ThreadsUtil.sleep(5000L);
+            }
         }
 
         connectionState.set(ConnectionState.OPENED);
+
+        CommonLogger.info("Successfully connected to the " + getServiceName() + "server.");
     }
 
     /**
@@ -78,7 +87,7 @@ public abstract class ConnectionContainer<T>
     @Override
     public final void destroy()
     {
-        if (!isEstablished())
+        if (!isConnectionEstablished())
             return;
 
         connectionState.set(ConnectionState.CLOSING);
@@ -95,7 +104,7 @@ public abstract class ConnectionContainer<T>
      *
      * @return {@code true} if the connection has been established
      */
-    public final boolean isEstablished()
+    public boolean isConnectionEstablished()
     {
         return connectionState.get().isUsable();
     }
@@ -103,12 +112,26 @@ public abstract class ConnectionContainer<T>
     /**
      * Establishes the contained connection
      */
-    protected abstract void connect(ConnectionData connectionData);
+    protected abstract boolean connect(ConnectionData connectionData);
 
     /**
      * Closes everything.
      */
     protected abstract void end();
+
+    /**
+     * Initializes the driver required that may be required by the container.
+     */
+    protected void initializeDriver()
+    {
+    }
+
+    /**
+     * Returns the name of the service
+     *
+     * @return the name of the service
+     */
+    protected abstract String getServiceName();
 
     private class TaskHandler {
 

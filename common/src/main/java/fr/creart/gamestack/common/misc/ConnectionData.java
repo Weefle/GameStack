@@ -12,6 +12,7 @@ public final class ConnectionData {
     private final String host;
     private int port;
     private String virtualHost;
+    private String databaseName;
 
     public ConnectionData(String username, String password, String host, int port)
     {
@@ -20,11 +21,17 @@ public final class ConnectionData {
 
     public ConnectionData(String username, String password, String host, int port, String virtualHost)
     {
+        this(username, password, host, port, virtualHost, "");
+    }
+
+    public ConnectionData(String username, String password, String host, int port, String virtualHost, String databaseName)
+    {
         this.username = username;
         this.password = password;
         this.host = host;
         this.port = port;
         this.virtualHost = virtualHost;
+        this.databaseName = databaseName;
     }
 
     public String getUsername()
@@ -45,6 +52,11 @@ public final class ConnectionData {
     public int getPort()
     {
         return port;
+    }
+
+    public String getDatabaseName()
+    {
+        return databaseName;
     }
 
     public String getVirtualHost()

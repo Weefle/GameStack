@@ -1,9 +1,11 @@
 package fr.creart.gamestack.common.metric;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.misc.Configurable;
 import fr.creart.gamestack.common.misc.Initialisable;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -20,12 +22,14 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
 
     private byte threads;
     private ScheduledExecutorService scheduler;
-    private boolean initialized;
+    private volatile boolean initialized;
     private MetricOutput defaultOutput;
+    private Set<MetricProvider> providers = Sets.newConcurrentHashSet();
 
-    public MetricsManager(MetricOutput output)
+    public MetricsManager(MetricOutput output, byte threads)
     {
         this.defaultOutput = output;
+        this.threads = threads;
     }
 
     public void registerProvider(MetricProvider provider)
@@ -33,7 +37,9 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
         checkInitializedState();
         Preconditions.checkNotNull(provider, "provider can't be null");
 
-
+        synchronized (this) {
+            providers.add(provider);
+        }
     }
 
     @Override

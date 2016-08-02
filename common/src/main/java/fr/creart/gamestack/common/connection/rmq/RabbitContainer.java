@@ -1,5 +1,6 @@
 package fr.creart.gamestack.common.connection.rmq;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
@@ -11,7 +12,6 @@ import com.rabbitmq.client.Envelope;
 import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.broking.AbstractBrokerManager;
 import fr.creart.gamestack.common.log.CommonLogger;
-import fr.creart.gamestack.common.misc.ConnectionData;
 import fr.creart.gamestack.common.protocol.PacketListener;
 import fr.creart.gamestack.common.protocol.ProtocolWrap;
 import fr.creart.protocolt.bytestreams.ByteArrayDataSource;
@@ -22,11 +22,11 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * Rabbit implementation
+ * RabbitMQ implementation
  *
  * @author Creart
  */
-public class RabbitContainer extends AbstractBrokerManager<Rabbit> {
+public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnectionData> {
 
     private Set<String> declaredExchanges = Sets.newConcurrentHashSet();
     private Set<String> listenedQueues = Sets.newConcurrentHashSet();
@@ -38,13 +38,15 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit> {
     }
 
     @Override
-    protected boolean connect(ConnectionData connectionData)
+    protected boolean connect(RabbitConnectionData connectionData)
     {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(connectionData.getHost());
         factory.setPort(connectionData.getPort());
         factory.setUsername(connectionData.getUsername());
         factory.setPassword(connectionData.getPassword());
+        if (!Strings.isNullOrEmpty(connectionData.getVirtualHost()))
+            factory.setVirtualHost(connectionData.getVirtualHost());
         factory.setThreadFactory(Commons.getThreadsManager().newThreadFactory("RabbitMQ"));
 
         if (connection.getConnection() == null || !connection.getConnection().isOpen())
@@ -139,7 +141,7 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit> {
 
         private ByteArrayPacket<?> packet;
 
-        public RabbitConsumer(Channel channel, ByteArrayPacket<?> packet)
+        RabbitConsumer(Channel channel, ByteArrayPacket<?> packet)
         {
             super(channel);
             this.packet = packet;

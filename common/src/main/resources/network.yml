@@ -1,0 +1,13 @@
+broker: # eg: RMQ
+    system: "rabbit"
+    host: "192.168.99.100"
+    port: 32770
+    vhost: ""
+    user: "root"
+    password: ""
+database:
+    system: "mariadb"
+    host: "192.168.99.100"
+    port: 32769
+    user: "root"
+    password: "root"

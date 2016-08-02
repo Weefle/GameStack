@@ -4,9 +4,7 @@ import fr.creart.gamestack.common.lang.AtomicWrapper;
 import fr.creart.gamestack.common.lang.Wrapper;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.Callback;
-import fr.creart.gamestack.common.misc.ConnectionData;
 import fr.creart.gamestack.common.misc.Destroyable;
-import fr.creart.gamestack.common.misc.Initialisable;
 import fr.creart.gamestack.common.thread.ThreadsUtil;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,12 +17,11 @@ import java.util.concurrent.Executors;
  *
  * @author Creart
  */
-public abstract class ConnectionContainer<T>
-        implements AutoCloseable, Initialisable, Destroyable {
+public abstract class ConnectionContainer<T, CONN_DATA extends ConnectionData>
+        implements AutoCloseable, Destroyable {
 
     private static final byte MAX_THREADS = 10;
 
-    protected ConnectionData connectionData;
     protected T connection; // contained connection
     protected final Wrapper<ConnectionState> connectionState = new AtomicWrapper<>(ConnectionState.CLOSED);
     private final ConnectionTasksManager<T> taskHandler;
@@ -36,23 +33,9 @@ public abstract class ConnectionContainer<T>
     }
 
     /**
-     * Sets the connection data
-     *
-     * @param connectionData New connection data
-     */
-    public final void setConnectionData(ConnectionData connectionData)
-    {
-        if (this.connectionData != null)
-            return;
-
-        this.connectionData = connectionData;
-    }
-
-    /**
      * Initializes the connection if it is closed.
      */
-    @Override
-    public final void initialize()
+    public final void initialize(CONN_DATA connectionData)
     {
         if (connectionState.get() == ConnectionState.CLOSING
                 || connectionState.get() == ConnectionState.OPENING
@@ -106,6 +89,9 @@ public abstract class ConnectionContainer<T>
      */
     protected final void enqueueTask(Callback<T> callback)
     {
+        if (!connectionState.get().isUsable())
+            return;
+
         synchronized (taskHandler) {
             taskHandler.enqueueTask(callback);
         }
@@ -134,7 +120,7 @@ public abstract class ConnectionContainer<T>
     /**
      * Establishes the contained connection
      */
-    protected abstract boolean connect(ConnectionData connectionData);
+    protected abstract boolean connect(CONN_DATA connectionData);
 
     /**
      * Closes everything.

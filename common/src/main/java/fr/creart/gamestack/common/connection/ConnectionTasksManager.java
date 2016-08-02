@@ -10,10 +10,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 class ConnectionTasksManager<T> {
 
     private ExecutorService service;
-    private ConnectionContainer<T> container;
+    private ConnectionContainer<T, ?> container;
     private AtomicInteger taskIdCount = new AtomicInteger();
 
-    ConnectionTasksManager(ExecutorService service, ConnectionContainer<T> container)
+    ConnectionTasksManager(ExecutorService service, ConnectionContainer<T, ?> container)
     {
         this.service = service;
         this.container = container;
@@ -32,7 +32,7 @@ class ConnectionTasksManager<T> {
         return task.getTaskId();
     }
 
-    ConnectionContainer<T> getContainer()
+    ConnectionContainer<T, ?> getContainer()
     {
         return container;
     }

@@ -3,8 +3,9 @@ package fr.creart.gamestack.common;
 import com.google.common.base.Preconditions;
 import fr.creart.gamestack.common.broking.AbstractBrokerManager;
 import fr.creart.gamestack.common.broking.BrokerManager;
+import fr.creart.gamestack.common.connection.ConnectionData;
 import fr.creart.gamestack.common.i18n.Translator;
-import fr.creart.gamestack.common.misc.ConnectionData;
+import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.thread.ThreadsManager;
 
 /**
@@ -19,7 +20,7 @@ public final class Commons {
 
     private static String softwareName;
     private static ThreadsManager threadsManager;
-    private static AbstractBrokerManager<?> broker;
+    private static AbstractBrokerManager<?, ?> broker;
 
     private Commons()
     {
@@ -76,16 +77,31 @@ public final class Commons {
      * @param data   Connection data (host, port, credentials...)
      * @param broker Message broker's manager
      */
-    public static void connectMessageBroker(ConnectionData data, AbstractBrokerManager<?> broker)
+    public static <T, CONN_DATA extends ConnectionData> void connectMessageBroker(CONN_DATA data, AbstractBrokerManager<T, CONN_DATA> broker)
     {
         Preconditions.checkNotNull(data, "data can't be null");
         Preconditions.checkNotNull(broker, "broker can't be null");
         Preconditions.checkArgument(!broker.isConnectionEstablished(), "connection already established");
 
-        broker.setConnectionData(data);
-        broker.initialize();
+        broker.initialize(data);
 
         Commons.broker = broker;
+    }
+
+    /**
+     * Closes the commons.
+     * Before that, make sure that you finished your processes which may use commons.
+     */
+    public static void close()
+    {
+        try {
+            threadsManager.close();
+        } catch (Exception e) {
+            CommonLogger.error("Could not close the threads manager.", e);
+        }
+
+        if (broker != null)
+            broker.close();
     }
 
 }

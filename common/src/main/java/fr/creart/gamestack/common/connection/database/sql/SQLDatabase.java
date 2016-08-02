@@ -3,7 +3,6 @@ package fr.creart.gamestack.common.connection.database.sql;
 import fr.creart.gamestack.common.connection.database.AbstractDatabase;
 import fr.creart.gamestack.common.lang.ClassUtil;
 import fr.creart.gamestack.common.log.CommonLogger;
-import fr.creart.gamestack.common.misc.ConnectionData;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,7 +14,7 @@ import org.apache.commons.lang3.Validate;
  *
  * @author Creart
  */
-public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLRequest> {
+public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLRequest, SQLConnectionData> {
 
     protected String databaseSystemName;
     protected String driver;
@@ -26,12 +25,12 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
     }
 
     @Override
-    protected boolean connect(ConnectionData connectionData)
+    protected boolean connect(SQLConnectionData connectionData)
     {
         try {
             connection = DriverManager.
                     getConnection("jdbc:" + databaseSystemName + "://" + connectionData.getHost() + ":"
-                            + connectionData.getPort() + "/" + connectionData.getDatabaseName());
+                            + connectionData.getPort() + "/" + connectionData.getDatabase());
             return true;
         } catch (Exception e) {
             CommonLogger.error("Failed to connect to the database.", e);

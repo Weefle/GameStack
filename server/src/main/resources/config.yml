@@ -1,1 +1,3 @@
 # GameStack and GSS (GameStack Server) configuration
+global:
+    slots: 100

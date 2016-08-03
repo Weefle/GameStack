@@ -8,7 +8,9 @@ import fr.creart.gamestack.common.misc.Initialisable;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class manages metrics.
@@ -26,6 +28,7 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     private volatile boolean initialized;
     private MetricOutput defaultOutput;
     private Set<MetricProvider> providers = Sets.newConcurrentHashSet();
+    private ScheduledFuture<?> metricTask;
 
     public MetricsManager(MetricOutput output, byte threads)
     {
@@ -60,6 +63,8 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
         scheduler = threads <= 1 ? Executors.newSingleThreadScheduledExecutor(factory) :
                 Executors.newScheduledThreadPool(Math.min(MAX_THREADS, threads), factory);
 
+        metricTask = scheduler.scheduleAtFixedRate(new MetricTask(this), 2000L, 500L, TimeUnit.MILLISECONDS);
+
         // finally
         initialized = true;
     }
@@ -67,6 +72,7 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     @Override
     public void close() throws Exception
     {
+        metricTask.cancel(false);
         scheduler.shutdownNow();
     }
 

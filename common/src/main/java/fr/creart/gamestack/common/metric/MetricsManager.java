@@ -36,11 +36,21 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
         this.threads = threads;
     }
 
+    /**
+     * Returns the currently registered providers
+     *
+     * @return the currently registered providers
+     */
     synchronized Set<MetricProvider> getProviders()
     {
         return providers;
     }
 
+    /**
+     * Registers a new provider
+     *
+     * @param provider The provider to register
+     */
     public void registerProvider(MetricProvider provider)
     {
         checkInitializedState();
@@ -76,16 +86,29 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
         scheduler.shutdownNow();
     }
 
+    /**
+     * Returns the metric default output
+     *
+     * @return the metric default output
+     */
     MetricOutput getDefaultOutput()
     {
         return defaultOutput;
     }
 
+    /**
+     * Returns the thread group used by the metrics system
+     *
+     * @return the thread group used by the metrics system
+     */
     ThreadGroup getMetricsGroup()
     {
         return metricsGroup;
     }
 
+    /**
+     * Throws an {@link IllegalStateException} if the metrics manager hasn't been initialized
+     */
     private void checkInitializedState()
     {
         Preconditions.checkState(initialized, "not initialized");

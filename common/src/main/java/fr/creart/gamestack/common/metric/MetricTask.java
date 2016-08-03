@@ -29,8 +29,7 @@ public class MetricTask implements Runnable {
 
         Set<Metric> output = new HashSet<>();
 
-        manager.getProviders().stream().filter(Streams.nonNullFilter())
-                .filter(provider -> provider.getUpdateFrequency() > 0/*remove all event-based metric providers*/).forEach(provider -> {
+        manager.getProviders().stream().filter(Streams.nonNullFilter()).forEach(provider -> {
             // approximately equals, a metric may have taken too much time to run.
             if (System.currentTimeMillis() - provider.getLastUpdate() <= 10 + runTime.get() + provider.getUpdateFrequency()) {
                 long start = System.currentTimeMillis(); // it's all the process

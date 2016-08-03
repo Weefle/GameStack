@@ -33,6 +33,7 @@ public class Main {
             configuration.initialize();
             CommonLogger.info("Loaded the configuration file (config.yml).");
         }
+
         else {
             CommonLogger.fatal("Could not load the configuration file (config.yml)!");
             if (saveValidation.swap().toOptional().orElse(new Exception("Could not get exception.")) instanceof FileNotFoundException)

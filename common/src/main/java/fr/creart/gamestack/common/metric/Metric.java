@@ -7,4 +7,20 @@ package fr.creart.gamestack.common.metric;
  * @author Creart
  */
 public abstract class Metric {
+
+    protected MetricProvider provider;
+
+    /**
+     * @param provider source provider
+     */
+    public Metric(MetricProvider provider)
+    {
+        this.provider = provider;
+    }
+
+    public MetricProvider getProvider()
+    {
+        return provider;
+    }
+
 }

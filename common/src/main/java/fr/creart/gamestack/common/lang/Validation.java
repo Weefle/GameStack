@@ -19,7 +19,7 @@ import java.util.Optional;
  *     }
  *     }
  * </pre>
- *
+ * <p>
  * Then, the caller of the function can get to know if the operation is a success by calling the {@link #isSuccess()}
  * function. (You can have a look at the test: fr.creart.gamestack.common.test.ValidationTest)
  *
@@ -34,6 +34,7 @@ public abstract class Validation<E, T> {
 
     /**
      * Returns {@code true} if the operation is a success
+     *
      * @return {@code true} if the operation is a success
      */
     public final boolean isSuccess()
@@ -43,12 +44,14 @@ public abstract class Validation<E, T> {
 
     /**
      * Returns an {@link Optional} of the value contained by the validation
+     *
      * @return an {@link Optional} of the value contained by the validation
      */
     public abstract Optional<T> toOptional();
 
     /**
      * Returns the inverse Validation of the current one
+     *
      * @return the inverse Validation of the current one
      */
     public abstract Validation<T, E> swap();

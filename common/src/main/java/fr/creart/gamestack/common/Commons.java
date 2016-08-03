@@ -46,6 +46,11 @@ public final class Commons {
         initialized = true;
     }
 
+    /**
+     * Returns the current threads manager
+     *
+     * @return the current threads manager
+     */
     public static ThreadsManager getThreadsManager()
     {
         return threadsManager;

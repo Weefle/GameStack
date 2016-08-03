@@ -20,6 +20,7 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
 
     private static final byte MAX_THREADS = 4;
 
+    private ThreadGroup metricsGroup;
     private byte threads;
     private ScheduledExecutorService scheduler;
     private volatile boolean initialized;
@@ -30,6 +31,11 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     {
         this.defaultOutput = output;
         this.threads = threads;
+    }
+
+    synchronized Set<MetricProvider> getProviders()
+    {
+        return providers;
     }
 
     public void registerProvider(MetricProvider provider)
@@ -48,7 +54,9 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
         if (initialized)
             return;
 
-        ThreadFactory factory = Commons.getThreadsManager().newThreadFactory("Metrics");
+        metricsGroup = Commons.getThreadsManager().newThreadGroup("Metrics");
+
+        ThreadFactory factory = Commons.getThreadsManager().newThreadFactory(metricsGroup);
         scheduler = threads <= 1 ? Executors.newSingleThreadScheduledExecutor(factory) :
                 Executors.newScheduledThreadPool(Math.min(MAX_THREADS, threads), factory);
 
@@ -60,6 +68,16 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     public void close() throws Exception
     {
         scheduler.shutdownNow();
+    }
+
+    MetricOutput getDefaultOutput()
+    {
+        return defaultOutput;
+    }
+
+    ThreadGroup getMetricsGroup()
+    {
+        return metricsGroup;
     }
 
     private void checkInitializedState()

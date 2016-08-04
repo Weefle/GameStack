@@ -1,6 +1,8 @@
 package fr.creart.gamestack.common.metric;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
 import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.misc.Configurable;
@@ -29,6 +31,7 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     private MetricOutput defaultOutput;
     private Set<MetricProvider> providers = Sets.newConcurrentHashSet();
     private ScheduledFuture<?> metricTask;
+    private BiMap<String, Class<? extends Metric>> metrics = HashBiMap.create();
 
     public MetricsManager(MetricOutput output, byte threads)
     {
@@ -84,6 +87,39 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     {
         metricTask.cancel(false);
         scheduler.shutdownNow();
+    }
+
+    /**
+     * Registers a metric
+     *
+     * @param metricName metric's name
+     * @param metric     metric's class
+     */
+    public void declareMetric(String metricName, Class<? extends Metric> metric)
+    {
+        metrics.put(metricName, metric);
+    }
+
+    /**
+     * Returns the metric associated to the given name
+     *
+     * @param metricName Metric's name
+     * @return the metric associated to the given name
+     */
+    public Class<? extends Metric> getMetric(String metricName)
+    {
+        return metrics.get(metricName);
+    }
+
+    /**
+     * Returns the metric's name associated to the given class
+     *
+     * @param clazz metric's class
+     * @return the metric's name associated to the given class
+     */
+    public String getMetricName(Class<? extends Metric> clazz)
+    {
+        return metrics.inverse().get(clazz);
     }
 
     /**

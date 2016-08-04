@@ -1,5 +1,7 @@
 package fr.creart.gamestack.common.protocol;
 
+import fr.creart.gamestack.common.log.CommonLogger;
+import fr.creart.gamestack.common.protocol.packet.MetricPacket;
 import fr.creart.protocolt.ProtoColt;
 import fr.creart.protocolt.Protocol;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
@@ -17,7 +19,14 @@ public final class ProtocolWrap {
         ProtoColt.configure(true);
         ProtoColt proto = ProtoColt.getInstance();
         protocol = proto.getOrCreateProtocol("gamestack");
+
         // declare packets
+
+        try {
+            protocol.declarePacket(new MetricPacket(0xFE));
+        } catch (Exception e) {
+            CommonLogger.error("Could not declare a packet.", e);
+        }
     }
 
     private ProtocolWrap()

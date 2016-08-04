@@ -19,6 +19,7 @@ import fr.creart.protocolt.bytestreams.ByteArrayDataWriter;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
 import fr.creart.protocolt.data.DataResult;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -153,7 +154,9 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
             ByteArrayDataInput input = ByteStreams.newDataInput(body);
             ByteArrayDataSource source = new ByteArrayDataSource(input);
             DataResult<?> result = packet.read(source);
-            listeners.get(packet.getId()).stream().forEach(listener -> listener.handlePacket(packet.getId(), result));
+            Collection<PacketListener> found = listeners.get(packet.getId());
+            if (found != null && !found.isEmpty())
+                found.stream().forEach(listener -> listener.handlePacket(packet.getId(), result));
             source.release();
         }
 

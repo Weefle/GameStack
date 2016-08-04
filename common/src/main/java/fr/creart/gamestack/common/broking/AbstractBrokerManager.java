@@ -13,7 +13,8 @@ import fr.creart.protocolt.bytestreams.ByteArrayPacket;
 /**
  * @author Creart
  */
-public abstract class AbstractBrokerManager<T, CONN_DATA extends ConnectionData> extends ConnectionContainer<T, CONN_DATA> implements BrokerManager {
+public abstract class AbstractBrokerManager<T, CONN_DATA extends ConnectionData>
+        extends ConnectionContainer<T, CONN_DATA> implements BrokerManager {
 
     protected Multimap<Integer, PacketListener> listeners = HashMultimap.create();
 

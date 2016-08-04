@@ -48,7 +48,7 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
         factory.setPassword(connectionData.getPassword());
         if (!Strings.isNullOrEmpty(connectionData.getVirtualHost()))
             factory.setVirtualHost(connectionData.getVirtualHost());
-        factory.setThreadFactory(Commons.getThreadsManager().newThreadFactory("RabbitMQ"));
+        factory.setThreadFactory(Commons.getInstance().getThreadsManager().newThreadFactory("RabbitMQ"));
 
         if (connection.getConnection() == null || !connection.getConnection().isOpen())
             try {

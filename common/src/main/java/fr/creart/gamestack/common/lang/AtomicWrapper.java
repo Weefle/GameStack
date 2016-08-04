@@ -1,5 +1,8 @@
 package fr.creart.gamestack.common.lang;
 
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * Implementation of {@link Wrapper} for atomic values
  *
@@ -7,7 +10,7 @@ package fr.creart.gamestack.common.lang;
  */
 public class AtomicWrapper<T> extends Wrapper<T> {
 
-    private final Object mutex = new Object();
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public AtomicWrapper()
     {
@@ -22,16 +25,22 @@ public class AtomicWrapper<T> extends Wrapper<T> {
     @Override
     public void set(T value)
     {
-        synchronized (mutex) {
+        lock.writeLock().lock();
+        try {
             this.value = value;
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public T get()
     {
-        synchronized (mutex) {
+        lock.readLock().lock();
+        try {
             return value;
+        } finally {
+            lock.readLock().unlock();
         }
     }
 

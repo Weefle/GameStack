@@ -20,7 +20,6 @@ public class Main {
     {
         CommonLogger.createLogger("Server");
         CommonLogger.info("Starting up GameStack server...");
-        Commons.initialize("Server");
         Chrono chrono = new Chrono();
 
         chrono.markStart(null);
@@ -42,7 +41,7 @@ public class Main {
                 CommonLogger.fatal("Could not save the file. Please give the necessary permissions to the user which is running the GameStack server.");
 
             CommonLogger.error("Shutting down the server...");
-            Commons.close();
+            Commons.getInstance().close();
             return;
         }
 

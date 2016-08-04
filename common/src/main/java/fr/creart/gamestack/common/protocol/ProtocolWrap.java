@@ -41,7 +41,7 @@ public final class ProtocolWrap {
      * @return the packet associated to the id
      */
     @SuppressWarnings("unchecked")
-    public static <T extends ByteArrayPacket<?>> T getPacketById(int id)
+    public static <V, T extends ByteArrayPacket<V>> T getPacketById(int id)
     {
         return (T) protocol.getPacketById(id);
     }

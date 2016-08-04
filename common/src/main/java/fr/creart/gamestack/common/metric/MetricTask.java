@@ -1,10 +1,10 @@
 package fr.creart.gamestack.common.metric;
 
 import fr.creart.gamestack.common.lang.BasicWrapper;
-import fr.creart.gamestack.common.lang.Streams;
 import fr.creart.gamestack.common.lang.Wrapper;
 import fr.creart.gamestack.common.log.CommonLogger;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -29,7 +29,7 @@ public class MetricTask implements Runnable {
 
         Set<Metric> output = new HashSet<>();
 
-        manager.getProviders().stream().filter(Streams.nonNullFilter()).forEach(provider -> {
+        manager.getProviders().stream().filter(Objects::nonNull).forEach(provider -> {
             // approximately equals, a metric may have taken too much time to run.
             if (System.currentTimeMillis() - provider.getLastUpdate() <= 10 + runTime.get() + provider.getUpdateFrequency()) {
                 long start = System.currentTimeMillis(); // it's all the process
@@ -58,7 +58,7 @@ public class MetricTask implements Runnable {
             }
         });
 
-        output.stream().filter(Streams.nonNullFilter()).forEach(this::sendMetric);
+        output.stream().filter(Objects::nonNull).forEach(this::sendMetric);
     }
 
     private void sendMetric(Metric metric)

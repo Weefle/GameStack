@@ -23,13 +23,13 @@ public class MetricPacket extends ByteArrayPacket<Metric> {
     @Override
     public DataResult<Metric> read(ByteArrayDataSource src)
     {
-        return new DataResult<>(JsonUtil.fromJson(Commons.getMetricsManager().getMetric(src.readString()), src.readString()));
+        return new DataResult<>(JsonUtil.fromJson(Commons.getInstance().getMetricsManager().getMetric(src.readString()), src.readString()));
     }
 
     @Override
     public void write(ByteArrayDataWriter writer, Metric metric)
     {
-        writer.write(Commons.getMetricsManager().getMetricName(metric.getClass()));
+        writer.write(Commons.getInstance().getMetricsManager().getMetricName(metric.getClass()));
         writer.write(JsonUtil.toJson(metric));
     }
 

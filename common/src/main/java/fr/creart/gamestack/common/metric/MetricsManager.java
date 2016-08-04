@@ -70,9 +70,9 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
         if (initialized)
             return;
 
-        metricsGroup = Commons.getThreadsManager().newThreadGroup("Metrics");
+        metricsGroup = Commons.getInstance().getThreadsManager().newThreadGroup("Metrics");
 
-        ThreadFactory factory = Commons.getThreadsManager().newThreadFactory(metricsGroup);
+        ThreadFactory factory = Commons.getInstance().getThreadsManager().newThreadFactory(metricsGroup);
         scheduler = threads <= 1 ? Executors.newSingleThreadScheduledExecutor(factory) :
                 Executors.newScheduledThreadPool(Math.min(MAX_THREADS, threads), factory);
 

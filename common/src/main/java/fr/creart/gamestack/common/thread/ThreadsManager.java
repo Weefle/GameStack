@@ -86,14 +86,7 @@ public final class ThreadsManager implements Destroyable, AutoCloseable {
     public ThreadFactory newThreadFactory(ThreadGroup group)
     {
         return new ThreadFactoryBuilder()
-                .setThreadFactory(runnable -> new Thread(group, runnable) {
-                    @Override
-                    public void run()
-                    {
-                        if (runnable != null)
-                            runnable.run();
-                    }
-                })
+                .setThreadFactory(runnable -> new Thread(group, runnable))
                 .setUncaughtExceptionHandler(new DefaultExceptionHandler())
                 .build();
     }

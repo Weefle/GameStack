@@ -25,12 +25,10 @@ public class DefaultMetricOutput implements MetricOutput {
     @Override
     public void send(Metric metric)
     {
-        if (metric == null) {
+        if (metric == null)
             CommonLogger.warn("Tried to publish a null metric.");
-            return;
-        }
-
-        broker.publish(packet, metric);
+        else
+            broker.publish(packet, metric);
     }
 
 }

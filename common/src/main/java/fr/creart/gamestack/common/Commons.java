@@ -18,12 +18,14 @@ import fr.creart.gamestack.common.thread.ThreadsManager;
  */
 public final class Commons {
 
-    private static boolean initialized;
+    private static Commons instance;
 
-    private static String softwareName;
-    private static ThreadsManager threadsManager;
-    private static MetricsManager metricsManager;
-    private static AbstractBrokerManager<?, ?> broker;
+    private boolean initialized;
+
+    private String softwareName;
+    private ThreadsManager threadsManager;
+    private MetricsManager metricsManager;
+    private AbstractBrokerManager<?, ?> broker;
 
     private Commons()
     {
@@ -35,8 +37,8 @@ public final class Commons {
      *
      * @param soft Software name
      */
-    public static <T, CONN_DATA extends ConnectionData> void initialize(String soft, CONN_DATA data,
-                                                                        AbstractBrokerManager<T, CONN_DATA> broker, byte metricsThreads)
+    public <T, CONN_DATA extends ConnectionData> void initialize(String soft, CONN_DATA brokerConnection,
+                                                                 AbstractBrokerManager<T, CONN_DATA> broker, byte metricsThreads)
     {
         if (initialized)
             return;
@@ -45,7 +47,7 @@ public final class Commons {
 
         threadsManager = new ThreadsManager(soft);
         Translator.initialize();
-        connectMessageBroker(data, broker);
+        connectMessageBroker(brokerConnection, broker);
         initializeMetricsManager(metricsThreads);
 
         initialized = true;
@@ -56,7 +58,7 @@ public final class Commons {
      *
      * @return the current threads manager
      */
-    public static ThreadsManager getThreadsManager()
+    public ThreadsManager getThreadsManager()
     {
         return threadsManager;
     }
@@ -66,7 +68,7 @@ public final class Commons {
      *
      * @return the current software name
      */
-    public static String getSoftwareName()
+    public String getSoftwareName()
     {
         return softwareName;
     }
@@ -76,7 +78,7 @@ public final class Commons {
      *
      * @return the current broker manager
      */
-    public static BrokerManager getMessageBroker()
+    public BrokerManager getMessageBroker()
     {
         return broker;
     }
@@ -86,7 +88,7 @@ public final class Commons {
      *
      * @return the current metrics manager
      */
-    public static MetricsManager getMetricsManager()
+    public MetricsManager getMetricsManager()
     {
         return metricsManager;
     }
@@ -97,7 +99,7 @@ public final class Commons {
      * @param data   Connection data (host, port, credentials...)
      * @param broker Message broker's manager
      */
-    private static <T, CONN_DATA extends ConnectionData> void connectMessageBroker(CONN_DATA data, AbstractBrokerManager<T, CONN_DATA> broker)
+    private <T, CONN_DATA extends ConnectionData> void connectMessageBroker(CONN_DATA data, AbstractBrokerManager<T, CONN_DATA> broker)
     {
         Preconditions.checkNotNull(data, "data can't be null");
         Preconditions.checkNotNull(broker, "broker can't be null");
@@ -105,7 +107,7 @@ public final class Commons {
 
         broker.initialize(data);
 
-        Commons.broker = broker;
+        this.broker = broker;
     }
 
     /**
@@ -113,7 +115,7 @@ public final class Commons {
      *
      * @param threads number of threads
      */
-    private static void initializeMetricsManager(byte threads)
+    private void initializeMetricsManager(byte threads)
     {
         metricsManager = new MetricsManager(new DefaultMetricOutput(broker), threads);
     }
@@ -122,7 +124,7 @@ public final class Commons {
      * Closes the commons.
      * Before that, make sure that you finished your processes which may use commons.
      */
-    public static void close()
+    public void close()
     {
         try {
             threadsManager.close();
@@ -132,6 +134,18 @@ public final class Commons {
 
         if (broker != null)
             broker.close();
+    }
+
+    /**
+     * Returns the single instance of the Commons class
+     *
+     * @return the single instance of the Commons class
+     */
+    public static Commons getInstance()
+    {
+        if (instance == null)
+            instance = new Commons();
+        return instance;
     }
 
 }

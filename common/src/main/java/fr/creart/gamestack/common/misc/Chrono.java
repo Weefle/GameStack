@@ -15,7 +15,7 @@ public final class Chrono {
     /**
      * Marks the position of the start.
      *
-     * @param unit nanoseconds or milliseconds
+     * @param unit time unit
      */
     public void markStart(TimeUnit unit)
     {
@@ -25,7 +25,7 @@ public final class Chrono {
     /**
      * Marks the position of the end.
      *
-     * @param unit nanoseconds or milliseconds
+     * @param unit time unit
      */
     public void markEnd(TimeUnit unit)
     {
@@ -44,9 +44,7 @@ public final class Chrono {
 
     private long now(TimeUnit unit)
     {
-        if (unit == TimeUnit.NANOSECONDS)
-            return System.nanoTime();
-        return System.currentTimeMillis();
+        return unit == TimeUnit.MILLISECONDS ? System.currentTimeMillis() : unit.convert(System.nanoTime(), unit);
     }
 
 }

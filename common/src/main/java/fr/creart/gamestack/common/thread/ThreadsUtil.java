@@ -13,9 +13,7 @@ public class ThreadsUtil {
     }
 
     /**
-     * Because it is very redundant to always try and catch to sleep a thread,
-     * I created this function. The {@link InterruptedException} isn't something
-     * you do a lot about.
+     * Sleeps the thread, if an {@link InterruptedException} is thrown it interrupts the thread.
      *
      * @param time Time to sleep
      */
@@ -24,7 +22,7 @@ public class ThreadsUtil {
         try {
             Thread.sleep(time);
         } catch (Exception e) {
-            // useless
+            Thread.currentThread().interrupt();
         }
     }
 

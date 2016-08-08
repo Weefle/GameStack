@@ -3,6 +3,7 @@ package fr.creart.gamestack.common.misc;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 /**
@@ -12,7 +13,10 @@ import java.lang.reflect.Type;
  */
 public final class JsonUtil {
 
-    private static final Gson GSON = new GsonBuilder().enableComplexMapKeySerialization().create();
+    private static final Gson GSON = new GsonBuilder()
+            .enableComplexMapKeySerialization()
+            .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT)
+            .create();
 
     private JsonUtil()
     {

@@ -1,12 +1,17 @@
 package fr.creart.gamestack.common.connection.database.sql;
 
+import com.google.common.base.Strings;
 import fr.creart.gamestack.common.connection.database.AbstractDatabase;
+import fr.creart.gamestack.common.connection.database.RequestType;
 import fr.creart.gamestack.common.lang.ClassUtil;
+import fr.creart.gamestack.common.lang.MoreArrays;
 import fr.creart.gamestack.common.log.CommonLogger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Arrays;
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -65,38 +70,60 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
     }
 
     @Override
-    public void executeRequest(SQLRequest request)
+    public void executeRequests(SQLRequest... requests)
     {
-        Validate.notNull(request, "request can't be null");
-        Validate.notEmpty(request.getRequest(), "the sql request can't be empty or null");
-        Validate.notNull(request.getType(), "request's type can't be null");
+        if (requests.length == 0)
+            return;
 
-        enqueueTask((conn) -> {
-            PreparedStatement statement = null;
-            ResultSet result = null;
-            try {
-                statement = conn.prepareStatement(request.getRequest());
-                switch (request.getType()) {
-                    case QUERY:
-                        result = statement.executeQuery();
-                        request.getQueryCallback().call(result);
-                        break;
-                    case INSERT:
-                    case UPDATE:
-                        statement.executeUpdate();
-                        break;
-                    default:
-                        break;
+        if (MoreArrays.isTrueForAll(requests, (request) -> request != null && request.getType() != RequestType.QUERY)) {
+            enqueueTask(conn -> {
+                Statement statement = null;
+                try {
+                    statement = conn.createStatement();
+                    for (SQLRequest request : requests)
+                        if (!Strings.isNullOrEmpty(request.getRequest()))
+                            statement.addBatch(request.getRequest());
+                    statement.executeBatch();
+                } catch (Exception e) {
+                    CommonLogger.error("Encountered an exception during the execution of an SQL batch (requests=" + Arrays.toString(requests) + ").", e);
+                } finally {
+                    if (statement != null && !statement.isClosed())
+                        statement.close();
                 }
-            } catch (Exception e) {
-                CommonLogger.error("Encountered an exception during the execution of the following SQL request: " + request.toString() + ".", e);
-            } finally {
-                if (result != null && !result.isClosed())
-                    result.close();
-                if (statement != null && !statement.isClosed())
-                    statement.close();
-            }
-        });
+            });
+            return;
+        }
+
+        for (SQLRequest request : requests) {
+            Validate.notNull(request, "request can't be null");
+            Validate.notEmpty(request.getRequest(), "the sql request can't be empty or null");
+            Validate.notNull(request.getType(), "request's type can't be null");
+
+            enqueueTask(conn -> {
+                PreparedStatement statement = null;
+                ResultSet result = null;
+                try {
+                    statement = conn.prepareStatement(request.getRequest());
+                    switch (request.getType()) {
+                        case QUERY:
+                            result = statement.executeQuery();
+                            request.getQueryCallback().call(result);
+                            break;
+                        case INSERT:
+                        case UPDATE:
+                            statement.executeUpdate();
+                            break;
+                    }
+                } catch (Exception e) {
+                    CommonLogger.error("Encountered an exception during the execution of the following SQL request: " + request.toString() + ".", e);
+                } finally {
+                    if (result != null && !result.isClosed())
+                        result.close();
+                    if (statement != null && !statement.isClosed())
+                        statement.close();
+                }
+            });
+        }
     }
 
     @Override

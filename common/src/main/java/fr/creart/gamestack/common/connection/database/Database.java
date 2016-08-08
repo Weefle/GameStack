@@ -8,10 +8,10 @@ package fr.creart.gamestack.common.connection.database;
 public interface Database<T extends AbstractRequest> {
 
     /**
-     * Executes the given request
+     * Executes the given request(s)
      *
-     * @param request The request
+     * @param requests The request(s)
      */
-    void executeRequest(T request);
+    void executeRequests(T... requests);
 
 }

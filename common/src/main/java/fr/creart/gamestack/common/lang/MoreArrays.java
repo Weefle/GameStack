@@ -1,5 +1,8 @@
 package fr.creart.gamestack.common.lang;
 
+import com.google.common.base.Preconditions;
+import java.util.function.Predicate;
+
 /**
  * Arrays utils
  *
@@ -36,6 +39,25 @@ public final class MoreArrays {
         for (String str : strings)
             builder.append(str);
         return builder.toString();
+    }
+
+    /**
+     * Tests the given predicate on each given object.
+     * Returns <code>true</code> if of all the objects passed predicate's test
+     *
+     * @param objects   Object array
+     * @param predicate The predicate
+     * @return <code>true</code> if of all the objects passed predicate's test
+     */
+    public static <T> boolean isTrueForAll(T[] objects, Predicate<T> predicate)
+    {
+        Preconditions.checkNotNull(predicate, "predicate can't be null");
+        Preconditions.checkArgument(objects.length > 0, "objects can't be null");
+
+        for (T obj : objects)
+            if (!predicate.test(obj))
+                return false;
+        return true;
     }
 
 }

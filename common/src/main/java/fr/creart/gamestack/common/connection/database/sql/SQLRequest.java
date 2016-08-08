@@ -1,6 +1,5 @@
 package fr.creart.gamestack.common.connection.database.sql;
 
-import com.google.common.base.Preconditions;
 import fr.creart.gamestack.common.connection.database.AbstractRequest;
 import fr.creart.gamestack.common.connection.database.RequestType;
 import fr.creart.gamestack.common.misc.Callback;
@@ -11,10 +10,9 @@ import java.sql.ResultSet;
  *
  * @author Creart
  */
-public class SQLRequest extends AbstractRequest {
+public class SQLRequest extends AbstractRequest<ResultSet> {
 
     private String request;
-    private Callback<ResultSet> queryCallback;
 
     /**
      * @param type    request's type. If it is a query, please use the other constructor with the callback.
@@ -32,21 +30,13 @@ public class SQLRequest extends AbstractRequest {
      */
     public SQLRequest(RequestType type, String request, Callback<ResultSet> queryCallback)
     {
-        super(type);
-        if (type == RequestType.QUERY)
-            Preconditions.checkNotNull(queryCallback, "callback can't be null");
+        super(type, queryCallback);
         this.request = request;
-        this.queryCallback = queryCallback;
     }
 
     public String getRequest()
     {
         return request;
-    }
-
-    public Callback<ResultSet> getQueryCallback()
-    {
-        return queryCallback;
     }
 
     @Override

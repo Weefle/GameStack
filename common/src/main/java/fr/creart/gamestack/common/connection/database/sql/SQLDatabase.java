@@ -107,7 +107,7 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
                     switch (request.getType()) {
                         case QUERY:
                             result = statement.executeQuery();
-                            request.getQueryCallback().call(result);
+                            request.getCallback().call(result);
                             break;
                         case INSERT:
                         case UPDATE:

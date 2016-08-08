@@ -2,16 +2,14 @@ package fr.creart.gamestack.common.log;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import fr.creart.gamestack.common.io.FileUtil;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import java.util.regex.Pattern;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * A common logger for all GameStack softwares.
@@ -19,6 +17,10 @@ import org.apache.log4j.spi.LoggingEvent;
  * @author Creart
  */
 public final class CommonLogger {
+
+    private static final byte MAX_UNCOMPRESSED_LOG_FILES = 4;
+    private static final Pattern LOG_FILE_PATTERN = Pattern.compile("^log(.*)*\\.txt$",
+            Pattern.CASE_INSENSITIVE);
 
     private static Logger logger;
 
@@ -38,22 +40,32 @@ public final class CommonLogger {
             Preconditions.checkNotNull(Strings.emptyToNull(softName), "soft name can't be null or empty.");
             logger = Logger.getLogger(softName);
             logger.addAppender(new ConsoleAppender(new CustomLayout(false)));
-            File log = new File("logs/" + softName.toLowerCase() + "/log" + LocalDateTime.now().
-                    format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss")) + ".txt");
-            if (log.delete())
-                info("Log file already existed. Removed it.");
 
             try {
-                if (log.getParentFile().mkdirs() && log.createNewFile())
-                    info("Successfully created new log file.");
-            } catch (Exception e) {
-                error("Could not create new log file.", e);
-            }
+                File output = new File("logs/" + softName.
+                        toLowerCase() + "/log-" + DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss").format(LocalDateTime.now()) + ".txt");
 
-            try {
-                logger.addAppender(new FileAppender(new CustomLayout(true), log.getAbsolutePath()));
+                File[] files = output.getParentFile().listFiles(file -> file != null && file.isFile() && LOG_FILE_PATTERN.matcher(file.getName()).matches());
+
+                if (files != null && files.length > MAX_UNCOMPRESSED_LOG_FILES) {
+                    File archive = new File("logs/" + softName.toLowerCase() + "/logs-" + DateTimeFormatter
+                            .ofPattern("dd-MM-yyyy_HH-mm-ss").format(LocalDateTime.now()) + ".zip");
+                    if (!archive.exists())
+                        archive.createNewFile();
+                    if (FileUtil.addToZip(archive, files))
+                        for (File file : files)
+                            file.delete();
+                }
+
+                if (!output.exists()) {
+                    output.getParentFile().mkdirs();
+                    output.createNewFile();
+                }
+
+                FileAppender appender = new FileAppender(new CustomLayout(true), output.getAbsolutePath(), false);
+                logger.addAppender(appender);
             } catch (Exception e) {
-                error("Could not add file appender to log4j.", e);
+                CommonLogger.error("Could not add file appender for logging!", e);
             }
         }
     }
@@ -96,62 +108,6 @@ public final class CommonLogger {
     public static void fatal(String message, Throwable attached)
     {
         logger.fatal(message, attached);
-    }
-
-    private static class CustomLayout extends Layout {
-
-        private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("'['HH':'mm']' ");
-
-        private boolean file;
-
-        private CustomLayout(boolean file)
-        {
-            this.file = file;
-        }
-
-        @Override
-        public String format(LoggingEvent event)
-        {
-            if (event == null)
-                return null;
-
-            if (event.getLevel() == Level.DEBUG && file)
-                return null;
-
-            StringBuilder builder = new StringBuilder(); // StringBuilders are more efficient than simple String concatenations
-            builder.append(currentTime());
-            builder.append('[').append(logger.getName()).append("] ");
-            builder.append(event.getLevel().toString()).append(": ");
-            builder.append(event.getMessage());
-
-            if (event.getThrowableInformation() != null)
-                builder.append(" Exception: ").append(ExceptionUtils.getStackTrace(event.getThrowableInformation().getThrowable()));
-
-            builder.append("\n");
-
-            return builder.toString();
-        }
-
-        @Override
-        public boolean ignoresThrowable()
-        {
-            return false;
-        }
-
-        @Override
-        public void activateOptions()
-        {
-            // nothing to do here.
-        }
-
-        private static String currentTime()
-        {
-            StringBuilder builder = new StringBuilder();
-            LocalDateTime time = LocalDateTime.now();
-            builder.append(time.format(DATE_FORMAT));
-            return builder.toString();
-        }
-
     }
 
 }

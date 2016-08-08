@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Manages commands.
@@ -13,11 +14,14 @@ import java.util.Map;
  */
 public final class CommandsManager {
 
+    private static CommandsManager instance;
+
     // KEY = Command's label
     // VALUE = Command (execution)
-    private static Map<String, Command> commands = new HashMap<>();
+    private Map<String, Command> commands = new HashMap<>();
+    private boolean run;
 
-    static
+    private CommandsManager()
     {
         registerCommand(new HelpCommand());
     }
@@ -27,7 +31,7 @@ public final class CommandsManager {
      *
      * @param command Command to register
      */
-    public static void registerCommand(Command command)
+    public void registerCommand(Command command)
     {
         Preconditions.checkNotNull(command, "command can't be null");
         Preconditions.checkNotNull(Strings.emptyToNull(command.getLabel()), "command label can't be null or empty");
@@ -46,7 +50,7 @@ public final class CommandsManager {
      * @param line   Entered line by the user
      * @param sender Command's sender
      */
-    public static void executeCommand(String line, CommandSender sender)
+    public void executeCommand(String line, CommandSender sender)
     {
         if (line == null || line.length() == 0)
             return;
@@ -62,9 +66,29 @@ public final class CommandsManager {
             return;
         }
 
-        String[] args = new String[] {};
+        String[] args = new String[]{};
         System.arraycopy(parts, 1, args, 0, parts.length - 1);
         command.execute(sender, args);
+    }
+
+    /**
+     * Listens commands in the current thread
+     */
+    public void listenConsole()
+    {
+        run = true;
+
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (run) {
+                String line = scanner.nextLine();
+                executeCommand(line, ConsoleSender.INSTANCE);
+            }
+        }
+    }
+
+    public synchronized void setRun(boolean run)
+    {
+        this.run = run;
     }
 
     /**
@@ -72,7 +96,7 @@ public final class CommandsManager {
      *
      * @return registered commands
      */
-    static Collection<Command> getCommands()
+    Collection<Command> getCommands()
     {
         return commands.values();
     }
@@ -80,12 +104,24 @@ public final class CommandsManager {
     /**
      * Returns the command associated to the specified name
      *
-     * @param name  Name of the command
+     * @param name Name of the command
      * @return the command associated to the specified name
      */
-    static Command getCommandByName(String name)
+    Command getCommandByName(String name)
     {
         return commands.get(name.toLowerCase());
+    }
+
+    /**
+     * Returns the single instance of the commands manager
+     *
+     * @return the single instance of the commands manager
+     */
+    public static CommandsManager getInstance()
+    {
+        if (instance == null)
+            instance = new CommandsManager();
+        return instance;
     }
 
 }

@@ -21,7 +21,7 @@ public class HelpCommand extends Command {
     public void execute(CommandSender sender, String[] args)
     {
         if (args.length == 0) {
-            Collection<Command> commands = CommandsManager.getCommands();
+            Collection<Command> commands = CommandsManager.getInstance().getCommands();
             StringBuilder builder = new StringBuilder();
             builder.append(FIRST_LINE);
             commands.stream().forEach(command ->
@@ -32,7 +32,7 @@ public class HelpCommand extends Command {
         }
 
         else {
-            Command command = CommandsManager.getCommandByName(args[0]);
+            Command command = CommandsManager.getInstance().getCommandByName(args[0]);
 
             if (command == null) {
                 sender.sendMessage("Help found for command \"" + args[0] + "\".");

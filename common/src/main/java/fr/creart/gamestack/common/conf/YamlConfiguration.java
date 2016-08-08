@@ -4,10 +4,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import fr.creart.gamestack.common.lang.Validation;
+import fr.creart.gamestack.common.log.CommonLogger;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
@@ -29,7 +32,12 @@ public class YamlConfiguration extends Configuration {
     @Override
     public void initialize()
     {
-        data = (Map<String, Object>) new Yaml().load(src.getAbsolutePath());
+        try (FileReader reader = new FileReader(src)) {
+            data = (Map<String, Object>) new Yaml().loadAs(reader, HashMap.class);
+        } catch (Exception e) {
+            CommonLogger.error("Could not initialize YamlConfiguration.", e);
+            data = new HashMap<>(); // in order to avoid NullPointerExceptions
+        }
     }
 
     @Override

@@ -1,15 +1,24 @@
 package fr.creart.gamestack.common.io;
 
+import com.google.common.base.Preconditions;
 import fr.creart.gamestack.common.lang.MoreArrays;
 import fr.creart.gamestack.common.lang.Validation;
 import fr.creart.gamestack.common.lang.Validation.Failure;
 import fr.creart.gamestack.common.lang.Validation.Success;
+import fr.creart.gamestack.common.log.CommonLogger;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import sun.plugin.dom.exception.InvalidStateException;
 
 /**
@@ -82,6 +91,67 @@ public final class FileUtil {
             return new Success<>(outFile);
         } catch (Exception e) {
             return new Failure<>(e);
+        }
+    }
+
+    /**
+     * Returns file's creation date or current time if failed
+     *
+     * @param file File
+     * @return file's creation date
+     */
+    public static Instant getFileCreationDate(File file)
+    {
+        Preconditions.checkNotNull(file, "file can't be null");
+        Preconditions.checkArgument(file.exists(), "file has to exist");
+
+        try {
+            BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+            return attr.creationTime().toInstant();
+        } catch (Exception e) {
+            CommonLogger.error("Could not get file creation date (file=" + file.toString() + ").", e);
+            return Instant.now();
+        }
+    }
+
+    /**
+     * Adds files to a ZIP.
+     * Returns <code>true</code> if the file has been successfully created
+     *
+     * @param dest Destination zip file
+     * @param src  Sources files
+     * @return <code>true</code> if the file has been successfully created
+     */
+    public static boolean addToZip(File dest, File... src)
+    {
+        Preconditions.checkNotNull(src, "src can't be null");
+        Preconditions.checkNotNull(dest, "dest can't be null");
+        Preconditions.checkArgument(src.length > 0, "no src provided");
+        for (File file : src)
+            Preconditions.checkArgument(file != null && file.exists() && file.isFile(), "src null or does not exist");
+        Preconditions.checkArgument(dest.exists(), "dest has to exist");
+
+        try {
+            byte[] buf = new byte[1024];
+
+            ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(dest));
+
+            for (File file : src) {
+                InputStream in = new FileInputStream(file);
+                int read;
+                zout.putNextEntry(new ZipEntry(file.getName()));
+                while ((read = in.read(buf)) > 0)
+                    zout.write(buf, 0, read);
+                zout.closeEntry();
+                in.close();
+            }
+
+            zout.flush();
+            zout.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

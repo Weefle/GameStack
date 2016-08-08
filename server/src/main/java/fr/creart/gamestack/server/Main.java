@@ -9,7 +9,7 @@ import fr.creart.gamestack.common.lang.Validation;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.Chrono;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Creart
@@ -18,36 +18,47 @@ public class Main {
 
     public static void main(String[] args)
     {
-        CommonLogger.createLogger("Server");
-        CommonLogger.info("Starting up GameStack server...");
-        Chrono chrono = new Chrono();
 
-        chrono.markStart(null);
+        try {
+            CommonLogger.createLogger("Server");
+            CommonLogger.info("Starting up GameStack server...");
+            Chrono chrono = new Chrono();
 
-        // read the configuration file.
-        Validation<Exception, File> saveValidation = FileUtil.saveResource("config.yml", "config.yml", false);
+            chrono.markStart(TimeUnit.MILLISECONDS);
 
-        if (saveValidation.isSuccess()) {
-            Configuration configuration = new YamlConfiguration(saveValidation.toOptional().orElse(new File("config.yml")));
-            configuration.initialize();
-            CommonLogger.info("Loaded the configuration file (config.yml).");
-        }
+            // read the configuration file.
+            Validation<Exception, File> saveValidation = FileUtil.saveResource("config.yml", "config.yml", false);
 
-        else {
-            CommonLogger.fatal("Could not load the configuration file (config.yml)!");
-            if (saveValidation.swap().toOptional().orElse(new Exception("Could not get exception.")) instanceof FileNotFoundException)
-                CommonLogger.fatal("The configuration file could not be found.");
-            else
-                CommonLogger.fatal("Could not save the file. Please give the necessary permissions to the user which is running the GameStack server.");
+            if (saveValidation.isSuccess()) {
+                Configuration configuration = new YamlConfiguration(saveValidation.toOptional().orElse(new File("config.yml")));
+                configuration.initialize();
+                CommonLogger.info("Loaded the configuration file (config.yml).");
+            }
 
-            CommonLogger.error("Shutting down the server...");
-            Commons.getInstance().close();
+            else {
+                CommonLogger.fatal("Could not load the configuration file (config.yml)!", saveValidation.swap().toOptional().get());
+                CommonLogger.info("Exiting...");
+                Commons.getInstance().close();
+                System.exit(1);
+                return;
+            }
+
+            chrono.markEnd(TimeUnit.MILLISECONDS);
+
+            CommonLogger.info("Done (~" + Decimals.firstDecimals(((double) chrono.difference()) / 1000, 1) + "s).");
+
+            // listen commands
+
+
+        } catch (Exception e) {
+            CommonLogger.fatal("An exception has been encountered during the execution of the program!", e);
+            CommonLogger.info("Exiting...");
+            System.exit(1);
             return;
         }
 
-        chrono.markEnd(null);
-
-        CommonLogger.info("Done (~" + Decimals.firstDecimals(((double) chrono.difference()) / 1000, 1) + "s).");
+        // finally
+        System.exit(0);
     }
 
 }

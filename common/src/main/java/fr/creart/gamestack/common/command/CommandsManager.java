@@ -4,8 +4,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Manages commands.
@@ -98,7 +100,9 @@ public final class CommandsManager {
      */
     Collection<Command> getCommands()
     {
-        return commands.values();
+        Set<Command> commands = new HashSet<>();
+        commands.addAll(this.commands.values());
+        return commands;
     }
 
     /**

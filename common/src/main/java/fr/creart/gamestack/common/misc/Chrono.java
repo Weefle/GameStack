@@ -37,9 +37,27 @@ public final class Chrono {
      *
      * @return the difference between the end and the start positions.
      */
-    public long difference()
+    public long differenceAs(TimeUnit baseUnit, TimeUnit unit)
     {
-        return end - start;
+        long duration = end - start;
+        switch (unit) {
+            case NANOSECONDS:
+                return baseUnit.toNanos(duration);
+            case MICROSECONDS:
+                return baseUnit.toMicros(duration);
+            case MILLISECONDS:
+                return baseUnit.toMillis(duration);
+            case SECONDS:
+                return baseUnit.toSeconds(duration);
+            case MINUTES:
+                return baseUnit.toMinutes(duration);
+            case HOURS:
+                return baseUnit.toHours(duration);
+            case DAYS:
+                return baseUnit.toDays(duration);
+            default:
+                return baseUnit.toSeconds(duration);
+        }
     }
 
     private long now(TimeUnit unit)

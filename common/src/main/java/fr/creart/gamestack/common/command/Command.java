@@ -49,4 +49,10 @@ public abstract class Command {
      */
     public abstract void execute(CommandSender sender, String[] args);
 
+    @Override
+    public final boolean equals(Object obj)
+    {
+        return obj instanceof Command && label.equals(((Command) obj).label);
+    }
+
 }

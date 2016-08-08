@@ -1,6 +1,7 @@
 package fr.creart.gamestack.server;
 
 import fr.creart.gamestack.common.Commons;
+import fr.creart.gamestack.common.command.CommandsManager;
 import fr.creart.gamestack.common.conf.Configuration;
 import fr.creart.gamestack.common.conf.YamlConfiguration;
 import fr.creart.gamestack.common.io.FileUtil;
@@ -45,11 +46,10 @@ public class Main {
 
             chrono.markEnd(TimeUnit.MILLISECONDS);
 
-            CommonLogger.info("Done (~" + Decimals.firstDecimals(((double) chrono.difference()) / 1000, 1) + "s).");
-
+            CommonLogger.info("Done (~" + Decimals.firstDecimals((double) chrono.differenceAs(TimeUnit.MILLISECONDS, TimeUnit.MILLISECONDS) / 1000, 1) + "s.)");
             // listen commands
 
-
+            CommandsManager.getInstance().listenConsole();
         } catch (Exception e) {
             CommonLogger.fatal("An exception has been encountered during the execution of the program!", e);
             CommonLogger.info("Exiting...");

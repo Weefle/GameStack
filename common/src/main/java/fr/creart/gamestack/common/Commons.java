@@ -126,6 +126,9 @@ public final class Commons {
      */
     public void close()
     {
+        if (!initialized)
+            return;
+
         try {
             threadsManager.close();
         } catch (Exception e) {

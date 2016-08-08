@@ -4,8 +4,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.Destroyable;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 /**
@@ -16,13 +14,11 @@ public final class ThreadsManager implements Destroyable, AutoCloseable {
     private static final ThreadGroup PARENT_GROUP = new ThreadGroup("GameStack");
 
     private final ThreadGroup currentGroup;
-    private ExecutorService cachedGlobalService;
     private boolean initialized;
 
     public ThreadsManager(String softName)
     {
         currentGroup = new ThreadGroup(PARENT_GROUP, softName);
-        cachedGlobalService = Executors.newCachedThreadPool(newThreadFactory("All"));
     }
 
     @Override
@@ -37,22 +33,10 @@ public final class ThreadsManager implements Destroyable, AutoCloseable {
         if (!initialized)
             return;
 
-        cachedGlobalService.shutdown();
-
         currentGroup.destroy();
         PARENT_GROUP.destroy();
 
         initialized = false;
-    }
-
-    /**
-     * Returns the global executor service
-     *
-     * @return the global executor service
-     */
-    public ExecutorService getCachedGlobalService()
-    {
-        return cachedGlobalService;
     }
 
     /**

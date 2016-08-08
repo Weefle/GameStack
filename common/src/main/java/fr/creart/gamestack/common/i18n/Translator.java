@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 /**
  * Util class which allows to obtain translations from the "messages.properties" file and replace arguments ("{\d}")
+ * The translations are user-related.
  *
  * @author Creart
  */
@@ -59,7 +60,7 @@ public class Translator {
             ret = MessageFormat.format(resourceBundle.getString(path), objects);
         } catch (Exception e) {
             CommonLogger.error(String.format("Could not get String %s in %s.", path, MESSAGES_FILE), e);
-            ret = e.toString();
+            ret = "/!\\ translation missing '" + path + "' /!\\";
         }
 
         return ret;

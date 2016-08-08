@@ -11,15 +11,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import sun.plugin.dom.exception.InvalidStateException;
 
 /**
  * File utils
@@ -85,7 +89,7 @@ public final class FileUtil {
                 if (!replace)
                     return new Success<>(outFile);
                 else if (!outFile.delete())
-                    return new Failure<>(new InvalidStateException("Could not override existing file."));
+                    return new Failure<>(new IllegalStateException("Could not override existing file."));
 
             Files.copy(connection.getInputStream(), outFile.toPath());
             return new Success<>(outFile);
@@ -118,25 +122,25 @@ public final class FileUtil {
      * Adds files to a ZIP.
      * Returns <code>true</code> if the file has been successfully created
      *
-     * @param dest Destination zip file
-     * @param src  Sources files
+     * @param destination Destination zip file
+     * @param sources     Sources files
      * @return <code>true</code> if the file has been successfully created
      */
-    public static boolean addToZip(File dest, File... src)
+    public static boolean addToZip(File destination, File... sources)
     {
-        Preconditions.checkNotNull(src, "src can't be null");
-        Preconditions.checkNotNull(dest, "dest can't be null");
-        Preconditions.checkArgument(src.length > 0, "no src provided");
-        for (File file : src)
+        Preconditions.checkNotNull(sources, "src can't be null");
+        Preconditions.checkNotNull(destination, "destination can't be null");
+        Preconditions.checkArgument(sources.length > 0, "no src provided");
+        for (File file : sources)
             Preconditions.checkArgument(file != null && file.exists() && file.isFile(), "src null or does not exist");
-        Preconditions.checkArgument(dest.exists(), "dest has to exist");
+        Preconditions.checkArgument(destination.exists(), "destination has to exist");
 
         try {
             byte[] buf = new byte[1024];
 
-            ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(dest));
+            ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(destination));
 
-            for (File file : src) {
+            for (File file : sources) {
                 InputStream in = new FileInputStream(file);
                 int read;
                 zout.putNextEntry(new ZipEntry(file.getName()));
@@ -152,6 +156,96 @@ public final class FileUtil {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    /**
+     * Copies the given folder's contents to the destination folder
+     *
+     * @param source      Source folder
+     * @param destination Destination folder
+     */
+    public static void copyFolder(File source, File destination)
+    {
+        Preconditions.checkNotNull(source, "source can't be null");
+        Preconditions.checkNotNull(destination, "destination can't be null");
+
+        if (source.isFile())
+            copyFile(source, destination);
+        else {
+            if (!destination.exists())
+                destination.mkdirs();
+            doCopyFolder(source, destination);
+        }
+    }
+
+    private static void doCopyFolder(File source, File destination)
+    {
+        for (File file : source.listFiles())
+            if (file != null && file.isFile())
+                copyFile(file, new File(destination.getAbsolutePath() + file.getName()));
+            else
+                doCopyFolder(source, destination);
+    }
+
+    /**
+     * Copies the source file to the destination.
+     *
+     * @param source      Source file
+     * @param destination Destination file
+     */
+    public static void copyFile(File source, File destination)
+    {
+        Preconditions.checkNotNull(source, "source can't be null");
+        Preconditions.checkNotNull(destination, "destination null");
+        Preconditions.checkArgument(!source.exists(), "source does not exist");
+
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = new FileInputStream(source);
+            if (!destination.exists())
+                destination.createNewFile();
+            out = new FileOutputStream(destination);
+            ReadableByteChannel inChannel = Channels.newChannel(in);
+            WritableByteChannel outChannel = Channels.newChannel(out);
+            fastChannelCopy(inChannel, outChannel);
+        } catch (Exception e) {
+            CommonLogger.error(String.format("Could not copy files (source=%s,destination=%s).", source.getAbsolutePath(), destination.getAbsolutePath()), e);
+        } finally {
+            try {
+                if (in != null)
+                    in.close();
+                if (out != null)
+                    out.close();
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
+    /**
+     * Copies the source channel to the destination channel.
+     *
+     * @param src  Source byte channel
+     * @param dest Destination byte channel
+     * @author Thomas Wabner (https://thomaswabner.wordpress.com/2007/10/09/fast-stream-copy-using-javanio-channels/)
+     */
+    private static void fastChannelCopy(ReadableByteChannel src, WritableByteChannel dest)
+    {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
+
+        try {
+            while (src.read(buffer) != -1) {
+                buffer.flip();
+                dest.write(buffer);
+                buffer.compact();
+            }
+            buffer.flip();
+            while (buffer.hasRemaining())
+                dest.write(buffer);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

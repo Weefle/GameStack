@@ -34,7 +34,7 @@ public class CustomLayout extends Layout {
         builder.append(event.getMessage());
 
         if (event.getThrowableInformation() != null)
-            builder.append(" Exception: ").append(ExceptionUtils.getStackTrace(event.getThrowableInformation().getThrowable()));
+            builder.append(" Exception:\n").append(ExceptionUtils.getStackTrace(event.getThrowableInformation().getThrowable()));
 
         builder.append("\n");
 

@@ -33,20 +33,28 @@ public final class Commons {
     }
 
     /**
-     * Initializes commons.
-     *
-     * @param soft Software name
+     * Initializes more basic stuff of commons
+     * @param soft  Soft's name
      */
-    public <T, CONN_DATA extends ConnectionData> void initialize(String soft, CONN_DATA brokerConnection,
-                                                                 AbstractBrokerManager<T, CONN_DATA> broker, byte metricsThreads)
+    public void initialize(String soft)
+    {
+        this.softwareName = soft;
+        threadsManager = new ThreadsManager(soft);
+        Translator.initialize();
+    }
+
+    /**
+     * Connects commons to the network.
+     *
+     * @param broker           The message broker implementation
+     * @param brokerConnection the connection data to the broker
+     * @param metricsThreads   number of threads allocated to the metrics
+     */
+    public <T, CONN_DATA extends ConnectionData> void connect(CONN_DATA brokerConnection, AbstractBrokerManager<T, CONN_DATA> broker, byte metricsThreads)
     {
         if (initialized)
             return;
 
-        softwareName = soft;
-
-        threadsManager = new ThreadsManager(soft);
-        Translator.initialize();
         connectMessageBroker(brokerConnection, broker);
         initializeMetricsManager(metricsThreads);
 
@@ -137,6 +145,8 @@ public final class Commons {
 
         if (broker != null)
             broker.close();
+
+        initialized = false; // in order to avoid a second closure of the class, if the function is accidentally called twice.
     }
 
     /**

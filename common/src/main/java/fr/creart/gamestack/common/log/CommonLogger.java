@@ -18,9 +18,7 @@ import org.apache.log4j.Logger;
  */
 public final class CommonLogger {
 
-    private static final byte MAX_UNCOMPRESSED_LOG_FILES = 4;
-    private static final Pattern LOG_FILE_PATTERN = Pattern.compile("^log(.*)*\\.txt$",
-            Pattern.CASE_INSENSITIVE);
+    private static final Pattern LOG_FILE_PATTERN = Pattern.compile("^log(.*)*\\.txt$", Pattern.CASE_INSENSITIVE);
 
     private static Logger logger;
 
@@ -32,7 +30,7 @@ public final class CommonLogger {
     /**
      * Creates a new logger if it has not been done yet.
      *
-     * @param softName  The name of the software which is using the logger.
+     * @param softName The name of the software which is using the logger.
      */
     public static void createLogger(String softName)
     {
@@ -45,22 +43,27 @@ public final class CommonLogger {
                 File output = new File("logs/" + softName.
                         toLowerCase() + "/log-" + DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss").format(LocalDateTime.now()) + ".txt");
 
-                File[] files = output.getParentFile().listFiles(file -> file != null && file.isFile() && LOG_FILE_PATTERN.matcher(file.getName()).matches());
+                /*
+                Before, the log files were compressed when they were too much (5), although the function listFiles was so slow that
+                I had to change it; now, the older logs are compressed when the session starts.
+                 */
 
-                if (files != null && files.length > MAX_UNCOMPRESSED_LOG_FILES) {
-                    File archive = new File("logs/" + softName.toLowerCase() + "/logs-" + DateTimeFormatter
-                            .ofPattern("dd-MM-yyyy_HH-mm-ss").format(LocalDateTime.now()) + ".zip");
+                if (!output.getParentFile().exists())
+                    output.getParentFile().mkdirs();
+
+                File[] files = output.getParentFile().listFiles(pathname -> LOG_FILE_PATTERN.matcher(pathname.getName()).matches());
+                for (File uncompressed : files) {
+                    File archive = new File(output.getParentFile().getPath() + File.separator + FileUtil.getFileCleanName(uncompressed) + ".zip");
+
                     if (!archive.exists())
                         archive.createNewFile();
+
                     if (FileUtil.addToZip(archive, files))
-                        for (File file : files)
-                            file.delete();
+                        uncompressed.delete();
                 }
 
-                if (!output.exists()) {
-                    output.getParentFile().mkdirs();
+                if (!output.exists())
                     output.createNewFile();
-                }
 
                 FileAppender appender = new FileAppender(new CustomLayout(true), output.getAbsolutePath(), false);
                 logger.addAppender(appender);
@@ -80,31 +83,63 @@ public final class CommonLogger {
         return logger != null;
     }
 
+    /**
+     * Logs the given message as an information
+     *
+     * @param message The message
+     */
     public static void info(String message)
     {
         logger.info(message);
     }
 
+    /**
+     * Logs the given message as a warning
+     *
+     * @param message The message
+     */
     public static void warn(String message)
     {
         logger.warn(message);
     }
 
+    /**
+     * Logs the given message as an error
+     *
+     * @param message The message
+     */
     public static void error(String message)
     {
         logger.error(message);
     }
 
+    /**
+     * Logs the given message and the attached throwable as an error
+     *
+     * @param message  The message
+     * @param attached The attached throwable
+     */
     public static void error(String message, Throwable attached)
     {
         logger.error(message, attached);
     }
 
+    /**
+     * Logs the given message as a fatal error
+     *
+     * @param message The message
+     */
     public static void fatal(String message)
     {
         logger.fatal(message);
     }
 
+    /**
+     * Logs the given message and the attached throwable as a fatal error
+     *
+     * @param message  The message
+     * @param attached The attached throwable
+     */
     public static void fatal(String message, Throwable attached)
     {
         logger.fatal(message, attached);

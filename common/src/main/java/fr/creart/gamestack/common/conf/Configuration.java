@@ -1,7 +1,6 @@
 package fr.creart.gamestack.common.conf;
 
 import com.google.common.base.Preconditions;
-import fr.creart.gamestack.common.lang.Validation;
 import fr.creart.gamestack.common.misc.Initialisable;
 import java.io.File;
 
@@ -61,26 +60,26 @@ public abstract class Configuration implements Initialisable {
      * @param <T>  T type of the checked object
      * @return a validation, with the value, or an exception.
      */
-    public abstract <T> Validation get(String path);
+    public abstract <T> T get(String path, T def);
 
-    public final Validation<Integer, Exception> getInteger(String path)
+    public final int getInteger(String path, int def)
     {
-        return get(path);
+        return get(path, def);
     }
 
-    public final Validation<String, Exception> getString(String path)
+    public final String getString(String path, String def)
     {
-        return get(path);
+        return get(path, def);
     }
 
-    public final Validation<Boolean, Exception> getBoolean(String path)
+    public final boolean getBoolean(String path, boolean def)
     {
-        return get(path);
+        return get(path, def);
     }
 
-    public final Validation<Double, Exception> getDouble(String path)
+    public final double getDouble(String path, double def)
     {
-        return get(path);
+        return get(path, def);
     }
 
 }

@@ -154,7 +154,7 @@ public final class FileUtil {
             zout.close();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            CommonLogger.error("Could not compress file to zip (dest=" + destination + ",sources=" + Arrays.toString(sources) + ").");
             return false;
         }
     }
@@ -219,7 +219,7 @@ public final class FileUtil {
                 if (out != null)
                     out.close();
             } catch (Exception e) {
-
+                CommonLogger.error("Could not close input or output stream.", e);
             }
         }
     }

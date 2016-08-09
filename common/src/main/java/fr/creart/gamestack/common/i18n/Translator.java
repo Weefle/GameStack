@@ -2,8 +2,10 @@ package fr.creart.gamestack.common.i18n;
 
 import fr.creart.gamestack.common.io.FileUtil;
 import fr.creart.gamestack.common.log.CommonLogger;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 /**
@@ -71,7 +73,8 @@ public class Translator {
         if (retry && !FileUtil.saveResource(MESSAGES_FILE, MESSAGES_FILE, true).isSuccess())
             throw new IOException("Could not create messages.properties file.");
 
-        resourceBundle = ResourceBundle.getBundle(MESSAGES_FILE);
+        FileInputStream in = new FileInputStream(MESSAGES_FILE);
+        resourceBundle = new PropertyResourceBundle(in);
     }
 
 }

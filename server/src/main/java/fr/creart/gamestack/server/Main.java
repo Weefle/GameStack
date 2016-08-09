@@ -1,15 +1,18 @@
 package fr.creart.gamestack.server;
 
+import com.google.common.base.Strings;
 import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.command.CommandsManager;
 import fr.creart.gamestack.common.conf.Configuration;
-import fr.creart.gamestack.common.conf.YamlConfiguration;
+import fr.creart.gamestack.common.conf.PropertiesConfiguration;
 import fr.creart.gamestack.common.io.FileUtil;
 import fr.creart.gamestack.common.lang.Decimals;
 import fr.creart.gamestack.common.lang.Validation;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.Chrono;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -17,9 +20,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class Main {
 
+    private static final String CONFIGURATION_FILE = "server.properties";
+    private static final String NETWORK_CONFIGURATION_FILE = "network.properties";
+
     public static void main(String[] args)
     {
-
         try {
             CommonLogger.createLogger("Server");
             CommonLogger.info("Starting up GameStack server...");
@@ -27,38 +32,71 @@ public class Main {
 
             chrono.markStart(TimeUnit.MILLISECONDS);
 
-            // read the configuration file.
-            Validation<Exception, File> saveValidation = FileUtil.saveResource("config.yml", "config.yml", false);
+            Configuration configuration = loadConfiguration(CONFIGURATION_FILE, CONFIGURATION_FILE);
 
-            if (saveValidation.isSuccess()) {
-                Configuration configuration = new YamlConfiguration(saveValidation.toOptional().orElse(new File("config.yml")));
-                configuration.initialize();
-                CommonLogger.info("Loaded the configuration file (config.yml).");
-            }
+            if (configuration == null)
+                exitCantLoad(CONFIGURATION_FILE);
 
-            else {
-                CommonLogger.fatal("Could not load the configuration file (config.yml)!", saveValidation.swap().toOptional().get());
-                CommonLogger.info("Exiting...");
-                Commons.getInstance().close();
-                System.exit(1);
-                return;
-            }
+            Configuration networkConf = loadConfiguration(NETWORK_CONFIGURATION_FILE, NETWORK_CONFIGURATION_FILE);
+
+            if (networkConf == null)
+                exitCantLoad(NETWORK_CONFIGURATION_FILE);
+
+            configuration.initialize();
+            networkConf.initialize();
+
+            StackServer server = StackServer.getInstance();
+            server.setConfiguration(configuration);
+            server.initialize();
 
             chrono.markEnd(TimeUnit.MILLISECONDS);
 
             CommonLogger.info("Done (~" + Decimals.firstDecimals((double) chrono.differenceAs(TimeUnit.MILLISECONDS, TimeUnit.MILLISECONDS) / 1000, 1) + "s.)");
-            // listen commands
 
-            CommandsManager.getInstance().listenConsole();
+            // listen commands
+            CommandsManager instance = CommandsManager.getInstance();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            while (server.isRunning()) {
+                // this is going to change because when the server is not running anymore, it has to wait for a line to exit
+                String line = reader.readLine();
+                if (!Strings.isNullOrEmpty(line))
+                    instance.executeCommand(line, null);
+            }
+            reader.close();
+            StackServer.getInstance().stop();
         } catch (Exception e) {
             CommonLogger.fatal("An exception has been encountered during the execution of the program!", e);
-            CommonLogger.info("Exiting...");
+            CommonLogger.fatal("Exiting...");
             System.exit(1);
             return;
+        } finally {
+            Commons.getInstance().close();
         }
+
+        CommonLogger.info("Thank you for using GameStack. Good-bye!");
 
         // finally
         System.exit(0);
+    }
+
+    private static Configuration loadConfiguration(String fileName, String destination)
+    {
+        // read the configuration file.
+        Validation<Exception, File> saveValidation = FileUtil.saveResource(fileName, destination, false);
+
+        if (saveValidation.isSuccess()) {
+            CommonLogger.info("Successfully loaded configuration file (" + fileName + ").");
+            return new PropertiesConfiguration(saveValidation.toOptional().get());
+        }
+
+        return null;
+    }
+
+    private static void exitCantLoad(String file)
+    {
+        CommonLogger.fatal(String.format("Could not load the configuration file (%s)!", file));
+        CommonLogger.info("Exiting...");
+        System.exit(1);
     }
 
 }

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Set;
 
 /**
@@ -21,7 +20,6 @@ public final class CommandsManager {
     // KEY = Command's label
     // VALUE = Command (execution)
     private Map<String, Command> commands = new HashMap<>();
-    private boolean run;
 
     private CommandsManager()
     {
@@ -71,26 +69,6 @@ public final class CommandsManager {
         String[] args = new String[]{};
         System.arraycopy(parts, 1, args, 0, parts.length - 1);
         command.execute(sender, args);
-    }
-
-    /**
-     * Listens commands in the current thread
-     */
-    public void listenConsole()
-    {
-        run = true;
-
-        try (Scanner scanner = new Scanner(System.in)) {
-            while (run) {
-                String line = scanner.nextLine();
-                executeCommand(line, ConsoleSender.INSTANCE);
-            }
-        }
-    }
-
-    public synchronized void setRun(boolean run)
-    {
-        this.run = run;
     }
 
     /**

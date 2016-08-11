@@ -11,7 +11,7 @@ package fr.creart.gamestack.common.connection.database;
  *
  * @author Creart
  */
-public interface Database<T extends AbstractRequest> {
+public interface Database<T extends AbstractRequest<?>> {
 
     /**
      * Executes the given request(s)

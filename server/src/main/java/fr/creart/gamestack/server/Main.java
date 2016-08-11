@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Main {
 
-    private static final String CONFIGURATION_FILE = "server.properties";
+    private static final String CONFIGURATION_FILE = "gamestack.properties";
     private static final String NETWORK_CONFIGURATION_FILE = "network.properties";
 
     public static void main(String[] args)

@@ -10,9 +10,13 @@ import com.google.common.base.Preconditions;
 import fr.creart.gamestack.common.broking.AbstractBrokerManager;
 import fr.creart.gamestack.common.broking.BrokerManager;
 import fr.creart.gamestack.common.connection.ConnectionData;
+import fr.creart.gamestack.common.connection.database.AbstractDatabase;
+import fr.creart.gamestack.common.connection.database.AbstractRequest;
+import fr.creart.gamestack.common.connection.database.Database;
+import fr.creart.gamestack.common.connection.database.DatabaseConnectionData;
 import fr.creart.gamestack.common.i18n.Translator;
 import fr.creart.gamestack.common.log.CommonLogger;
-import fr.creart.gamestack.common.metric.DefaultMetricOutput;
+import fr.creart.gamestack.common.metric.BrokerMetricOutput;
 import fr.creart.gamestack.common.metric.MetricsManager;
 import fr.creart.gamestack.common.thread.ThreadsManager;
 
@@ -32,6 +36,7 @@ public final class Commons {
     private ThreadsManager threadsManager;
     private MetricsManager metricsManager;
     private AbstractBrokerManager<?, ?> broker;
+    private Database<? extends AbstractRequest<?>> database;
 
     private Commons()
     {
@@ -40,7 +45,8 @@ public final class Commons {
 
     /**
      * Initializes more basic stuff of commons
-     * @param soft  Soft's name
+     *
+     * @param soft Soft's name
      */
     public void initialize(String soft)
     {
@@ -56,12 +62,15 @@ public final class Commons {
      * @param brokerConnection the connection data to the broker
      * @param metricsThreads   number of threads allocated to the metrics
      */
-    public <T, CONN_DATA extends ConnectionData> void connect(CONN_DATA brokerConnection, AbstractBrokerManager<T, CONN_DATA> broker, byte metricsThreads)
+    public <T, V extends ConnectionData, S extends DatabaseConnectionData>
+    void connect(V brokerConnection, AbstractBrokerManager<T, V> broker,
+                 S databaseConnection, AbstractDatabase<?, ?, S> database, byte metricsThreads)
     {
         if (initialized)
             return;
 
         connectMessageBroker(brokerConnection, broker);
+        connectDatabase(databaseConnection, database);
         initializeMetricsManager(metricsThreads);
 
         initialized = true;
@@ -85,6 +94,16 @@ public final class Commons {
     public String getSoftwareName()
     {
         return softwareName;
+    }
+
+    /**
+     * Returns the current database
+     *
+     * @return the current database
+     */
+    public Database<? extends AbstractRequest<?>> getDatabase()
+    {
+        return database;
     }
 
     /**
@@ -120,8 +139,23 @@ public final class Commons {
         Preconditions.checkArgument(!broker.isConnectionEstablished(), "connection already established");
 
         broker.initialize(data);
-
         this.broker = broker;
+    }
+
+    /**
+     * Connects the database and sets it to the common's current
+     *
+     * @param data     Connection data
+     * @param database Database
+     */
+    private <DATA extends DatabaseConnectionData, T, Q extends AbstractRequest<?>> void connectDatabase(DATA data, AbstractDatabase<T, Q, DATA> database)
+    {
+        Preconditions.checkNotNull(data, "connection data can't be null");
+        Preconditions.checkNotNull(database, "database can't be null");
+        Preconditions.checkArgument(!database.isConnectionEstablished(), "connection already established");
+
+        database.initialize(data);
+        this.database = database;
     }
 
     /**
@@ -131,7 +165,7 @@ public final class Commons {
      */
     private void initializeMetricsManager(byte threads)
     {
-        metricsManager = new MetricsManager(new DefaultMetricOutput(broker), threads);
+        metricsManager = new MetricsManager(new BrokerMetricOutput(broker), threads);
     }
 
     /**

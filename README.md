@@ -16,7 +16,7 @@ In order to simply explain you the functioning, the project is composed of diffe
 The latter is the core of the infrastructure, it is going to make more or less important decisions (thanks to some algorithms) like when
 a new server needs to be purchased, for instance.
 
-As I already said, everything is configurable. So you can modify parameters as you like in the server.properties file. (This one contains
+As I already said, everything is configurable. So you can modify parameters as you like in the gamestack.properties file. (This one contains
 server's configuration but also the whole network's one.)
 
 Français — Un schéma en version PDF est disponible, il résumé globalement le fonctionnement de GameStack : http://bit.ly/29BmB4X
@@ -24,7 +24,7 @@ Pour vous résumer le fonctionnement, c'est plutôt simple. Le projet se constit
 Ce dernier est le noyau de l'infrastructure ; c'est lui qui, grâce à certains algorithmes — plus ou moins complexes —, va prendre des décisions
 comme quand il faut commander une nouvelle instance, par exemple.
 
-Comme dit plus haut, tout est configurable. Vous pouvez donc modifier les paramètres à votre guise dans le fichier server.properties. (Celui-ci contient
+Comme dit plus haut, tout est configurable. Vous pouvez donc modifier les paramètres à votre guise dans le fichier gamestack.properties. (Celui-ci contient
 la configuration pour le serveur en lui-même, mais pour toute l'infrastructure GameStack également.)
 
 Requirements
@@ -94,6 +94,13 @@ database.user="root"
 database.password="root"
 database.db="gamestack"
 ```
+
+Protocol
+--------
+
+| Packet id | Packet Name | Description |
+| ------------------------------------- |
+| 0xFE      | Metric Packet | Software's or whole network's statistic. The value is encoded in JSON. |
 
 License
 -------

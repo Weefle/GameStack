@@ -9,9 +9,10 @@ package fr.creart.gamestack.server;
 import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.command.CommandsManager;
 import fr.creart.gamestack.common.conf.Configuration;
+import fr.creart.gamestack.common.connection.database.DatabaseConnectionData;
 import fr.creart.gamestack.common.connection.rmq.RabbitConnectionData;
-import fr.creart.gamestack.common.connection.rmq.RabbitContainer;
 import fr.creart.gamestack.common.log.CommonLogger;
+import fr.creart.gamestack.common.misc.DependsManager;
 import fr.creart.gamestack.common.misc.Initialisable;
 import fr.creart.gamestack.server.command.StopCommand;
 import fr.creart.gamestack.server.conf.ConfigurationConstants;
@@ -26,11 +27,8 @@ public class StackServer implements Initialisable {
     private static StackServer instance;
 
     private Configuration configuration;
-
     private ReadWriteLock lock = new ReentrantReadWriteLock();
-
     private volatile boolean running;
-
     private ThreadGroup softGroup;
 
     private StackServer()
@@ -50,13 +48,25 @@ public class StackServer implements Initialisable {
         Commons commons = Commons.getInstance();
         commons.initialize("Server");
         softGroup = commons.getThreadsManager().newThreadGroup("Server");
+        String brokerSystem = configuration.getString(ConfigurationConstants.BROKER_SYSTEM, "rabbitmq");
+        String databaseSystem = configuration.getString(ConfigurationConstants.DATABASE_SYSTEM, "mysql");
+        DependsManager dependsManager = new DependsManager();
+        dependsManager.createAssociations();
 
         commons.connect(new RabbitConnectionData(configuration.getString(ConfigurationConstants.BROKER_USERNAME, "root"),
                         configuration.getString(ConfigurationConstants.BROKER_PASSWORD, "root"),
                         configuration.getString(ConfigurationConstants.BROKER_HOST, "192.168.99.100"),
                         configuration.getInteger(ConfigurationConstants.BROKER_PORT, 5672),
                         configuration.getString(ConfigurationConstants.BROKER_VIRTUAL_HOST, "")),
-                new RabbitContainer(3), (byte) 3);
+                dependsManager.getAssociation(brokerSystem, 3),
+                new DatabaseConnectionData(configuration.getString(ConfigurationConstants.DATABASE_USERNAME, "root"),
+                        configuration.getString(ConfigurationConstants.DATABASE_PASSWORD, "root"),
+                        configuration.getString(ConfigurationConstants.DATABASE_HOST, "192.168.99.100"),
+                        configuration.getInteger(ConfigurationConstants.DATABASE_PORT, 5432),
+                        configuration.getString(ConfigurationConstants.DATABASE_DB, "gamestack")),
+                dependsManager.getAssociation(databaseSystem, 3),
+                (byte) 3
+        );
 
         // registering commands
         CommandsManager.getInstance().registerCommand(new StopCommand());

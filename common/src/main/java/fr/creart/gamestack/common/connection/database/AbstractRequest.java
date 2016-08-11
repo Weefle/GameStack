@@ -47,6 +47,11 @@ public abstract class AbstractRequest<V> {
         return type;
     }
 
+    /**
+     * Returns the callback of the request
+     *
+     * @return the callback of the request
+     */
     public Callback<V> getCallback()
     {
         return callback;

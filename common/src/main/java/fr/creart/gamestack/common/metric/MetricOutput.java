@@ -6,18 +6,27 @@
 
 package fr.creart.gamestack.common.metric;
 
+import java.io.Closeable;
+
 /**
  * Represents an object which propagates {@link Metric}s on the network.
  *
  * @author Creart
  */
-public interface MetricOutput {
+public interface MetricOutput extends Closeable {
 
     /**
      * Propagates the metric to the network
      *
      * @param metric Metric to send
      */
-    void send(Metric metric);
+    void output(Metric metric) throws Exception;
+
+    /**
+     * Returns a textual representation of the metric output. (It may be its name, for instance.)
+     *
+     * @return Returns a textual representation of the metric output.
+     */
+    String toString();
 
 }

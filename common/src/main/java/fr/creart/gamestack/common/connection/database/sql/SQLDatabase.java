@@ -8,6 +8,7 @@ package fr.creart.gamestack.common.connection.database.sql;
 
 import com.google.common.base.Strings;
 import fr.creart.gamestack.common.connection.database.AbstractDatabase;
+import fr.creart.gamestack.common.connection.database.DatabaseConnectionData;
 import fr.creart.gamestack.common.connection.database.RequestType;
 import fr.creart.gamestack.common.lang.ClassUtil;
 import fr.creart.gamestack.common.lang.MoreArrays;
@@ -25,7 +26,7 @@ import org.apache.commons.lang3.Validate;
  *
  * @author Creart
  */
-public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLRequest, SQLConnectionData> {
+public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLRequest, DatabaseConnectionData> {
 
     protected String databaseSystemName;
     protected String driver;
@@ -36,7 +37,7 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
     }
 
     @Override
-    protected boolean connect(SQLConnectionData connectionData)
+    protected boolean connect(DatabaseConnectionData connectionData)
     {
         try {
             connection = DriverManager.

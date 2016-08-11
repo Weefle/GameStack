@@ -30,7 +30,8 @@ public final class JsonUtil {
     }
 
     /**
-     * Returns a textual json representation of the given object
+     * Returns a textual json representation of the given object.
+     * Transient and static fields are not serialized
      *
      * @param obj Object to serialize
      * @return a textual json representation of the given object
@@ -43,11 +44,11 @@ public final class JsonUtil {
     }
 
     /**
-     * Returns the object deserialized from the string
+     * Returns the object deserialized from the String
      *
      * @param clazz source class
      * @param json  source String
-     * @return the object deserialized from the string
+     * @return the object deserialized from the String
      */
     public static <T> T fromJson(Class<T> clazz, String json)
     {

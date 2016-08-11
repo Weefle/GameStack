@@ -40,6 +40,11 @@ public class SQLRequest extends AbstractRequest<ResultSet> {
         this.request = request;
     }
 
+    /**
+     * Returns the SQL request
+     *
+     * @return the SQL request
+     */
     public String getRequest()
     {
         return request;

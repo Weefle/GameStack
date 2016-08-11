@@ -9,9 +9,9 @@ package fr.creart.gamestack.common.metric;
 import fr.creart.gamestack.common.lang.BasicWrapper;
 import fr.creart.gamestack.common.lang.Wrapper;
 import fr.creart.gamestack.common.log.CommonLogger;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Creart
@@ -33,7 +33,7 @@ public class MetricTask implements Runnable {
     {
         final Wrapper<Long> runTime = new BasicWrapper<>(0L);
 
-        Set<Metric> output = new HashSet<>();
+        Set<Metric> output = new TreeSet<>();
 
         manager.getProviders().stream().filter(Objects::nonNull).forEach(provider -> {
             // approximately equals, a metric may have taken too much time to run.
@@ -70,9 +70,18 @@ public class MetricTask implements Runnable {
     private void sendMetric(Metric metric)
     {
         if (metric.getProvider().hasCustomOutput())
-            metric.getProvider().getChosenOutput().send(metric);
+            try {
+                metric.getProvider().getChosenOutput().output(metric);
+            } catch (Exception e) {
+                CommonLogger.error("Could not output the metric " + metric.getProvider().getMetricName() + " in the default output!", e);
+            }
         else
-            manager.getDefaultOutput().send(metric);
+            try {
+                manager.getDefaultOutput().output(metric);
+            } catch (Exception e) {
+                CommonLogger.error("Could not output the metric " + metric.getProvider().getMetricName() + " in the "
+                        + metric.getProvider().getChosenOutput().toString() + " (custom) output.", e);
+            }
     }
 
 }

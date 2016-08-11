@@ -86,6 +86,7 @@ public abstract class ConnectionContainer<T, CONN_DATA extends ConnectionData>
         }
 
         connectionState.set(ConnectionState.CLOSED);
+        taskHandler.destroy();
     }
 
     /**

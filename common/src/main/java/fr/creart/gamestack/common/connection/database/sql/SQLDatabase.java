@@ -118,6 +118,7 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
                             break;
                         case INSERT:
                         case UPDATE:
+                        case DELETE:
                             statement.executeUpdate();
                             break;
                     }

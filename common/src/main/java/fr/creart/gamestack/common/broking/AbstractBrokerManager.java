@@ -50,14 +50,14 @@ public abstract class AbstractBrokerManager<T, CONN_DATA extends ConnectionData>
             CommonLogger.
                     error("Could not publish packet (id=" + packet.getId()
                             + ", protocol=" + packet.getProtocolName()
-                            + ") because the connection is not usable.");
+                            + ") because the connection is not currently usable.");
     }
 
     protected abstract <P> void doPublish(ByteArrayPacket<P> packet, P output);
 
     protected final String packetChannelName(int packetId)
     {
-        return "packet" + Integer.toHexString(packetId);
+        return "packet:" + packetId;
     }
 
 }

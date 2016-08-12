@@ -27,6 +27,42 @@ comme quand il faut commander une nouvelle instance, par exemple.
 Comme dit plus haut, tout est configurable. Vous pouvez donc modifier les paramètres à votre guise dans le fichier gamestack.properties. (Celui-ci contient
 la configuration pour le serveur en lui-même, mais pour toute l'infrastructure GameStack également.)
 
+Server Types
+------------
+English — In order to have a good management of on demand Minecraft servers, a "weight" system has been created. Each server can contain a certain amount
+of Minecraft servers and the latter may change, depending on the type of servers which are ran. For instance, a heavy game like a UHC of 100 players
+needs much more resources than a small Rush of 8 players. Here is where the "gamegrams" step in. Abridged "gg", this unit determines the weight of a type
+of server. It is up to you to define the weight of a game in the web pannel or directly in the database you have chosen.
+
+(Warning :warning:: the scale is subject to change) The unit has for scale:
+
+* 1 gg = 100 Mb RAM (Megabytes, and not bits, obviously)
+* 10 gg = 500 Mb RAM
+
+If you wish, you can also activate a parameter in the configuration called ```gameweight-resizer``` which has for value a boolean (true/false).
+If the value is true, the sizes of the games you set beforehand will be correctly scaled, in order to stick better to the needs of the Minecraft servers
+in terms of resources.
+
+Français — Pour une bonne gestion des serveurs Minecraft à la demande, un système de "poids" de serveurs a été créé. Chaque serveur peut contenir un certain
+nombre de serveurs Minecraft et ce dernier fluctue, en fonction des types de serveurs lancés. Par exemple, un jeu volumineux comme un UHC avec 100 joueurs 
+prend plus de ressources qu'un petit Rush à 8 joueurs. C'est là qu'interviennent les "gamegrammes". Abrégé "gg", cette unité détermine le poids d'un 
+type de serveur. C'est à vous de définir les poids des jeux depuis le pannel web ou directement dans la base de données choisie.
+
+(Attention :warning: : l'échelle est sujet à changement) L'unité a pour échelle : 
+
+* 1 gg = 100 Mo de RAM alloués
+* 10 gg = 500 Mo de RAM alloués
+
+Si vous le souhaitez, vous pouvez également activer dans la configuration un paramètre, appelé ```gameweight-resizer```, qui a pour valeur un booléen
+(true/false). Si la valeur est mise à vraie ("true"), les tailles des jeux que vous aurez fixées seront modifiées pour le mieux correspondre à leurs besoins
+en ressources.
+
+Instances
+---------
+English — 
+
+Français — 
+
 Requirements
 ------------
 English — GameStack needs a database **and** a message broker in order to work correctly. (A message broker is typically a software which allows the share

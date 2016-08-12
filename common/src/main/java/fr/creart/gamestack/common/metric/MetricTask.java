@@ -73,14 +73,14 @@ public class MetricTask implements Runnable {
             try {
                 metric.getProvider().getChosenOutput().output(metric);
             } catch (Exception e) {
-                CommonLogger.error("Could not output the metric " + metric.getProvider().getMetricName() + " in the default output!", e);
+                CommonLogger.error("Could not output the metric " + metric.getProvider().getMetricName() + " in the chosen output!", e);
             }
         else
             try {
                 manager.getDefaultOutput().output(metric);
             } catch (Exception e) {
                 CommonLogger.error("Could not output the metric " + metric.getProvider().getMetricName() + " in the "
-                        + metric.getProvider().getChosenOutput().toString() + " (custom) output.", e);
+                        + metric.getProvider().getChosenOutput().toString() + " output.", e);
             }
     }
 

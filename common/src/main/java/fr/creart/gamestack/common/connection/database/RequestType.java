@@ -15,6 +15,7 @@ public enum RequestType {
 
     QUERY,
     INSERT,
-    UPDATE
+    UPDATE,
+    DELETE
 
 }

@@ -93,16 +93,8 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
 
         ByteArrayDataWriter writer = new ByteArrayDataWriter();
         packet.write(writer, output);
-
         String chann = packetChannelName(packet.getId());
-        if (!declaredExchanges.contains(chann))
-            try {
-                connection.getChannel().exchangeDeclare(chann, "fanout");
-            } catch (Exception e) {
-                CommonLogger.error("Could not declare exchange and because of that, publish a packet.", e);
-                return;
-            }
-
+        declareChannel(chann);
         enqueueTask((rabbit) -> rabbit.getChannel().basicPublish(chann, "", null, writer.result().toByteArray()));
     }
 
@@ -112,15 +104,7 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
         super.registerListener(packetId, listener);
 
         String chann = packetChannelName(packetId);
-
-        if (!declaredExchanges.contains(chann))
-            try {
-                connection.getChannel().exchangeDeclare(chann, "fanout");
-                declaredExchanges.add(chann);
-            } catch (Exception e) {
-                CommonLogger.error("Could not declare exchange: " + chann + ".", e);
-            }
-
+        declareChannel(chann);
         if (!listenedQueues.contains(chann))
             try {
                 String queue = connection.getChannel().queueDeclare().getQueue();
@@ -136,6 +120,18 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
     protected String getServiceName()
     {
         return "RabbitMQ";
+    }
+
+    private void declareChannel(String chann)
+    {
+        try {
+            if (!declaredExchanges.contains(chann)) {
+                connection.getChannel().exchangeDeclare(chann, "fanout");
+                declaredExchanges.add(chann);
+            }
+        } catch (Exception e) {
+            CommonLogger.error("Could not declare exchange: " + chann + ".", e);
+        }
     }
 
     @Override
@@ -162,7 +158,11 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
             DataResult<?> result = packet.read(source);
             Collection<PacketListener> found = listeners.get(packet.getId());
             if (found != null && !found.isEmpty())
-                found.stream().forEach(listener -> listener.handlePacket(packet.getId(), result));
+                try {
+                    found.stream().forEach(listener -> listener.handlePacket(packet.getId(), result));
+                } catch (Exception e) {
+                    CommonLogger.error("Failed execution of a packet handler.", e);
+                }
             source.release();
         }
 

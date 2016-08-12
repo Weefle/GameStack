@@ -7,8 +7,6 @@
 package fr.creart.gamestack.common.command;
 
 import java.util.Collection;
-import lombok.AccessLevel;
-import lombok.Getter;
 
 /**
  * Represents a command which can be executed from the console.
@@ -17,18 +15,15 @@ import lombok.Getter;
  */
 public abstract class Command {
 
-    @Getter(AccessLevel.PACKAGE)
     private final String label;
-    @Getter(AccessLevel.PACKAGE)
     private final String[] aliases;
-    @Getter(AccessLevel.PACKAGE)
     private final String help;
 
     /**
      * Default constructor
      *
-     * @param label     Command's label (its name)
-     * @param aliases   Command's aliases (other names)
+     * @param label   Command's label (its name)
+     * @param aliases Command's aliases (other names)
      */
     public Command(String label, String help, String... aliases)
     {
@@ -40,8 +35,8 @@ public abstract class Command {
     /**
      * Default constructor "helper"
      *
-     * @param label     Command's label (its name)
-     * @param aliases   Command's aliases (other names)
+     * @param label   Command's label (its name)
+     * @param aliases Command's aliases (other names)
      */
     public Command(String label, String help, Collection<String> aliases)
     {
@@ -51,9 +46,39 @@ public abstract class Command {
     /**
      * Called on the command execution.
      *
-     * @param args  Provided arguments
+     * @param args Provided arguments
      */
     public abstract void execute(CommandSender sender, String[] args);
+
+    /**
+     * Returns command's label
+     *
+     * @return command's label
+     */
+    String getLabel()
+    {
+        return label;
+    }
+
+    /**
+     * Returns command's aliases
+     *
+     * @return command's aliases
+     */
+    String[] getAliases()
+    {
+        return aliases;
+    }
+
+    /**
+     * Returns command's help
+     *
+     * @return command's help
+     */
+    String getHelp()
+    {
+        return help;
+    }
 
     @Override
     public final boolean equals(Object obj)

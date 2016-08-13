@@ -7,15 +7,24 @@
 package fr.creart.gamestack.common.lang;
 
 /**
+ * Basic wrapper, just contains a value.
+ *
+ * {@inheritDoc}
  * @author Creart
  */
 public class BasicWrapper<T> extends Wrapper<T> {
 
+    /**
+     * {@inheritDoc}
+     */
     public BasicWrapper()
     {
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public BasicWrapper(T value)
     {
         super(value);

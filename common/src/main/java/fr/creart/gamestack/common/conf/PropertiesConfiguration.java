@@ -33,19 +33,10 @@ public class PropertiesConfiguration extends Configuration {
     @Override
     public void saveChanges()
     {
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(src);
+        try (FileWriter writer = new FileWriter(src)) {
             properties.store(writer, "");
         } catch (Exception e) {
             CommonLogger.error(String.format("Could not save changes to .properties file (%s)", src.getName()), e);
-        } finally {
-            try {
-                if (writer != null)
-                    writer.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -59,6 +50,7 @@ public class PropertiesConfiguration extends Configuration {
         try {
             return (T) ret;
         } catch (Exception e) {
+            // ignore exception, could not cast.
             return def;
         }
     }

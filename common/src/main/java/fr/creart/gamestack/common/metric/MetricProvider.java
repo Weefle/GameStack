@@ -20,6 +20,9 @@ public abstract class MetricProvider {
     private final short updateFrequency;
     private AtomicBoolean lastUpdateFailed = new AtomicBoolean(false);
 
+    /**
+     * @param updateFrequency the update frequency of the provider (in milliseconds)
+     */
     public MetricProvider(short updateFrequency)
     {
         this.updateFrequency = updateFrequency;
@@ -40,7 +43,7 @@ public abstract class MetricProvider {
      *
      * @return the last time that the provider has provided a metric
      */
-    synchronized final long getLastUpdate()
+    final synchronized long getLastUpdate()
     {
         return lastUpdate;
     }
@@ -48,7 +51,7 @@ public abstract class MetricProvider {
     /**
      * Sets the last update to current time
      */
-    synchronized final void renewLastUpdate()
+    final synchronized void renewLastUpdate()
     {
         lastUpdate = System.currentTimeMillis();
     }
@@ -58,6 +61,11 @@ public abstract class MetricProvider {
         this.lastUpdateFailed.set(lastUpdateFailed);
     }
 
+    /**
+     * Returns <tt>true</tt> if the last metric update failed. (If the last {@link #provide()} call failed.)
+     *
+     * @return <tt>true</tt> if the last metric update failed
+     */
     public boolean hasLastUpdateFailed()
     {
         return lastUpdateFailed.get();

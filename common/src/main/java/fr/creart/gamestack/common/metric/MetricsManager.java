@@ -39,6 +39,10 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     private ScheduledFuture<?> metricTask;
     private BiMap<String, Class<? extends Metric>> metrics = HashBiMap.create();
 
+    /**
+     * @param output  metric output
+     * @param threads number of allocated threads
+     */
     public MetricsManager(MetricOutput output, byte threads)
     {
         this.defaultOutput = output;

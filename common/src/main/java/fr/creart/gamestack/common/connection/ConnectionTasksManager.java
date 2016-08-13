@@ -60,7 +60,7 @@ class ConnectionTasksManager<T> implements Destroyable {
                 CommonLogger.error(builder.toString());
             }
         } catch (Exception e) {
-            CommonLogger.error("Could not close ");
+            CommonLogger.error("Could not close thread pool.", e);
         }
     }
 

@@ -18,6 +18,12 @@ public class ConnectionData {
     private final String host;
     private int port;
 
+    /**
+     * @param username user's name
+     * @param password user's password
+     * @param host     target connection host
+     * @param port     target connection port
+     */
     public ConnectionData(String username, String password, String host, int port)
     {
         this.username = username;

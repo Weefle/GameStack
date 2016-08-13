@@ -17,13 +17,17 @@ import fr.creart.gamestack.common.protocol.ProtocolWrap;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
 
 /**
+ * {@inheritDoc}
  * @author Creart
  */
-public abstract class AbstractBrokerManager<T, CONN_DATA extends ConnectionData>
-        extends ConnectionContainer<T, CONN_DATA> implements BrokerManager {
+public abstract class AbstractBrokerManager<T, D extends ConnectionData>
+        extends ConnectionContainer<T, D> implements BrokerManager {
 
     protected Multimap<Integer, PacketListener> listeners = HashMultimap.create();
 
+    /**
+     * {@inheritDoc}
+     */
     public AbstractBrokerManager(int threads)
     {
         super(threads);

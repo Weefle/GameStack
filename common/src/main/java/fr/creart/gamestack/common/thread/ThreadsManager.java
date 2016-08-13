@@ -22,6 +22,9 @@ public final class ThreadsManager implements Destroyable, AutoCloseable {
     private final ThreadGroup currentGroup;
     private boolean initialized;
 
+    /**
+     * @param softName current software's name
+     */
     public ThreadsManager(String softName)
     {
         currentGroup = new ThreadGroup(PARENT_GROUP, softName);

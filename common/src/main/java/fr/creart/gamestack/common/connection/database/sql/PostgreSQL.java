@@ -13,6 +13,9 @@ package fr.creart.gamestack.common.connection.database.sql;
  */
 public class PostgreSQL extends SQLDatabase {
 
+    /**
+     * {@inheritDoc}
+     */
     public PostgreSQL(int threads)
     {
         super(threads);

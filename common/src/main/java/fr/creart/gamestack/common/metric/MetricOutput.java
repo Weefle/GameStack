@@ -27,6 +27,7 @@ public interface MetricOutput extends Closeable {
      *
      * @return Returns a textual representation of the metric output.
      */
+    @Override
     String toString();
 
 }

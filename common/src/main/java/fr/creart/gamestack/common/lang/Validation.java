@@ -29,6 +29,8 @@ import java.util.Optional;
  * Then, the caller of the function can get to know if the operation is a success by calling the {@link #isSuccess()}
  * function. (You can have a look at the test: fr.creart.gamestack.common.test.ValidationTest)
  *
+ * @param <E> exception
+ * @param <T> value
  * @author François Sarradin (https://www.youtube.com/watch?v=evS3iwZLS4s)
  */
 public abstract class Validation<E, T> {
@@ -62,9 +64,18 @@ public abstract class Validation<E, T> {
      */
     public abstract Validation<T, E> swap();
 
+    /**
+     * Represents a case of success
+     *
+     * @param <T> value
+     * @param <E> exception
+     */
     public static class Success<T, E> extends Validation<E, T> {
         private final T value;
 
+        /**
+         * @param value the value
+         */
         public Success(T value)
         {
             this.value = value;
@@ -83,9 +94,18 @@ public abstract class Validation<E, T> {
         }
     }
 
+    /**
+     * Represents a case of failure
+     *
+     * @param <E> exception
+     * @param <T> value
+     */
     public static class Failure<E, T> extends Validation<E, T> {
         private final E exception;
 
+        /**
+         * @param exception the exception
+         */
         public Failure(E exception)
         {
             this.exception = exception;

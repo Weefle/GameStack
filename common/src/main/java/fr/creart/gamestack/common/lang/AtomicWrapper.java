@@ -12,17 +12,24 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Implementation of {@link Wrapper} for atomic values
  *
+ * {@inheritDoc}
  * @author Creart
  */
 public class AtomicWrapper<T> extends Wrapper<T> {
 
     private ReadWriteLock lock = new ReentrantReadWriteLock();
 
+    /**
+     * {@inheritDoc}
+     */
     public AtomicWrapper()
     {
         super();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public AtomicWrapper(T value)
     {
         super(value);

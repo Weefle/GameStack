@@ -41,6 +41,8 @@ public final class Chrono {
     /**
      * Returns the difference between the end and the start positions.
      *
+     * @param baseUnit the unit used for the mark end and start functions
+     * @param unit     the result unit
      * @return the difference between the end and the start positions.
      */
     public long differenceAs(TimeUnit baseUnit, TimeUnit unit)
@@ -53,14 +55,13 @@ public final class Chrono {
                 return baseUnit.toMicros(duration);
             case MILLISECONDS:
                 return baseUnit.toMillis(duration);
-            case SECONDS:
-                return baseUnit.toSeconds(duration);
             case MINUTES:
                 return baseUnit.toMinutes(duration);
             case HOURS:
                 return baseUnit.toHours(duration);
             case DAYS:
                 return baseUnit.toDays(duration);
+            case SECONDS:
             default:
                 return baseUnit.toSeconds(duration);
         }

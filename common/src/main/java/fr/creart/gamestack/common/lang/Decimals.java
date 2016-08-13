@@ -42,4 +42,28 @@ public class Decimals {
         return format.format(number);
     }
 
+    /**
+     * Returns <tt>true</tt> if the two floats are equal
+     *
+     * @param first  First value
+     * @param second Second value
+     * @return <tt>true</tt> if the two values are equal
+     */
+    public static boolean equal(float first, float second)
+    {
+        return Float.floatToIntBits(first) == Float.floatToIntBits(second);
+    }
+
+    /**
+     * Returns <tt>true</tt> if the two doubles are equal
+     *
+     * @param first  First value
+     * @param second Second value
+     * @return <tt>true</tt> if the two doubles are equal
+     */
+    public static boolean equal(double first, double second)
+    {
+        return Double.doubleToLongBits(first) == Double.doubleToLongBits(second);
+    }
+
 }

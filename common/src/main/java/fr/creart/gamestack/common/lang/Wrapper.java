@@ -16,11 +16,17 @@ public abstract class Wrapper<T> {
 
     protected T value;
 
+    /**
+     * Default constructor, null value by default
+     */
     public Wrapper()
     {
         this(null);
     }
 
+    /**
+     * @param value wrapper's value
+     */
     public Wrapper(T value)
     {
         this.value = value;

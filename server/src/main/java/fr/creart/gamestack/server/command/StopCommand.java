@@ -15,6 +15,9 @@ import fr.creart.gamestack.server.StackServer;
  */
 public class StopCommand extends Command {
 
+    /**
+     * Constructor
+     */
     public StopCommand()
     {
         super("stop", "Shuts GameStack down.");

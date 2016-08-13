@@ -16,13 +16,16 @@ import org.apache.log4j.spi.LoggingEvent;
 /**
  * @author Creart
  */
-public class CustomLayout extends Layout {
+class CustomLayout extends Layout {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("'['HH':'mm']' ");
 
     private boolean file;
 
-    public CustomLayout(boolean file)
+    /**
+     * @param file <tt>true</tt> if the layout is for file appending (does not print debug)
+     */
+    CustomLayout(boolean file)
     {
         this.file = file;
     }

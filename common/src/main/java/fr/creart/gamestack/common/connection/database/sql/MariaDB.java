@@ -13,6 +13,9 @@ package fr.creart.gamestack.common.connection.database.sql;
  */
 public class MariaDB extends SQLDatabase {
 
+    /**
+     * {@inheritDoc}
+     */
     public MariaDB(int threads)
     {
         super(threads);

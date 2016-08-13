@@ -9,11 +9,16 @@ package fr.creart.gamestack.common.connection.database;
 import fr.creart.gamestack.common.connection.ConnectionContainer;
 
 /**
+ * {@inheritDoc}
+ * @param <Q> handled requests
  * @author Creart
  */
-public abstract class AbstractDatabase<T, Q extends AbstractRequest<?>, CONN_DATA extends DatabaseConnectionData>
-        extends ConnectionContainer<T, CONN_DATA> implements Database<Q> {
+public abstract class AbstractDatabase<T, Q extends AbstractRequest<?>, D extends DatabaseConnectionData>
+        extends ConnectionContainer<T, D> implements Database<Q> {
 
+    /**
+     * {@inheritDoc}
+     */
     public AbstractDatabase(int threads)
     {
         super(threads);

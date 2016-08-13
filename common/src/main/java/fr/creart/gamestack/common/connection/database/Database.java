@@ -9,8 +9,10 @@ package fr.creart.gamestack.common.connection.database;
 /**
  * Represents a database connection
  *
+ * @param <T> type of requests
  * @author Creart
  */
+@FunctionalInterface
 public interface Database<T extends AbstractRequest<?>> {
 
     /**

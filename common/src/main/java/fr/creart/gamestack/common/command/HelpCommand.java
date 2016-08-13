@@ -13,7 +13,7 @@ import com.google.common.base.Strings;
  *
  * @author Creart
  */
-public class HelpCommand extends Command {
+class HelpCommand extends Command {
 
     private static final String FIRST_LINE = "All GameStack commands:\n";
 

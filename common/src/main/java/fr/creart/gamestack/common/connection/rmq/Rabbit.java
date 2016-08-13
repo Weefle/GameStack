@@ -58,7 +58,7 @@ class Rabbit implements Closeable {
             try {
                 channel.close();
             } catch (TimeoutException e) {
-                CommonLogger.error("Time out with the RabbitMQ server!", e);
+                CommonLogger.error("Connection with the RabbitMQ server timed out.", e);
             }
 
         if (connection.isOpen())

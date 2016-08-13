@@ -19,16 +19,13 @@ import fr.creart.gamestack.common.misc.Callback;
 public abstract class AbstractRequest<V> {
 
     protected RequestType type;
-    protected Callback<V> callback;
+    private Callback<V> callback;
 
     /**
-     * @param type Request's type
+     * @param type      Type of request (insertion, update, query or deletion)
+     * @param callback  Called back on a query result
+     * @see RequestType
      */
-    public AbstractRequest(RequestType type)
-    {
-        this.type = type;
-    }
-
     public AbstractRequest(@NotNull RequestType type, Callback<V> callback)
     {
         this.type = type;

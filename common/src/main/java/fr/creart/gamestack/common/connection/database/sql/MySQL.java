@@ -13,6 +13,9 @@ package fr.creart.gamestack.common.connection.database.sql;
  */
 public class MySQL extends SQLDatabase {
 
+    /**
+     * {@inheritDoc}
+     */
     public MySQL(int threads)
     {
         super(threads);

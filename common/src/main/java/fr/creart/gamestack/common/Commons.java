@@ -14,6 +14,7 @@ import fr.creart.gamestack.common.connection.database.AbstractDatabase;
 import fr.creart.gamestack.common.connection.database.AbstractRequest;
 import fr.creart.gamestack.common.connection.database.Database;
 import fr.creart.gamestack.common.connection.database.DatabaseConnectionData;
+import fr.creart.gamestack.common.connection.database.sql.SQLRequest;
 import fr.creart.gamestack.common.i18n.Translator;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.metric.BrokerMetricOutput;
@@ -21,7 +22,7 @@ import fr.creart.gamestack.common.metric.MetricsManager;
 import fr.creart.gamestack.common.thread.ThreadsManager;
 
 /**
- * Centralizes the common library for GameStack softwares.
+ * Centralizes the common library for GameStack software.
  * You just have to create the logger on your own.
  *
  * @author Creart
@@ -36,7 +37,10 @@ public final class Commons {
     private ThreadsManager threadsManager;
     private MetricsManager metricsManager;
     private AbstractBrokerManager<?, ?> broker;
-    private Database<? extends AbstractRequest<?>> database;
+    /**
+     * Note: Only SQL support for the moment
+     */
+    private Database<SQLRequest> database;
 
     private Commons()
     {
@@ -58,13 +62,15 @@ public final class Commons {
     /**
      * Connects commons to the network.
      *
-     * @param broker           The message broker implementation
-     * @param brokerConnection the connection data to the broker
-     * @param metricsThreads   number of threads allocated to the metrics
+     * @param broker             the message broker implementation
+     * @param brokerConnection   the connection data to the broker
+     * @param database           the database implementation
+     * @param databaseConnection the data used to connect to the database
+     * @param metricsThreads     number of threads allocated to the metrics
      */
     public <T, V extends ConnectionData, S extends DatabaseConnectionData>
     void connect(V brokerConnection, AbstractBrokerManager<T, V> broker,
-                 S databaseConnection, AbstractDatabase<?, ?, S> database, byte metricsThreads)
+                 S databaseConnection, AbstractDatabase<?, SQLRequest, S> database, byte metricsThreads)
     {
         if (initialized)
             return;
@@ -101,7 +107,7 @@ public final class Commons {
      *
      * @return the current database
      */
-    public Database<? extends AbstractRequest<?>> getDatabase()
+    public Database<SQLRequest> getDatabase()
     {
         return database;
     }
@@ -132,7 +138,7 @@ public final class Commons {
      * @param data   Connection data (host, port, credentials...)
      * @param broker Message broker's manager
      */
-    private <T, CONN_DATA extends ConnectionData> void connectMessageBroker(CONN_DATA data, AbstractBrokerManager<T, CONN_DATA> broker)
+    private <T, D extends ConnectionData> void connectMessageBroker(D data, AbstractBrokerManager<T, D> broker)
     {
         Preconditions.checkNotNull(data, "data can't be null");
         Preconditions.checkNotNull(broker, "broker can't be null");
@@ -148,7 +154,7 @@ public final class Commons {
      * @param data     Connection data
      * @param database Database
      */
-    private <DATA extends DatabaseConnectionData, T, Q extends AbstractRequest<?>> void connectDatabase(DATA data, AbstractDatabase<T, Q, DATA> database)
+    private <DATA extends DatabaseConnectionData, T, Q extends AbstractRequest<?>> void connectDatabase(DATA data, AbstractDatabase<T, SQLRequest, DATA> database)
     {
         Preconditions.checkNotNull(data, "connection data can't be null");
         Preconditions.checkNotNull(database, "database can't be null");

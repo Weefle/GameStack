@@ -15,6 +15,11 @@ public class RabbitConnectionData extends ConnectionData {
 
     private String virtualHost;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param virtualHost the rabbitmq virtual host
+     */
     public RabbitConnectionData(String username, String password, String host, int port, String virtualHost)
     {
         super(username, password, host, port);

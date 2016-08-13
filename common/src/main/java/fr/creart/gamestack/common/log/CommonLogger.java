@@ -18,7 +18,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 
 /**
- * A common logger for all GameStack softwares.
+ * A common logger for all GameStack software.
  *
  * @author Creart
  */

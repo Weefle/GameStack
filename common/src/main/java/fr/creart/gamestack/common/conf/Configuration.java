@@ -59,30 +59,58 @@ public abstract class Configuration implements Initialisable {
     }
 
     /**
-     * Returns a validation. Contains the value if no exception has been raised.
-     * If it fails, it returns a failure with the reason of the exception.
+     * Returns the value associated to the given path, <tt>def</tt> if failed
      *
-     * @param path Path
+     * @param path path to value
+     * @param def  default value
      * @param <T>  T type of the checked object
-     * @return a validation, with the value, or an exception.
+     * @return the value associated to the given path
      */
     public abstract <T> T get(String path, T def);
 
+    /**
+     * Returns the integer associated to the given path, def if failed
+     *
+     * @param path path to value
+     * @param def  default value
+     * @return the integer associated to the given path
+     */
     public final int getInteger(String path, int def)
     {
         return get(path, def);
     }
 
+    /**
+     * Returns the String associated to the given path, def if failed
+     *
+     * @param path path to value
+     * @param def  default value
+     * @return the String associated to the given path
+     */
     public final String getString(String path, String def)
     {
         return get(path, def);
     }
 
+    /**
+     * Returns the boolean associated to the given path, def if failed
+     *
+     * @param path path to value
+     * @param def  default value
+     * @return the boolean associated to the given path
+     */
     public final boolean getBoolean(String path, boolean def)
     {
         return get(path, def);
     }
 
+    /**
+     * Returns the double associated to the given path, def if failed
+     *
+     * @param path path to value
+     * @param def  default value
+     * @return the double associated to the given path
+     */
     public final double getDouble(String path, double def)
     {
         return get(path, def);

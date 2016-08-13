@@ -84,9 +84,9 @@ public final class CommandsManager {
      */
     Collection<Command> getCommands()
     {
-        Set<Command> commands = new HashSet<>();
-        commands.addAll(this.commands.values());
-        return commands;
+        Set<Command> ret = new HashSet<>();
+        ret.addAll(commands.values());
+        return ret;
     }
 
     /**

@@ -21,6 +21,11 @@ public class DatabaseConnectionData extends ConnectionData {
 
     private String database;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param database database name
+     */
     public DatabaseConnectionData(String username, String password, String host, int port, String database)
     {
         super(username, password, host, port);

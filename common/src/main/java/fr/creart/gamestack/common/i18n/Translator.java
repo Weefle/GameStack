@@ -43,13 +43,16 @@ public class Translator {
         try {
             initialize(false);
         } catch (Exception e) {
+            CommonLogger.error("Could not load %s file. Trying again...", e);
             try {
                 initialize(true);
             } catch (Exception e1) {
-                CommonLogger.error(String.format("Could not load %s file!", MESSAGES_FILE), e);
+                CommonLogger.error(String.format("Could not load %s file!", MESSAGES_FILE), e1);
+                return;
             }
         }
 
+        CommonLogger.info("Successfully loaded messages.properties file.");
         initialized = true;
     }
 

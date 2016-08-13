@@ -23,6 +23,9 @@ public class BrokerMetricOutput implements MetricOutput {
     private MetricPacket packet;
     private BrokerManager broker;
 
+    /**
+     * @param broker the broker manager for the output (default broker)
+     */
     public BrokerMetricOutput(BrokerManager broker)
     {
         this.broker = broker;

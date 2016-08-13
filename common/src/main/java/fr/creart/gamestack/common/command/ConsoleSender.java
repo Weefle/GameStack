@@ -15,12 +15,12 @@ import com.google.common.base.Strings;
  */
 public final class ConsoleSender implements CommandSender {
 
+    static final CommandSender INSTANCE = new ConsoleSender();
+
     private ConsoleSender()
     {
 
     }
-
-    static final CommandSender INSTANCE = new ConsoleSender();
 
     @Override
     public void sendMessage(String message)

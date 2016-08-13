@@ -31,6 +31,9 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
     protected String databaseSystemName;
     protected String driver;
 
+    /**
+     * {@inheritDoc}
+     */
     public SQLDatabase(int threads)
     {
         super(threads);

@@ -6,6 +6,8 @@
 
 package fr.creart.gamestack.common.metric;
 
+import com.google.common.base.Charsets;
+import fr.creart.protocolt.util.MoreArrays;
 import java.time.LocalDateTime;
 
 /**
@@ -18,7 +20,7 @@ public abstract class Metric implements Comparable<Metric> {
 
     protected transient MetricProvider provider;
     protected final LocalDateTime time;
-    private transient final MetricPriority priority;
+    private final transient MetricPriority priority;
 
     /**
      * @param provider source provider
@@ -69,6 +71,21 @@ public abstract class Metric implements Comparable<Metric> {
     public LocalDateTime getTime()
     {
         return time;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof Metric))
+            return false;
+        Metric other = (Metric) obj;
+        return provider.getMetricName().equals(other.getProvider().getMetricName()) && time.equals(other.getTime());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return MoreArrays.sum(provider.getMetricName().getBytes(Charsets.UTF_8));
     }
 
     @Override

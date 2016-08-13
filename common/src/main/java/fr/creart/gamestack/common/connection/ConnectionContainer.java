@@ -21,9 +21,10 @@ import java.util.concurrent.Executors;
  * <p>
  * /!\ Set the {@link ConnectionData} before you connect /!\
  *
+ * {@inheritDoc}
  * @author Creart
  */
-public abstract class ConnectionContainer<T, CONN_DATA extends ConnectionData>
+public abstract class ConnectionContainer<T, D extends ConnectionData>
         implements AutoCloseable, Destroyable {
 
     private static final byte MAX_THREADS = 10;
@@ -32,6 +33,9 @@ public abstract class ConnectionContainer<T, CONN_DATA extends ConnectionData>
     protected final Wrapper<ConnectionState> connectionState = new AtomicWrapper<>(ConnectionState.CLOSED);
     private final ConnectionTasksManager<T> taskHandler;
 
+    /**
+     * @param threads number of used threads (max = 10)
+     */
     public ConnectionContainer(int threads)
     {
         ExecutorService service = threads <= 1 ? Executors.newSingleThreadExecutor() : Executors.newFixedThreadPool(Math.min(threads, MAX_THREADS));
@@ -40,8 +44,10 @@ public abstract class ConnectionContainer<T, CONN_DATA extends ConnectionData>
 
     /**
      * Initializes the connection if it is closed.
+     *
+     * @param connectionData data required in order to establish the connection (host, port... + credentials)
      */
-    public final void initialize(CONN_DATA connectionData)
+    public final void initialize(D connectionData)
     {
         if (connectionState.get() == ConnectionState.CLOSING
                 || connectionState.get() == ConnectionState.OPENING
@@ -127,7 +133,7 @@ public abstract class ConnectionContainer<T, CONN_DATA extends ConnectionData>
     /**
      * Establishes the contained connection
      */
-    protected abstract boolean connect(CONN_DATA connectionData);
+    protected abstract boolean connect(D connectionData);
 
     /**
      * Closes everything.

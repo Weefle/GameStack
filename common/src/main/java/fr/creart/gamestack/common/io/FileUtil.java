@@ -160,7 +160,7 @@ public final class FileUtil {
             zout.close();
             return true;
         } catch (Exception e) {
-            CommonLogger.error("Could not compress file to zip (dest=" + destination + ",sources=" + Arrays.toString(sources) + ").");
+            CommonLogger.error("Could not compress file to zip (dest=" + destination + ",sources=" + Arrays.toString(sources) + ").", e);
             return false;
         }
     }
@@ -206,10 +206,8 @@ public final class FileUtil {
         Preconditions.checkNotNull(destination, "destination null");
         Preconditions.checkArgument(!source.exists(), "source does not exist");
 
-        InputStream in = null;
         OutputStream out = null;
-        try {
-            in = new FileInputStream(source);
+        try (InputStream in = new FileInputStream(source)) {
             if (!destination.exists())
                 destination.createNewFile();
             out = new FileOutputStream(destination);
@@ -220,12 +218,10 @@ public final class FileUtil {
             CommonLogger.error(String.format("Could not copy files (source=%s,destination=%s).", source.getAbsolutePath(), destination.getAbsolutePath()), e);
         } finally {
             try {
-                if (in != null)
-                    in.close();
                 if (out != null)
                     out.close();
             } catch (Exception e) {
-                CommonLogger.error("Could not close input or output stream.", e);
+                CommonLogger.error("Could not close output stream.", e);
             }
         }
     }
@@ -251,7 +247,7 @@ public final class FileUtil {
             while (buffer.hasRemaining())
                 dest.write(buffer);
         } catch (Exception e) {
-            e.printStackTrace();
+            CommonLogger.error("Could not copy channels.", e);
         }
     }
 

@@ -6,15 +6,14 @@
 
 package fr.creart.gamestack.common.protocol;
 
-import fr.creart.protocolt.data.DataResult;
-
 /**
  * Represents a listener which listens for a packet.
  *
+ * @param <T> the type of data result
  * @author Creart
  */
 @FunctionalInterface
-public interface PacketListener {
+public interface PacketListener<T> {
 
     /**
      * Called as an event when a packet is received for which the current listener has been registered.
@@ -22,6 +21,6 @@ public interface PacketListener {
      * @param packetId Packet's id
      * @param result   Received data
      */
-    void handlePacket(int packetId, DataResult<?> result);
+    void handlePacket(int packetId, T result);
 
 }

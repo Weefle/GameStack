@@ -15,10 +15,10 @@ import fr.creart.gamestack.common.connection.database.AbstractRequest;
 import fr.creart.gamestack.common.connection.database.Database;
 import fr.creart.gamestack.common.connection.database.DatabaseConnectionData;
 import fr.creart.gamestack.common.connection.database.sql.SQLRequest;
-import fr.creart.gamestack.common.i18n.Translator;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.metric.BrokerMetricOutput;
 import fr.creart.gamestack.common.metric.MetricsManager;
+import fr.creart.gamestack.common.text.Translator;
 import fr.creart.gamestack.common.thread.ThreadsManager;
 
 /**
@@ -41,6 +41,7 @@ public final class Commons {
      * Note: Only SQL support for the moment
      */
     private Database<SQLRequest> database;
+    private Translator translator;
 
     private Commons()
     {
@@ -56,7 +57,8 @@ public final class Commons {
     {
         this.softwareName = soft;
         threadsManager = new ThreadsManager(soft);
-        Translator.initialize();
+        translator = new Translator("messages.properties");
+        translator.initialize();
     }
 
     /**
@@ -130,6 +132,16 @@ public final class Commons {
     public MetricsManager getMetricsManager()
     {
         return metricsManager;
+    }
+
+    /**
+     * Returns the current translator
+     *
+     * @return the current translator
+     */
+    public Translator getTranslator()
+    {
+        return translator;
     }
 
     /**

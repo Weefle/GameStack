@@ -14,8 +14,13 @@ import fr.creart.gamestack.common.connection.rmq.RabbitConnectionData;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.DependsManager;
 import fr.creart.gamestack.common.misc.Initialisable;
+import fr.creart.gamestack.common.protocol.packet.result.HostUpdate;
 import fr.creart.gamestack.server.command.StopCommand;
 import fr.creart.gamestack.server.conf.ConfigurationConstants;
+import fr.creart.gamestack.server.listener.HostUpdateListener;
+import fr.creart.gamestack.server.server.HostServer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -30,6 +35,8 @@ public class StackServer implements Initialisable {
     private ReadWriteLock lock = new ReentrantReadWriteLock();
     private volatile boolean running;
     private ThreadGroup softGroup;
+
+    private Map<String, HostServer> servers = new HashMap<>();
 
     private StackServer()
     {
@@ -71,6 +78,9 @@ public class StackServer implements Initialisable {
         // registering commands
         CommandsManager.getInstance().registerCommand(new StopCommand());
 
+        // registering packet listeners
+        commons.getMessageBroker().registerListener(0x01, new HostUpdateListener());
+
         // finally
         running = true;
     }
@@ -110,6 +120,28 @@ public class StackServer implements Initialisable {
     public ThreadGroup getSoftGroup()
     {
         return softGroup;
+    }
+
+    /**
+     * If no server has been saved for the given address, a new one is created.
+     * Otherwise, its data is updated.
+     *
+     * @param update the update to apply
+     */
+    public void updateServer(HostUpdate update)
+    {
+        lock.writeLock().lock();
+        try {
+            HostServer server = servers.get(update.getAddress());
+            if (server == null) {
+                server = new HostServer(update.getAddress(), update.getCapacity(), update.getUsedCapacity());
+                servers.put(server.getAddress(), server);
+            }
+            else
+                server.update(update.getCapacity(), update.getUsedCapacity());
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     /**

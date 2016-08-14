@@ -23,7 +23,6 @@ import fr.creart.gamestack.common.protocol.ProtocolWrap;
 import fr.creart.protocolt.bytestreams.ByteArrayDataSource;
 import fr.creart.protocolt.bytestreams.ByteArrayDataWriter;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
-import fr.creart.protocolt.data.DataResult;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
@@ -150,12 +149,13 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
             this.packet = packet;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException
         {
             ByteArrayDataInput input = ByteStreams.newDataInput(body);
             ByteArrayDataSource source = new ByteArrayDataSource(input);
-            DataResult<?> result = packet.read(source);
+            Object result = packet.read(source);
             Collection<PacketListener> found = listeners.get(packet.getId());
             if (found != null && !found.isEmpty())
                 try {

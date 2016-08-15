@@ -6,21 +6,31 @@
 
 package fr.creart.gamestack.server;
 
+import com.google.common.base.Preconditions;
 import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.command.CommandsManager;
 import fr.creart.gamestack.common.conf.Configuration;
 import fr.creart.gamestack.common.connection.database.DatabaseConnectionData;
 import fr.creart.gamestack.common.connection.rmq.RabbitConnectionData;
+import fr.creart.gamestack.common.game.GameMap;
+import fr.creart.gamestack.common.lang.BasicWrapper;
+import fr.creart.gamestack.common.lang.Wrapper;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.DependsManager;
 import fr.creart.gamestack.common.misc.Initialisable;
+import fr.creart.gamestack.common.pipeline.Pipeline;
+import fr.creart.gamestack.common.pipeline.SimplePipeline;
 import fr.creart.gamestack.common.protocol.packet.result.HostUpdate;
 import fr.creart.gamestack.server.command.StopCommand;
 import fr.creart.gamestack.server.conf.ConfigurationConstants;
 import fr.creart.gamestack.server.listener.HostUpdateListener;
+import fr.creart.gamestack.server.listener.MinecraftUpdateListener;
 import fr.creart.gamestack.server.server.HostServer;
+import fr.creart.gamestack.server.server.MinecraftServer;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -31,22 +41,23 @@ public class StackServer implements Initialisable {
 
     private static StackServer instance;
 
-    private Configuration configuration;
+    private Configuration networkConfiguration;
     private ReadWriteLock lock = new ReentrantReadWriteLock();
     private volatile boolean running;
     private ThreadGroup softGroup;
 
     private Map<String, HostServer> servers = new HashMap<>();
+    private Pipeline<Collection<MinecraftServer>> minecraftServersPipeline = new SimplePipeline<>();
 
     private StackServer()
     {
         // no instance
     }
 
-    void setConfiguration(Configuration configuration)
+    void setNetworkConfiguration(Configuration networkConfiguration)
     {
-        if (this.configuration == null)
-            this.configuration = configuration;
+        if (this.networkConfiguration == null)
+            this.networkConfiguration = networkConfiguration;
     }
 
     @Override
@@ -55,22 +66,22 @@ public class StackServer implements Initialisable {
         Commons commons = Commons.getInstance();
         commons.initialize("Server");
         softGroup = commons.getThreadsManager().newThreadGroup("Server");
-        String brokerSystem = configuration.getString(ConfigurationConstants.BROKER_SYSTEM, "rabbitmq");
-        String databaseSystem = configuration.getString(ConfigurationConstants.DATABASE_SYSTEM, "mysql");
+        String brokerSystem = networkConfiguration.getString(ConfigurationConstants.BROKER_SYSTEM, "rabbitmq");
+        String databaseSystem = networkConfiguration.getString(ConfigurationConstants.DATABASE_SYSTEM, "mysql");
         DependsManager dependsManager = new DependsManager();
         dependsManager.createAssociations();
 
-        commons.connect(new RabbitConnectionData(configuration.getString(ConfigurationConstants.BROKER_USERNAME, "root"),
-                        configuration.getString(ConfigurationConstants.BROKER_PASSWORD, "root"),
-                        configuration.getString(ConfigurationConstants.BROKER_HOST, "192.168.99.100"),
-                        configuration.getInteger(ConfigurationConstants.BROKER_PORT, 5672),
-                        configuration.getString(ConfigurationConstants.BROKER_VIRTUAL_HOST, "")),
+        commons.connect(new RabbitConnectionData(networkConfiguration.getString(ConfigurationConstants.BROKER_USERNAME, "root"),
+                        networkConfiguration.getString(ConfigurationConstants.BROKER_PASSWORD, "root"),
+                        networkConfiguration.getString(ConfigurationConstants.BROKER_HOST, "192.168.99.100"),
+                        networkConfiguration.getInteger(ConfigurationConstants.BROKER_PORT, 5672),
+                        networkConfiguration.getString(ConfigurationConstants.BROKER_VIRTUAL_HOST, "")),
                 dependsManager.getAssociation(brokerSystem, 3),
-                new DatabaseConnectionData(configuration.getString(ConfigurationConstants.DATABASE_USERNAME, "root"),
-                        configuration.getString(ConfigurationConstants.DATABASE_PASSWORD, "root"),
-                        configuration.getString(ConfigurationConstants.DATABASE_HOST, "192.168.99.100"),
-                        configuration.getInteger(ConfigurationConstants.DATABASE_PORT, 5432),
-                        configuration.getString(ConfigurationConstants.DATABASE_DB, "gamestack")),
+                new DatabaseConnectionData(networkConfiguration.getString(ConfigurationConstants.DATABASE_USERNAME, "root"),
+                        networkConfiguration.getString(ConfigurationConstants.DATABASE_PASSWORD, "root"),
+                        networkConfiguration.getString(ConfigurationConstants.DATABASE_HOST, "192.168.99.100"),
+                        networkConfiguration.getInteger(ConfigurationConstants.DATABASE_PORT, 5432),
+                        networkConfiguration.getString(ConfigurationConstants.DATABASE_DB, "gamestack")),
                 dependsManager.getAssociation(databaseSystem, 3),
                 (byte) 3
         );
@@ -80,6 +91,7 @@ public class StackServer implements Initialisable {
 
         // registering packet listeners
         commons.getMessageBroker().registerListener(0x01, new HostUpdateListener());
+        commons.getMessageBroker().registerListener(0x02, new MinecraftUpdateListener());
 
         // finally
         running = true;
@@ -123,6 +135,22 @@ public class StackServer implements Initialisable {
     }
 
     /**
+     * Returns the host server associated to the given address
+     *
+     * @param address server's address
+     * @return the host server associated to the given address
+     */
+    public HostServer getServer(String address)
+    {
+        lock.readLock().lock();
+        try {
+            return servers.get(address);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    /**
      * If no server has been saved for the given address, a new one is created.
      * Otherwise, its data is updated.
      *
@@ -136,11 +164,72 @@ public class StackServer implements Initialisable {
             if (server == null) {
                 server = new HostServer(update.getAddress(), update.getCapacity(), update.getUsedCapacity());
                 servers.put(server.getAddress(), server);
+                minecraftServersPipeline.add(server);
             }
             else
                 server.update(update.getCapacity(), update.getUsedCapacity());
         } finally {
             lock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Removes the server associated to the given address and returns it (may be <tt>null</tt>)
+     *
+     * @param address server's address
+     * @return the removed server
+     */
+    public HostServer removeServer(String address)
+    {
+        lock.writeLock().lock();
+        try {
+            return servers.remove(address);
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Returns the server the most available for hosting (the one with the most available resources).
+     * <tt>null</tt> if nothing hasn't been found
+     *
+     * @return the server the most available for hosting
+     */
+    public HostServer getBestServer()
+    {
+        lock.readLock().lock();
+        try {
+            Wrapper<HostServer> best = new BasicWrapper<>();
+            servers.values().stream().filter(server -> server != null && !server.hasTimedOut()).forEach(server -> {
+                HostServer currentBest = best.get();
+                if (currentBest == null || server.getCapacity() - server.getUsedCapacity() > currentBest.getCapacity() - currentBest.getUsedCapacity())
+                    best.set(server);
+            });
+            return best.get();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Returns the best Minecraft server for the given map (null if not found).
+     * Sorted by the current strategy which is: first almost full servers.
+     *
+     * @param map map to look for
+     * @return the best server for the given map
+     */
+    public MinecraftServer getBestMinecraftServer(GameMap map)
+    {
+        Preconditions.checkNotNull(map, "map can't be null");
+
+        lock.readLock().lock();
+        try {
+            TreeSet<MinecraftServer> mcServers = new TreeSet<>((first, second) -> first.getAvailableSlots() < second.getAvailableSlots()
+                    && first.getAvailableSlots() > 0 ? -1 : 1); // the almost full servers first
+            minecraftServersPipeline.call(mcServers);
+            return mcServers.first();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 

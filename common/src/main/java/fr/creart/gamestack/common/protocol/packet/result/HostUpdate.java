@@ -12,11 +12,11 @@
 
 package fr.creart.gamestack.common.protocol.packet.result;
 
-import fr.creart.gamestack.common.protocol.packet.HostKeepAlivePacket;
+import fr.creart.gamestack.common.protocol.packet.HostUpdatePacket;
 
 /**
  * Data class which contains information about a new server and represents an update (created on the reception of the
- * {@link HostKeepAlivePacket}).
+ * {@link HostUpdatePacket}).
  *
  * @author Creart
  */
@@ -27,8 +27,8 @@ public class HostUpdate extends HostedData {
 
     /**
      * @param address      server's address
-     * @param capacity     server's capacity (in gg)
-     * @param usedCapacity server's used capacity (in gg)
+     * @param capacity     server's max capacity
+     * @param usedCapacity server's used capacity
      */
     public HostUpdate(String address, float capacity, float usedCapacity)
     {

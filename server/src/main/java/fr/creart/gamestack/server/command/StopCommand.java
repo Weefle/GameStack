@@ -11,6 +11,8 @@ import fr.creart.gamestack.common.command.CommandSender;
 import fr.creart.gamestack.server.StackServer;
 
 /**
+ * Stops the server
+ *
  * @author Creart
  */
 public class StopCommand extends Command {

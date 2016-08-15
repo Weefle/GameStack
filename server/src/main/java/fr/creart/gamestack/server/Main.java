@@ -52,7 +52,7 @@ public class Main {
             networkConf.initialize();
 
             StackServer server = StackServer.getInstance();
-            server.setConfiguration(configuration);
+            server.setNetworkConfiguration(networkConf);
             server.initialize();
 
             chrono.markEnd(TimeUnit.MILLISECONDS);
@@ -74,7 +74,6 @@ public class Main {
             CommonLogger.fatal("An exception has been encountered during the execution of the program!", e);
             CommonLogger.fatal("Exiting...");
             System.exit(1);
-            return;
         } finally {
             Commons.getInstance().close();
         }

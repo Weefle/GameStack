@@ -6,7 +6,9 @@
 
 package fr.creart.gamestack.server.server;
 
-import java.net.InetSocketAddress;
+import fr.creart.gamestack.common.pipeline.PipelineProvider;
+import fr.creart.gamestack.common.protocol.packet.result.MinecraftServerUpdate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +17,9 @@ import java.util.Map;
  *
  * @author Creart
  */
-public class HostServer {
+public class HostServer implements PipelineProvider<Collection<MinecraftServer>> {
+
+    private static final short TIMEOUT_TIME = 15_000;
 
     private String address;
     /**
@@ -23,13 +27,18 @@ public class HostServer {
      */
     private float capacity;
     private float usedCapacity;
-    private Map<InetSocketAddress, MinecraftServer> minecraftServers;
+    private long lastKeepAlive;
+    private Map<Integer, MinecraftServer> minecraftServers;
 
+    /**
+     * @param address      server's address
+     * @param capacity     server's max capacity
+     * @param usedCapacity server's used capacity
+     */
     public HostServer(String address, float capacity, float usedCapacity)
     {
         this.address = address;
-        this.capacity = capacity;
-        this.usedCapacity = usedCapacity;
+        update(capacity, usedCapacity);
     }
 
     /**
@@ -67,11 +76,49 @@ public class HostServer {
      *
      * @return the map of Minecraft servers
      */
-    public Map<InetSocketAddress, MinecraftServer> getMinecraftServers()
+    private Map<Integer, MinecraftServer> getMinecraftServers()
     {
         if (minecraftServers == null)
             minecraftServers = new HashMap<>();
         return minecraftServers;
+    }
+
+    /**
+     * Returns the hosted Minecraft servers
+     *
+     * @return the hosted Minecraft servers
+     */
+    public Collection<MinecraftServer> getHostedServers()
+    {
+        return getMinecraftServers().values();
+    }
+
+    /**
+     * Updates Minecraft server
+     *
+     * @param port   server's port
+     * @param update server's update
+     */
+    public void updateMinecraftServer(int port, MinecraftServerUpdate update)
+    {
+        MinecraftServer server = getMinecraftServers().get(port);
+        if (server == null) {
+            server = new MinecraftServer(this, update.getPort(), update.getAddress(), update.getGameName(), update.getOnlinePlayers(), update.getMaxPlayers());
+            minecraftServers.put(server.getPort(), server);
+        }
+        else
+            server.update(update.getOnlinePlayers(), update.getMaxPlayers());
+    }
+
+    /**
+     * Returns the removed server
+     *
+     * @param port server's port
+     * @return the removed server
+     */
+    public MinecraftServer removeMinecraftServer(int port)
+    {
+        return getMinecraftServers().remove(port);
     }
 
     /**
@@ -85,6 +132,16 @@ public class HostServer {
     }
 
     /**
+     * Returns <tt>true</tt> if the server has timed out
+     *
+     * @return <tt>true</tt> if the server has timed out
+     */
+    public boolean hasTimedOut()
+    {
+        return System.currentTimeMillis() > lastKeepAlive + TIMEOUT_TIME;
+    }
+
+    /**
      * Updates host server's information
      *
      * @param capacity     the server total capacity
@@ -94,6 +151,13 @@ public class HostServer {
     {
         this.capacity = capacity;
         this.usedCapacity = usedCapacity;
+        lastKeepAlive = System.currentTimeMillis();
+    }
+
+    @Override
+    public void pipeline(Collection<MinecraftServer> srvs)
+    {
+        srvs.addAll(minecraftServers.values());
     }
 
 }

@@ -7,9 +7,9 @@
 package fr.creart.gamestack.common.protocol;
 
 import fr.creart.gamestack.common.log.CommonLogger;
-import fr.creart.gamestack.common.protocol.packet.HostKeepAlivePacket;
+import fr.creart.gamestack.common.protocol.packet.HostUpdatePacket;
 import fr.creart.gamestack.common.protocol.packet.MetricPacket;
-import fr.creart.gamestack.common.protocol.packet.MinecraftServerKeepAlivePacket;
+import fr.creart.gamestack.common.protocol.packet.MinecraftServerStatusPacket;
 import fr.creart.protocolt.ProtoColt;
 import fr.creart.protocolt.Protocol;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
@@ -31,9 +31,9 @@ public final class ProtocolWrap {
         // declare packets
 
         try {
-            protocol.declarePacket(new HostKeepAlivePacket(0x01));
-            protocol.declarePacket(new MinecraftServerKeepAlivePacket(0x02));
-            protocol.declarePacket(new MetricPacket(0xFE));
+            protocol.declarePacket(new HostUpdatePacket(0x01));
+            protocol.declarePacket(new MinecraftServerStatusPacket(0x02));
+            protocol.declarePacket(new MetricPacket(0x03));
         } catch (Exception e) {
             CommonLogger.error("Could not declare a packet.", e);
         }

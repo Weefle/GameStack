@@ -11,6 +11,8 @@ import fr.creart.gamestack.common.protocol.packet.result.HostUpdate;
 import fr.creart.gamestack.server.StackServer;
 
 /**
+ * Listens for host updates
+ *
  * @author Creart
  */
 public class HostUpdateListener implements PacketListener<HostUpdate> {

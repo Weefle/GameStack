@@ -16,9 +16,9 @@ import fr.creart.protocolt.bytestreams.ByteArrayPacket;
  *
  * @author Creart
  */
-public class HostKeepAlivePacket extends ByteArrayPacket<HostUpdate> {
+public class HostUpdatePacket extends ByteArrayPacket<HostUpdate> {
 
-    public HostKeepAlivePacket(int id)
+    public HostUpdatePacket(int id)
     {
         super(id);
     }

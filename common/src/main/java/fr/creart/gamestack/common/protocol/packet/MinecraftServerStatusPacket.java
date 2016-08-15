@@ -7,6 +7,7 @@
 package fr.creart.gamestack.common.protocol.packet;
 
 import fr.creart.gamestack.common.log.CommonLogger;
+import fr.creart.gamestack.common.protocol.packet.result.KeepAliveStatus;
 import fr.creart.gamestack.common.protocol.packet.result.MinecraftServerUpdate;
 import fr.creart.protocolt.bytestreams.ByteArrayDataSource;
 import fr.creart.protocolt.bytestreams.ByteArrayDataWriter;
@@ -32,16 +33,17 @@ public class MinecraftServerStatusPacket extends ByteArrayPacket<MinecraftServer
     @Override
     public MinecraftServerUpdate read(ByteArrayDataSource source)
     {
-        int statusId = source.readInt();
-        Status status = Status.getById(statusId);
-        MinecraftServerUpdate update = new MinecraftServerUpdate(source.readString(), source.readInt(), status);
+        byte statusId = source.readByte();
+        KeepAliveStatus status = KeepAliveStatus.getById(statusId);
 
         if (status == null) {
             CommonLogger.error("Received a Minecraft server status packet with an unrecognized mode (" + statusId + ")!");
             return null;
         }
 
-        if (status == Status.ADD || status == Status.UPDATE) {
+        MinecraftServerUpdate update = new MinecraftServerUpdate(source.readString(), source.readString(), source.readInt(), status);
+
+        if (status == KeepAliveStatus.ADD || status == KeepAliveStatus.UPDATE) {
             update.setOnlinePlayers(source.readShort());
             update.setMaxPlayers(source.readShort());
         }
@@ -52,50 +54,14 @@ public class MinecraftServerStatusPacket extends ByteArrayPacket<MinecraftServer
     @Override
     public void write(ByteArrayDataWriter writer, MinecraftServerUpdate data)
     {
-        writer.write(data.getStatus().id);
+        writer.write(data.getStatus().getId());
         writer.write(data.getAddress());
+        writer.write(data.getGameName());
         writer.write(data.getPort());
-        if (data.getStatus() == Status.ADD || data.getStatus() == Status.UPDATE) {
+        if (data.getStatus() == KeepAliveStatus.ADD || data.getStatus() == KeepAliveStatus.UPDATE) {
             writer.write(data.getOnlinePlayers());
             writer.write(data.getMaxPlayers());
         }
-    }
-
-    /**
-     * Represents a status update
-     */
-    public enum Status {
-
-        ADD((byte) 0),
-        UPDATE((byte) 1),
-        DELETE((byte) 2);
-
-        private byte id;
-
-        Status(byte id)
-        {
-            this.id = id;
-        }
-
-        public byte getId()
-        {
-            return id;
-        }
-
-        /**
-         * Returns the <tt>Status</tt> associated to the given id
-         *
-         * @param id status' id
-         * @return the <tt>Status</tt> associated to the given id
-         */
-        public static Status getById(int id)
-        {
-            for (Status status : values())
-                if (status.id == id)
-                    return status;
-            return null;
-        }
-
     }
 
 }

@@ -6,7 +6,6 @@
 
 package fr.creart.gamestack.common.conf;
 
-import fr.creart.gamestack.common.log.CommonLogger;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -36,7 +35,7 @@ public class PropertiesConfiguration extends Configuration {
         try (FileWriter writer = new FileWriter(src)) {
             properties.store(writer, "");
         } catch (Exception e) {
-            CommonLogger.error(String.format("Could not save changes to .properties file (%s)", src.getName()), e);
+            logger.error(String.format("Could not save changes to .properties file (%s)", src.getName()), e);
         }
     }
 
@@ -62,7 +61,7 @@ public class PropertiesConfiguration extends Configuration {
             properties = new Properties();
             properties.load(new FileReader(src));
         } catch (Exception e) {
-            CommonLogger.error(String.format("Could not load configuration from file %s.", src.getName()), e);
+            logger.error(String.format("Could not load configuration from file %s.", src.getName()), e);
         }
     }
 

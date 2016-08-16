@@ -71,8 +71,8 @@ public class Main {
             reader.close();
             StackServer.getInstance().stop();
         } catch (Exception e) {
-            CommonLogger.fatal("An exception has been encountered during the execution of the program!", e);
-            CommonLogger.fatal("Exiting...");
+            CommonLogger.info("An exception has been encountered during the execution of the program!", e);
+            CommonLogger.info("Exiting...");
             System.exit(1);
         } finally {
             Commons.getInstance().close();
@@ -99,7 +99,7 @@ public class Main {
 
     private static void exitCantLoad(String file)
     {
-        CommonLogger.fatal(String.format("Could not load the configuration file (%s)!", file));
+        CommonLogger.error(String.format("Could not load the configuration file (%s)!", file));
         CommonLogger.info("Exiting...");
         System.exit(1);
     }

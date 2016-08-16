@@ -8,7 +8,6 @@ package fr.creart.gamestack.common.connection.rmq;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import fr.creart.gamestack.common.log.CommonLogger;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -22,11 +21,13 @@ import java.util.concurrent.TimeoutException;
  */
 class Rabbit implements Closeable {
 
+    private RabbitContainer container;
     private Connection connection;
     private Channel channel;
 
-    Rabbit(Connection connection, Channel channel)
+    Rabbit(RabbitContainer container, Connection connection, Channel channel)
     {
+        this.container = container;
         this.connection = connection;
         this.channel = channel;
     }
@@ -58,7 +59,7 @@ class Rabbit implements Closeable {
             try {
                 channel.close();
             } catch (TimeoutException e) {
-                CommonLogger.error("Connection with the RabbitMQ server timed out.", e);
+                container.getLogger().error("Connection with the RabbitMQ server timed out.", e);
             }
 
         if (connection.isOpen())

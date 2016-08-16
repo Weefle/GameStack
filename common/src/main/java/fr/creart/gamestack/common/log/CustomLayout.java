@@ -6,25 +6,17 @@
 
 package fr.creart.gamestack.common.log;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
-
 /**
  * @author Creart
  */
-class CustomLayout extends Layout {
+class CustomLayout {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("'['HH':'mm']' ");
+    /*private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("'['HH':'mm']' ");
 
     private boolean file;
 
     /**
      * @param file <tt>true</tt> if the layout is for file appending (does not print debug)
-     */
     CustomLayout(boolean file)
     {
         this.file = file;
@@ -65,6 +57,6 @@ class CustomLayout extends Layout {
     private static String currentTime()
     {
         return LocalDateTime.now().format(DATE_FORMAT);
-    }
+    }*/
 
 }

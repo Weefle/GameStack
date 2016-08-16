@@ -12,6 +12,8 @@
 
 package fr.creart.gamestack.common.protocol.packet.result;
 
+import fr.creart.gamestack.common.game.GameStatus;
+
 /**
  * Represents a Minecraft server update, which can be an adding, update or deletion.
  *
@@ -20,6 +22,7 @@ package fr.creart.gamestack.common.protocol.packet.result;
 public class MinecraftServerUpdate extends SocketHostData {
 
     private KeepAliveStatus status;
+    private GameStatus gameStatus;
     private String gameName;
     private short onlinePlayers;
     private short maxPlayers;
@@ -29,11 +32,12 @@ public class MinecraftServerUpdate extends SocketHostData {
      * @param port    server's port
      * @param status  server's status
      */
-    public MinecraftServerUpdate(String address, String gameName, int port, KeepAliveStatus status)
+    public MinecraftServerUpdate(String address, String gameName, int port, KeepAliveStatus status, GameStatus gameStatus)
     {
         super(address, port);
         this.gameName = gameName;
         this.status = status;
+        this.gameStatus = gameStatus;
     }
 
     public void setOnlinePlayers(short onlinePlayers)
@@ -54,6 +58,11 @@ public class MinecraftServerUpdate extends SocketHostData {
     public KeepAliveStatus getStatus()
     {
         return status;
+    }
+
+    public GameStatus getGameStatus()
+    {
+        return gameStatus;
     }
 
     public short getOnlinePlayers()

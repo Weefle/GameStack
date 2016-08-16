@@ -31,7 +31,6 @@ public class DependsManager {
         associations.put("mysql", ReflectionUtil.getConstructor(MySQL.class, int.class));
         associations.put("postgres", ReflectionUtil.getConstructor(PostgreSQL.class, int.class));
         associations.put("rabbitmq", ReflectionUtil.getConstructor(RabbitContainer.class, int.class));
-        associations.put("redis", null /*@TODO*/);
     }
 
     /**

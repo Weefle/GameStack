@@ -9,6 +9,7 @@ package fr.creart.gamestack.common.conf;
 import com.google.common.base.Preconditions;
 import fr.creart.gamestack.common.misc.Initialisable;
 import java.io.File;
+import org.apache.log4j.Logger;
 
 /**
  * Represents a configuration, from which you can obtain data by specifying its path, and where you can set/update data.
@@ -19,6 +20,7 @@ import java.io.File;
 @SuppressWarnings("unchecked")
 public abstract class Configuration implements Initialisable {
 
+    protected final Logger logger = Logger.getLogger("Configuration");
     protected final File src;
 
     /**
@@ -63,22 +65,10 @@ public abstract class Configuration implements Initialisable {
      *
      * @param path path to value
      * @param def  default value
-     * @param <T>  T type of the checked object
+     * @param <T>  type of the object
      * @return the value associated to the given path
      */
     public abstract <T> T get(String path, T def);
-
-    /**
-     * Returns the integer associated to the given path, def if failed
-     *
-     * @param path path to value
-     * @param def  default value
-     * @return the integer associated to the given path
-     */
-    public final int getInteger(String path, int def)
-    {
-        return get(path, def);
-    }
 
     /**
      * Returns the String associated to the given path, def if failed
@@ -93,6 +83,18 @@ public abstract class Configuration implements Initialisable {
     }
 
     /**
+     * Returns the integer associated to the given path, def if failed
+     *
+     * @param path path to value
+     * @param def  default value
+     * @return the integer associated to the given path
+     */
+    public final int getInteger(String path, int def)
+    {
+        return Integer.parseInt(getString(path, String.valueOf(def)));
+    }
+
+    /**
      * Returns the boolean associated to the given path, def if failed
      *
      * @param path path to value
@@ -101,7 +103,7 @@ public abstract class Configuration implements Initialisable {
      */
     public final boolean getBoolean(String path, boolean def)
     {
-        return get(path, def);
+        return Boolean.parseBoolean(getString(path, String.valueOf(def)));
     }
 
     /**
@@ -113,7 +115,7 @@ public abstract class Configuration implements Initialisable {
      */
     public final double getDouble(String path, double def)
     {
-        return get(path, def);
+        return Double.parseDouble(getString(path, String.valueOf(def)));
     }
 
 }

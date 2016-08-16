@@ -6,15 +6,7 @@
 
 package fr.creart.gamestack.common.log;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import fr.creart.gamestack.common.io.FileUtil;
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.regex.Pattern;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -23,8 +15,6 @@ import org.apache.log4j.Logger;
  * @author Creart
  */
 public final class CommonLogger {
-
-    private static final Pattern LOG_FILE_PATTERN = Pattern.compile("^log(.*)*\\.txt$", Pattern.CASE_INSENSITIVE);
 
     private static Logger logger;
 
@@ -41,41 +31,8 @@ public final class CommonLogger {
     public static void createLogger(String softName)
     {
         if (!hasLogger()) {
-            Preconditions.checkNotNull(Strings.emptyToNull(softName), "soft name can't be null or empty.");
+            System.setProperty("gamestack.log_folder", "logs/" + softName.toLowerCase() + "/");
             logger = Logger.getLogger(softName);
-            logger.addAppender(new ConsoleAppender(new CustomLayout(false)));
-
-            try {
-                File output = new File("logs/" + softName.
-                        toLowerCase() + "/log-" + DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss").format(LocalDateTime.now()) + ".txt");
-
-                /*
-                Before, the log files were compressed when they were too much (5), although the function listFiles was so slow that
-                I had to change it; now, the older logs are compressed when the session starts.
-                 */
-
-                if (!output.getParentFile().exists())
-                    output.getParentFile().mkdirs();
-
-                File[] files = output.getParentFile().listFiles(pathname -> LOG_FILE_PATTERN.matcher(pathname.getName()).matches());
-                for (File uncompressed : files) {
-                    File archive = new File(output.getParentFile().getPath() + File.separator + FileUtil.getFileCleanName(uncompressed) + ".zip");
-
-                    if (!archive.exists())
-                        archive.createNewFile();
-
-                    if (FileUtil.addToZip(archive, files))
-                        uncompressed.delete();
-                }
-
-                if (!output.exists())
-                    output.createNewFile();
-
-                FileAppender appender = new FileAppender(new CustomLayout(true), output.getAbsolutePath(), false);
-                logger.addAppender(appender);
-            } catch (Exception e) {
-                CommonLogger.error("Could not add file appender for logging!", e);
-            }
         }
     }
 
@@ -97,6 +54,17 @@ public final class CommonLogger {
     public static void info(String message)
     {
         logger.info(message);
+    }
+
+    /**
+     * Logs the given message and the attached throwable as an information
+     *
+     * @param message the message (https://goo.gl/g1aNsY)
+     * @param attached attached throwable
+     */
+    public static void info(String message, Throwable attached)
+    {
+        logger.info(message, attached);
     }
 
     /**
@@ -131,24 +99,11 @@ public final class CommonLogger {
     }
 
     /**
-     * Logs the given message as a fatal error
-     *
-     * @param message The message
+     * Closes all created loggers
      */
-    public static void fatal(String message)
+    public static void close()
     {
-        logger.fatal(message);
-    }
-
-    /**
-     * Logs the given message and the attached throwable as a fatal error
-     *
-     * @param message  The message
-     * @param attached The attached throwable
-     */
-    public static void fatal(String message, Throwable attached)
-    {
-        logger.fatal(message, attached);
+        LogManager.shutdown();
     }
 
 }

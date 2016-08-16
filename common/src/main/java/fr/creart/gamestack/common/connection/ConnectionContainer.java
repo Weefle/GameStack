@@ -8,12 +8,12 @@ package fr.creart.gamestack.common.connection;
 
 import fr.creart.gamestack.common.lang.AtomicWrapper;
 import fr.creart.gamestack.common.lang.Wrapper;
-import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.Callback;
 import fr.creart.gamestack.common.misc.Destroyable;
 import fr.creart.gamestack.common.thread.ThreadsUtil;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.apache.log4j.Logger;
 
 /**
  * This class represents an object which contains a connection.
@@ -29,6 +29,7 @@ public abstract class ConnectionContainer<T, D extends ConnectionData>
 
     private static final byte MAX_THREADS = 10;
 
+    protected final Logger logger = Logger.getLogger(getClass().getSimpleName());
     protected T connection; // contained connection
     protected final Wrapper<ConnectionState> connectionState = new AtomicWrapper<>(ConnectionState.CLOSED);
     private final ConnectionTasksManager<T> taskHandler;
@@ -60,14 +61,14 @@ public abstract class ConnectionContainer<T, D extends ConnectionData>
 
         synchronized (this) {
             while (!connect(connectionData)) {
-                CommonLogger.error("Could not connect to the " + getServiceName() + " server. Trying again in 5 seconds.");
+                logger.error("Could not connect to the " + getServiceName() + " server. Trying again in 5 seconds.");
                 ThreadsUtil.sleep(5000L);
             }
         }
 
         connectionState.set(ConnectionState.OPENED);
 
-        CommonLogger.info("Successfully connected to the " + getServiceName() + "server.");
+        logger.info("Successfully connected to the " + getServiceName() + "server.");
     }
 
     /**
@@ -118,6 +119,16 @@ public abstract class ConnectionContainer<T, D extends ConnectionData>
     public boolean isConnectionEstablished()
     {
         return connectionState.get().isUsable();
+    }
+
+    /**
+     * Returns container's logger
+     *
+     * @return container's logger
+     */
+    public final Logger getLogger()
+    {
+        return logger;
     }
 
     /**

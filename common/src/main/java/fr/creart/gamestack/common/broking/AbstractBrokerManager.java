@@ -11,7 +11,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import fr.creart.gamestack.common.connection.ConnectionContainer;
 import fr.creart.gamestack.common.connection.ConnectionData;
-import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.protocol.PacketListener;
 import fr.creart.gamestack.common.protocol.ProtocolWrap;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
@@ -51,8 +50,7 @@ public abstract class AbstractBrokerManager<T, D extends ConnectionData>
         if (connectionState.get().isUsable())
             doPublish(packet, output);
         else
-            CommonLogger.
-                    error("Could not publish packet (id=" + packet.getId()
+            logger.error("Could not publish packet (id=" + packet.getId()
                             + ", protocol=" + packet.getProtocolName()
                             + ") because the connection is not currently usable.");
     }

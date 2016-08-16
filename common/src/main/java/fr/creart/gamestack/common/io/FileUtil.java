@@ -28,8 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /**
  * File utils
@@ -121,47 +119,6 @@ public final class FileUtil {
         } catch (Exception e) {
             CommonLogger.error("Could not get file creation date (file=" + file.toString() + ").", e);
             return Instant.now();
-        }
-    }
-
-    /**
-     * Adds files to a ZIP.
-     * Returns <code>true</code> if the file has been successfully created
-     *
-     * @param destination Destination zip file
-     * @param sources     Sources files
-     * @return <code>true</code> if the file has been successfully created
-     */
-    public static boolean addToZip(File destination, File... sources)
-    {
-        Preconditions.checkNotNull(sources, "src can't be null");
-        Preconditions.checkNotNull(destination, "destination can't be null");
-        Preconditions.checkArgument(sources.length > 0, "no src provided");
-        for (File file : sources)
-            Preconditions.checkArgument(file != null && file.exists() && file.isFile(), "src null or does not exist");
-        Preconditions.checkArgument(destination.exists(), "destination has to exist");
-
-        try {
-            byte[] buf = new byte[1024];
-
-            ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(destination));
-
-            for (File file : sources) {
-                InputStream in = new FileInputStream(file);
-                int read;
-                zout.putNextEntry(new ZipEntry(file.getName()));
-                while ((read = in.read(buf)) > 0)
-                    zout.write(buf, 0, read);
-                zout.closeEntry();
-                in.close();
-            }
-
-            zout.flush();
-            zout.close();
-            return true;
-        } catch (Exception e) {
-            CommonLogger.error("Could not compress file to zip (dest=" + destination + ",sources=" + Arrays.toString(sources) + ").", e);
-            return false;
         }
     }
 

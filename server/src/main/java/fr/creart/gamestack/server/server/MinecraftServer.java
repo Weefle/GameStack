@@ -6,13 +6,19 @@
 
 package fr.creart.gamestack.server.server;
 
+import fr.creart.gamestack.common.game.GameStatus;
+import fr.creart.gamestack.common.misc.KeptAlive;
+
 /**
  * Represents a Minecraft server (which hosts players)
  *
  * @author Creart
  */
-public class MinecraftServer {
+public class MinecraftServer extends KeptAlive {
 
+    private static final short TIMEOUT_TIME = 15_000;
+
+    private GameStatus gameStatus;
     private HostServer host;
     private int port;
     private String name;
@@ -28,8 +34,9 @@ public class MinecraftServer {
      * @param onlinePlayers players currently connected to the server
      * @param maxPlayers    the maximal amount of players
      */
-    public MinecraftServer(HostServer host, int port, String name, String gameName, short onlinePlayers, short maxPlayers)
+    public MinecraftServer(GameStatus status, HostServer host, int port, String name, String gameName, short onlinePlayers, short maxPlayers)
     {
+        this.gameStatus = status;
         this.host = host;
         this.port = port;
         this.name = name;
@@ -73,10 +80,29 @@ public class MinecraftServer {
         return maxPlayers - onlinePlayers;
     }
 
-    public void update(short onlinePlayers, short maxPlayers)
+    public GameStatus getGameStatus()
+    {
+        return gameStatus;
+    }
+
+    /**
+     * Called when the {@link fr.creart.gamestack.common.protocol.packet.MinecraftServerStatusPacket} is called
+     *
+     * @param onlinePlayers currently online players
+     * @param maxPlayers    maximal amount of players
+     */
+    public void update(GameStatus status, short onlinePlayers, short maxPlayers)
     {
         this.onlinePlayers = onlinePlayers;
         this.maxPlayers = maxPlayers;
+        this.gameStatus = status;
+        keepAlive();
+    }
+
+    @Override
+    protected long getAliveDifference()
+    {
+        return TIMEOUT_TIME;
     }
 
     @Override

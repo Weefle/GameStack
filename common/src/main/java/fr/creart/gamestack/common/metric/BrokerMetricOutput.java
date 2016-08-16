@@ -7,7 +7,6 @@
 package fr.creart.gamestack.common.metric;
 
 import fr.creart.gamestack.common.broking.BrokerManager;
-import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.protocol.ProtocolWrap;
 import fr.creart.gamestack.common.protocol.packet.MetricPacket;
 import java.io.IOException;
@@ -36,7 +35,7 @@ public class BrokerMetricOutput implements MetricOutput {
     public void output(Metric metric)
     {
         if (metric == null)
-            CommonLogger.warn("Tried to publish a null metric.");
+            MetricsManager.LOGGER.warn("Tried to publish a null metric.");
         else
             broker.publish(packet, metric);
     }

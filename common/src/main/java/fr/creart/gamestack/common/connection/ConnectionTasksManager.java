@@ -6,7 +6,6 @@
 
 package fr.creart.gamestack.common.connection;
 
-import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.Callback;
 import fr.creart.gamestack.common.misc.Destroyable;
 import java.util.concurrent.ExecutorService;
@@ -49,7 +48,7 @@ class ConnectionTasksManager<T> implements Destroyable {
     {
         taskIdCount = null;
         try {
-            CommonLogger.info("Shutting down " + getContainer().getServiceName() + "'s tasks");
+            container.getLogger().info("Shutting down " + getContainer().getServiceName() + "'s tasks");
             service.shutdown();
             if (!service.awaitTermination(2, TimeUnit.SECONDS)) {
                 StringBuilder builder = new StringBuilder();
@@ -57,10 +56,10 @@ class ConnectionTasksManager<T> implements Destroyable {
                         .append("tasks. The following tasks could not be terminated:\n");
                 for (Runnable runnable : service.shutdownNow())
                     builder.append("\t- Class: ").append(runnable.getClass().getName());
-                CommonLogger.error(builder.toString());
+                container.getLogger().error(builder.toString());
             }
         } catch (Exception e) {
-            CommonLogger.error("Could not close thread pool.", e);
+            container.getLogger().error("Could not close thread pool.", e);
         }
     }
 

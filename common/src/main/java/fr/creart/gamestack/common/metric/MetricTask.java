@@ -8,7 +8,6 @@ package fr.creart.gamestack.common.metric;
 
 import fr.creart.gamestack.common.lang.BasicWrapper;
 import fr.creart.gamestack.common.lang.Wrapper;
-import fr.creart.gamestack.common.log.CommonLogger;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -45,13 +44,14 @@ public class MetricTask implements Runnable {
                 try {
                     thread.join(MAX_PROVIDER_RUN_TIME);
                 } catch (InterruptedException e) {
-                    CommonLogger.error(String.format("Interrupted execution on metric provider task (%s)!", provider.toString()), e);
+                    MetricsManager.LOGGER.error(String.format("Interrupted execution on metric provider task (%s)!", provider.toString()), e);
                 }
 
                 // task takes too much time
                 if (thread.isAlive()) {
                     thread.interrupt();
-                    CommonLogger.warn("The metric provider (" + provider.toString() + ") took too much time to provide data (> 500ms)! Interrupted it.");
+                    MetricsManager.
+                            LOGGER.warn("The metric provider (" + provider.toString() + ") took too much time to provide data (> 500ms)! Interrupted it.");
                     provider.setLastUpdateFailed(true);
                 }
                 // don't update the metric's last execution if it failed.
@@ -73,13 +73,13 @@ public class MetricTask implements Runnable {
             try {
                 metric.getProvider().getChosenOutput().output(metric);
             } catch (Exception e) {
-                CommonLogger.error("Could not output the metric " + metric.getProvider().getMetricName() + " in the chosen output!", e);
+                MetricsManager.LOGGER.error("Could not output the metric " + metric.getProvider().getMetricName() + " in the chosen output!", e);
             }
         else
             try {
                 manager.getDefaultOutput().output(metric);
             } catch (Exception e) {
-                CommonLogger.error("Could not output the metric " + metric.getProvider().getMetricName() + " in the "
+                MetricsManager.LOGGER.error("Could not output the metric " + metric.getProvider().getMetricName() + " in the "
                         + metric.getProvider().getChosenOutput().toString() + " output.", e);
             }
     }

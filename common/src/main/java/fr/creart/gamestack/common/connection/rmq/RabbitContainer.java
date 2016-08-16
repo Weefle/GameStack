@@ -17,7 +17,6 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.broking.AbstractBrokerManager;
-import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.protocol.PacketListener;
 import fr.creart.gamestack.common.protocol.ProtocolWrap;
 import fr.creart.protocolt.bytestreams.ByteArrayDataSource;
@@ -37,10 +36,13 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
     private Set<String> declaredExchanges = Sets.newConcurrentHashSet();
     private Set<String> listenedQueues = Sets.newConcurrentHashSet();
 
+    /**
+     * {@inheritDoc}
+     */
     public RabbitContainer(int threads)
     {
         super(threads);
-        connection = new Rabbit(null, null);
+        connection = new Rabbit(this, null, null);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
                 connection.setConnection(factory.newConnection());
                 return true;
             } catch (Exception e) {
-                CommonLogger.error("Failed connection to the RabbitMQ server.", e);
+                logger.error("Failed connection to the RabbitMQ server.", e);
                 return false;
             }
 
@@ -69,7 +71,7 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
             connection.setChannel(connection.getConnection().createChannel());
             return true;
         } catch (Exception e) {
-            CommonLogger.fatal("Could not create RabbitMQ channel.", e);
+            logger.error("Could not create RabbitMQ channel.", e);
             return false;
         }
     }
@@ -81,7 +83,7 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
             try {
                 connection.close();
             } catch (Exception e) {
-                CommonLogger.error("Encountered an exception during the shutdown of the RabbitMQ connection.", e);
+                logger.error("Encountered an exception during the shutdown of the RabbitMQ connection.", e);
             }
     }
 
@@ -111,7 +113,7 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
                 connection.getChannel().basicConsume(queue, new RabbitConsumer(connection.getChannel(), ProtocolWrap.getPacketById(packetId)));
                 listenedQueues.add(chann);
             } catch (Exception e) {
-                CommonLogger.error("Could not create queue: " + chann + ".", e);
+                logger.error("Could not create queue: " + chann + ".", e);
             }
     }
 
@@ -129,7 +131,7 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
                 declaredExchanges.add(chann);
             }
         } catch (Exception e) {
-            CommonLogger.error("Could not declare exchange: " + chann + ".", e);
+            logger.error("Could not declare exchange: " + chann + ".", e);
         }
     }
 
@@ -161,7 +163,7 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
                 try {
                     found.stream().forEach(listener -> listener.handlePacket(packet.getId(), result));
                 } catch (Exception e) {
-                    CommonLogger.error("Failed execution of a packet handler.", e);
+                    logger.error("Failed execution of a packet handler.", e);
                 }
             source.release();
         }

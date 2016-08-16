@@ -19,6 +19,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import org.apache.log4j.Logger;
 
 /**
  * This class manages metrics.
@@ -27,6 +28,8 @@ import java.util.concurrent.TimeUnit;
  * @author Creart
  */
 public class MetricsManager implements Initialisable, Configurable, AutoCloseable {
+
+    static final Logger LOGGER = Logger.getLogger("Metrics");
 
     private static final byte MAX_THREADS = 4;
 

@@ -7,12 +7,12 @@
 package fr.creart.gamestack.common.text;
 
 import fr.creart.gamestack.common.io.FileUtil;
-import fr.creart.gamestack.common.log.CommonLogger;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import org.apache.log4j.Logger;
 
 /**
  * Util class which allows to obtain translations from the "messages.properties" file and replace arguments ("{\d}")
@@ -21,6 +21,8 @@ import java.util.ResourceBundle;
  * @author Creart
  */
 public class Translator {
+
+    private static final Logger LOGGER = Logger.getLogger("Translator");
 
     private String file;
     private boolean initialized;
@@ -42,16 +44,16 @@ public class Translator {
         try {
             initialize(false);
         } catch (Exception e) {
-            CommonLogger.error(String.format("Could not load %s file. Trying again...", file), e);
+            LOGGER.error(String.format("Could not load %s file. Trying again...", file), e);
             try {
                 initialize(true);
             } catch (Exception e1) {
-                CommonLogger.error(String.format("Could not load %s file!", file), e1);
+                LOGGER.error(String.format("Could not load %s file!", file), e1);
                 return;
             }
         }
 
-        CommonLogger.info("Successfully loaded messages.properties file.");
+        LOGGER.info("Successfully loaded messages.properties file.");
         initialized = true;
     }
 
@@ -69,7 +71,7 @@ public class Translator {
         try {
             ret = MessageFormat.format(resourceBundle.getString(path), objects);
         } catch (Exception e) {
-            CommonLogger.error(String.format("Could not get String %s in %s.", path, file), e);
+            LOGGER.error(String.format("Could not get String %s in %s.", path, file), e);
             ret = "/!\\ translation missing '" + path + "' /!\\";
         }
 

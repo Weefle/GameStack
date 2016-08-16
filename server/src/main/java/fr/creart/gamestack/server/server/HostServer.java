@@ -6,6 +6,7 @@
 
 package fr.creart.gamestack.server.server;
 
+import fr.creart.gamestack.common.misc.KeptAlive;
 import fr.creart.gamestack.common.pipeline.PipelineProvider;
 import fr.creart.gamestack.common.protocol.packet.result.MinecraftServerUpdate;
 import java.util.Collection;
@@ -17,7 +18,7 @@ import java.util.Map;
  *
  * @author Creart
  */
-public class HostServer implements PipelineProvider<Collection<MinecraftServer>> {
+public class HostServer extends KeptAlive implements PipelineProvider<Collection<MinecraftServer>> {
 
     private static final short TIMEOUT_TIME = 15_000;
 
@@ -27,7 +28,6 @@ public class HostServer implements PipelineProvider<Collection<MinecraftServer>>
      */
     private float capacity;
     private float usedCapacity;
-    private long lastKeepAlive;
     private Map<Integer, MinecraftServer> minecraftServers;
 
     /**
@@ -103,11 +103,17 @@ public class HostServer implements PipelineProvider<Collection<MinecraftServer>>
     {
         MinecraftServer server = getMinecraftServers().get(port);
         if (server == null) {
-            server = new MinecraftServer(this, update.getPort(), update.getAddress(), update.getGameName(), update.getOnlinePlayers(), update.getMaxPlayers());
+            server = new MinecraftServer(update.getGameStatus(),
+                    this,
+                    update.getPort(),
+                    update.getAddress(),
+                    update.getGameName(),
+                    update.getOnlinePlayers(),
+                    update.getMaxPlayers());
             minecraftServers.put(server.getPort(), server);
         }
         else
-            server.update(update.getOnlinePlayers(), update.getMaxPlayers());
+            server.update(update.getGameStatus(), update.getOnlinePlayers(), update.getMaxPlayers());
     }
 
     /**
@@ -132,16 +138,6 @@ public class HostServer implements PipelineProvider<Collection<MinecraftServer>>
     }
 
     /**
-     * Returns <tt>true</tt> if the server has timed out
-     *
-     * @return <tt>true</tt> if the server has timed out
-     */
-    public boolean hasTimedOut()
-    {
-        return System.currentTimeMillis() > lastKeepAlive + TIMEOUT_TIME;
-    }
-
-    /**
      * Updates host server's information
      *
      * @param capacity     the server total capacity
@@ -151,7 +147,13 @@ public class HostServer implements PipelineProvider<Collection<MinecraftServer>>
     {
         this.capacity = capacity;
         this.usedCapacity = usedCapacity;
-        lastKeepAlive = System.currentTimeMillis();
+        keepAlive();
+    }
+
+    @Override
+    protected long getAliveDifference()
+    {
+        return TIMEOUT_TIME;
     }
 
     @Override

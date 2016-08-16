@@ -6,6 +6,7 @@
 
 package fr.creart.gamestack.common.protocol.packet;
 
+import fr.creart.gamestack.common.game.GameStatus;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.protocol.packet.result.KeepAliveStatus;
 import fr.creart.gamestack.common.protocol.packet.result.MinecraftServerUpdate;
@@ -41,7 +42,8 @@ public class MinecraftServerStatusPacket extends ByteArrayPacket<MinecraftServer
             return null;
         }
 
-        MinecraftServerUpdate update = new MinecraftServerUpdate(source.readString(), source.readString(), source.readInt(), status);
+        MinecraftServerUpdate update =
+                new MinecraftServerUpdate(source.readString(), source.readString(), source.readInt(), status, GameStatus.getById(source.readByte()));
 
         if (status == KeepAliveStatus.ADD || status == KeepAliveStatus.UPDATE) {
             update.setOnlinePlayers(source.readShort());
@@ -58,6 +60,7 @@ public class MinecraftServerStatusPacket extends ByteArrayPacket<MinecraftServer
         writer.write(data.getAddress());
         writer.write(data.getGameName());
         writer.write(data.getPort());
+        writer.write(data.getGameStatus().getId());
         if (data.getStatus() == KeepAliveStatus.ADD || data.getStatus() == KeepAliveStatus.UPDATE) {
             writer.write(data.getOnlinePlayers());
             writer.write(data.getMaxPlayers());

@@ -6,7 +6,6 @@
 
 package fr.creart.gamestack.common.connection;
 
-import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.misc.Callback;
 
 /**
@@ -38,7 +37,7 @@ class ConnectionTask<T> implements Runnable {
         try {
             task.call(tasksManager.getContainer().getConnection());
         } catch (Exception e) {
-            CommonLogger.error("An unhandled exception occurred during the execution of the task " + taskId + ".", e);
+            tasksManager.getContainer().getLogger().error("An unhandled exception occurred during the execution of the task " + taskId + ".", e);
         }
     }
 

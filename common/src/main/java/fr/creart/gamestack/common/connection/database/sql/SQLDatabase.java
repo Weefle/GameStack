@@ -12,7 +12,6 @@ import fr.creart.gamestack.common.connection.database.DatabaseConnectionData;
 import fr.creart.gamestack.common.connection.database.RequestType;
 import fr.creart.gamestack.common.lang.ClassUtil;
 import fr.creart.gamestack.common.lang.MoreArrays;
-import fr.creart.gamestack.common.log.CommonLogger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -48,7 +47,7 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
                             + connectionData.getPort() + "/" + connectionData.getDatabase());
             return true;
         } catch (Exception e) {
-            CommonLogger.error("Failed to connect to the database.", e);
+            logger.error("Failed to connect to the database.", e);
             return false;
         }
     }
@@ -60,7 +59,7 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
             if (isEstablished())
                 connection.close();
         } catch (Exception e) {
-            CommonLogger.error("Could not close SQL connection.", e);
+            logger.error("Could not close SQL connection.", e);
         }
     }
 
@@ -95,7 +94,7 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
                             statement.addBatch(request.getRequest());
                     statement.executeBatch();
                 } catch (Exception e) {
-                    CommonLogger.error("Encountered an exception during the execution of an SQL batch (requests=" + Arrays.toString(requests) + ").", e);
+                    logger.error("Encountered an exception during the execution of an SQL batch (requests=" + Arrays.toString(requests) + ").", e);
                 } finally {
                     if (statement != null && !statement.isClosed())
                         statement.close();
@@ -126,7 +125,7 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
                             break;
                     }
                 } catch (Exception e) {
-                    CommonLogger.error("Encountered an exception during the execution of the following SQL request: " + request.toString() + ".", e);
+                    logger.error("Encountered an exception during the execution of the following SQL request: " + request.toString() + ".", e);
                 } finally {
                     if (result != null && !result.isClosed())
                         result.close();

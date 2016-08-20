@@ -36,23 +36,27 @@ public abstract class Application implements UnsafeRunnable {
         try {
             load();
         } catch (Exception e) {
-            CommonLogger.fatal("Encountered an unhandled exception during the startup. Exiting...");
+            CommonLogger.fatal("Encountered an unhandled exception during the startup.", e);
+            CommonLogger.info("Exiting...");
             System.exit(1);
         }
 
         chrono.markEnd(TimeUnit.MILLISECONDS);
         CommonLogger.info("Done (~" + Decimals.firstDecimals((double) chrono.differenceAs(TimeUnit.MILLISECONDS, TimeUnit.MILLISECONDS) / 1000, 1) + "s.)");
 
+        byte code = 0; // lol bytecode
+
         try {
             run();
         } catch (Exception e) {
-            CommonLogger.fatal("An unhandled exception has been encountered during the execution of the program.");
+            CommonLogger.fatal("An unhandled exception has been encountered during the execution of the program.", e);
+            code = 1;
         } finally {
             Commons.getInstance().close();
         }
 
         CommonLogger.info("Thank you for using GameStack. Good-bye!");
-        System.exit(0);
+        System.exit(code);
     }
 
     protected abstract void load() throws Exception;

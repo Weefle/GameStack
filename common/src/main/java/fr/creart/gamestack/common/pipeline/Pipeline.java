@@ -26,6 +26,13 @@ public interface Pipeline<T> {
     void add(PipelineProvider<T> provider);
 
     /**
+     * Removes the given provider
+     *
+     * @param provider provider
+     */
+    void remove(PipelineProvider<T> provider);
+
+    /**
      * Adds all the given providers
      *
      * @param providers providers to add

@@ -59,7 +59,7 @@ public final class CommonLogger {
     /**
      * Logs the given message and the attached throwable as an information
      *
-     * @param message the message (https://goo.gl/g1aNsY)
+     * @param message  the message (https://goo.gl/g1aNsY)
      * @param attached attached throwable
      */
     public static void info(String message, Throwable attached)
@@ -96,6 +96,27 @@ public final class CommonLogger {
     public static void error(String message, Throwable attached)
     {
         logger.error(message, attached);
+    }
+
+    /**
+     * Logs the given message as a fatal error
+     *
+     * @param message The message
+     */
+    public static void fatal(String message)
+    {
+        logger.fatal(message);
+    }
+
+    /**
+     * Logs the given message and the attached throwable as a fatal error
+     *
+     * @param message  The message
+     * @param attached The attached throwable
+     */
+    public static void fatal(String message, Throwable attached)
+    {
+        logger.fatal(message, attached);
     }
 
     /**

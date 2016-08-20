@@ -7,81 +7,73 @@
 package fr.creart.gamestack.server;
 
 import com.google.common.base.Strings;
-import fr.creart.gamestack.common.Commons;
+import fr.creart.gamestack.common.app.Application;
 import fr.creart.gamestack.common.command.CommandsManager;
 import fr.creart.gamestack.common.conf.Configuration;
+import fr.creart.gamestack.common.conf.ConfigurationLoadException;
 import fr.creart.gamestack.common.conf.PropertiesConfiguration;
 import fr.creart.gamestack.common.io.FileUtil;
-import fr.creart.gamestack.common.lang.Decimals;
 import fr.creart.gamestack.common.lang.Validation;
 import fr.creart.gamestack.common.log.CommonLogger;
-import fr.creart.gamestack.common.misc.Chrono;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Creart
  */
-public class Main {
+public class Main extends Application {
 
     private static final String CONFIGURATION_FILE = "gamestack.properties";
     private static final String NETWORK_CONFIGURATION_FILE = "network.properties";
 
     public static void main(String[] args)
     {
-        try {
-            CommonLogger.createLogger("Server");
-            CommonLogger.info("Starting up GameStack server...");
-            Chrono chrono = new Chrono();
+        new Main().startup("GameStack Server", "Server");
+    }
 
-            chrono.markStart(TimeUnit.MILLISECONDS);
+    @Override
+    protected void load() throws Exception
+    {
+        Configuration configuration = loadConfiguration(CONFIGURATION_FILE, CONFIGURATION_FILE);
 
-            Configuration configuration = loadConfiguration(CONFIGURATION_FILE, CONFIGURATION_FILE);
+        if (configuration == null)
+            throw new ConfigurationLoadException("Could not configuration file (" + CONFIGURATION_FILE + ")!");
 
-            if (configuration == null)
-                exitCantLoad(CONFIGURATION_FILE);
+        Configuration networkConf = loadConfiguration(NETWORK_CONFIGURATION_FILE, NETWORK_CONFIGURATION_FILE);
 
-            Configuration networkConf = loadConfiguration(NETWORK_CONFIGURATION_FILE, NETWORK_CONFIGURATION_FILE);
+        if (networkConf == null)
+            throw new ConfigurationLoadException("Could not configuration file (" + NETWORK_CONFIGURATION_FILE + ")!");
 
-            if (networkConf == null)
-                exitCantLoad(NETWORK_CONFIGURATION_FILE);
+        configuration.initialize();
+        networkConf.initialize();
 
-            configuration.initialize();
-            networkConf.initialize();
+        StackServer server = StackServer.getInstance();
+        server.setNetworkConfiguration(networkConf);
+        server.initialize();
+    }
 
-            StackServer server = StackServer.getInstance();
-            server.setNetworkConfiguration(networkConf);
-            server.initialize();
-
-            chrono.markEnd(TimeUnit.MILLISECONDS);
-
-            CommonLogger.info("Done (~" + Decimals.firstDecimals((double) chrono.differenceAs(TimeUnit.MILLISECONDS, TimeUnit.MILLISECONDS) / 1000, 1) + "s.)");
-
-            // listen commands
-            CommandsManager instance = CommandsManager.getInstance();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            while (server.isRunning()) {
-                // this is going to change because when the server is not running anymore, it has to wait for a line to exit
-                String line = reader.readLine();
-                if (!Strings.isNullOrEmpty(line))
-                    instance.executeCommand(line, null);
+    @Override
+    public void run() throws Exception
+    {
+        StackServer server = StackServer.getInstance();
+        // listen commands
+        CommandsManager instance = CommandsManager.getInstance();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        while (server.isRunning()) {
+            // this is going to change because when the server is not running anymore, it has to wait for a line to exit
+            String line;
+            try {
+                line = reader.readLine();
+            } catch (Exception e) {
+                continue; // ignore
             }
-            reader.close();
-            StackServer.getInstance().stop();
-        } catch (Exception e) {
-            CommonLogger.info("An exception has been encountered during the execution of the program!", e);
-            CommonLogger.info("Exiting...");
-            System.exit(1);
-        } finally {
-            Commons.getInstance().close();
+
+            if (!Strings.isNullOrEmpty(line))
+                instance.executeCommand(line, null);
         }
-
-        CommonLogger.info("Thank you for using GameStack. Good-bye!");
-
-        // finally
-        System.exit(0);
+        reader.close();
+        StackServer.getInstance().stop();
     }
 
     private static Configuration loadConfiguration(String fileName, String destination)
@@ -95,13 +87,6 @@ public class Main {
         }
 
         return null;
-    }
-
-    private static void exitCantLoad(String file)
-    {
-        CommonLogger.error(String.format("Could not load the configuration file (%s)!", file));
-        CommonLogger.info("Exiting...");
-        System.exit(1);
     }
 
 }

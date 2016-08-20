@@ -10,6 +10,7 @@ import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.protocol.packet.HostUpdatePacket;
 import fr.creart.gamestack.common.protocol.packet.MetricPacket;
 import fr.creart.gamestack.common.protocol.packet.MinecraftServerStatusPacket;
+import fr.creart.gamestack.common.protocol.packet.PlayerTeleportPacket;
 import fr.creart.protocolt.ProtoColt;
 import fr.creart.protocolt.Protocol;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
@@ -34,6 +35,7 @@ public final class ProtocolWrap {
             protocol.declarePacket(new HostUpdatePacket(0x01));
             protocol.declarePacket(new MinecraftServerStatusPacket(0x02));
             protocol.declarePacket(new MetricPacket(0x03));
+            protocol.declarePacket(new PlayerTeleportPacket(0x04));
         } catch (Exception e) {
             CommonLogger.error("Could not declare a packet.", e);
         }

@@ -35,6 +35,12 @@ public class SimplePipeline<T> implements Pipeline<T> {
     }
 
     @Override
+    public void remove(PipelineProvider<T> provider)
+    {
+        providers.remove(provider);
+    }
+
+    @Override
     public void call(T object)
     {
         providers.stream().forEach(provider -> provider.pipeline(object));

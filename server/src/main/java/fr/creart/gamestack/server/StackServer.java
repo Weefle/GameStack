@@ -183,7 +183,9 @@ public class StackServer implements Initialisable {
     {
         lock.writeLock().lock();
         try {
-            return servers.remove(address);
+            HostServer server = servers.remove(address);
+            minecraftServersPipeline.remove(server);
+            return server;
         } finally {
             lock.writeLock().unlock();
         }
@@ -225,7 +227,7 @@ public class StackServer implements Initialisable {
         lock.readLock().lock();
         try {
             TreeSet<MinecraftServer> mcServers = new TreeSet<>((first, second) -> first.getAvailableSlots() < second.getAvailableSlots()
-                    && first.getAvailableSlots() > 0 ? -1 : 1); // the almost full servers first
+                    && first.getAvailableSlots() > 0 ? 1 : -1); // the almost full servers first
             minecraftServersPipeline.call(mcServers);
             return mcServers.first();
         } finally {

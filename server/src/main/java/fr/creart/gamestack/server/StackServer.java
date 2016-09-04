@@ -8,7 +8,6 @@ package fr.creart.gamestack.server;
 
 import com.google.common.base.Preconditions;
 import fr.creart.gamestack.common.Commons;
-import fr.creart.gamestack.common.command.CommandsManager;
 import fr.creart.gamestack.common.conf.Configuration;
 import fr.creart.gamestack.common.connection.database.DatabaseConnectionData;
 import fr.creart.gamestack.common.connection.rmq.RabbitConnectionData;
@@ -21,6 +20,7 @@ import fr.creart.gamestack.common.misc.Initialisable;
 import fr.creart.gamestack.common.pipeline.Pipeline;
 import fr.creart.gamestack.common.pipeline.SimplePipeline;
 import fr.creart.gamestack.common.protocol.packet.result.HostUpdate;
+import fr.creart.gamestack.server.command.CommandsManager;
 import fr.creart.gamestack.server.command.StopCommand;
 import fr.creart.gamestack.server.conf.ConfigurationConstants;
 import fr.creart.gamestack.server.listener.HostUpdateListener;

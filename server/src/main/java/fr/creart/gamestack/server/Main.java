@@ -8,13 +8,13 @@ package fr.creart.gamestack.server;
 
 import com.google.common.base.Strings;
 import fr.creart.gamestack.common.app.Application;
-import fr.creart.gamestack.common.command.CommandsManager;
 import fr.creart.gamestack.common.conf.Configuration;
 import fr.creart.gamestack.common.conf.ConfigurationLoadException;
 import fr.creart.gamestack.common.conf.PropertiesConfiguration;
 import fr.creart.gamestack.common.io.FileUtil;
 import fr.creart.gamestack.common.lang.Validation;
 import fr.creart.gamestack.common.log.CommonLogger;
+import fr.creart.gamestack.server.command.CommandsManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;

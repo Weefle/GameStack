@@ -45,11 +45,12 @@
     </build>
 
     <modules>
-        <module>server</module>
         <module>api</module>
-        <module>common</module>
-        <module>client</module>
+        <module>bukkit</module>
         <module>bungee</module>
+        <module>client</module>
+        <module>common</module>
+        <module>server</module>
     </modules>
 
 </project>

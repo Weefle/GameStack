@@ -1,0 +1,5 @@
+main: fr.creart.gamestack.bukkit.BukkitStack
+name: BukkitStack
+version: 1.0.0
+author: Creart
+description: Bukkit part of the GameStack project.

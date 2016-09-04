@@ -6,8 +6,6 @@
 
 package fr.creart.gamestack.server.command;
 
-import fr.creart.gamestack.common.command.Command;
-import fr.creart.gamestack.common.command.CommandSender;
 import fr.creart.gamestack.server.StackServer;
 
 /**

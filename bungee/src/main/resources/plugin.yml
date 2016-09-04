@@ -1,0 +1,4 @@
+main: fr.creart.gamestack.bungee.BungeeStack
+name: BungeeStack
+version: 1.0.0
+author: Creart

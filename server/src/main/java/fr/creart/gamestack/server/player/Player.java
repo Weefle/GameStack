@@ -41,6 +41,12 @@ public class Player implements Queueable {
     }
 
     @Override
+    public byte getWeight()
+    {
+        return 1;
+    }
+
+    @Override
     public void connect(String serverName)
     {
         if (Strings.isNullOrEmpty(serverName)) {

@@ -21,7 +21,7 @@ import java.net.InetSocketAddress;
  */
 public abstract class SocketHostData extends HostedData {
 
-    private int port;
+    private final int port;
 
     /**
      * @param address socket's address

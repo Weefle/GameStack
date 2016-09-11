@@ -60,7 +60,6 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
         if (connection.getConnection() == null || !connection.getConnection().isOpen())
             try {
                 connection.setConnection(factory.newConnection());
-                return true;
             } catch (Exception e) {
                 logger.error("Failed connection to the RabbitMQ server.", e);
                 return false;
@@ -161,7 +160,7 @@ public class RabbitContainer extends AbstractBrokerManager<Rabbit, RabbitConnect
             Collection<PacketListener> found = listeners.get(packet.getId());
             if (found != null && !found.isEmpty())
                 try {
-                    found.stream().forEach(listener -> listener.handlePacket(packet.getId(), result));
+                    found.forEach(listener -> listener.handlePacket(packet.getId(), result));
                 } catch (Exception e) {
                     logger.error("Failed execution of a packet handler.", e);
                 }

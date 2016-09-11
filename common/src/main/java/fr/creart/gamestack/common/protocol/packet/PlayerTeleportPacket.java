@@ -10,7 +10,6 @@ import fr.creart.gamestack.common.protocol.packet.result.PlayerTeleport;
 import fr.creart.protocolt.bytestreams.ByteArrayDataSource;
 import fr.creart.protocolt.bytestreams.ByteArrayDataWriter;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
-import java.util.UUID;
 
 /**
  * Sent when a player needs to be teleported to a specific server
@@ -27,14 +26,14 @@ public class PlayerTeleportPacket extends ByteArrayPacket<PlayerTeleport> {
     @Override
     public PlayerTeleport read(ByteArrayDataSource source)
     {
-        return new PlayerTeleport(UUID.fromString(source.readString()), source.readString());
+        return new PlayerTeleport(source.readString(), Util.getUUIDs(source.readString()));
     }
 
     @Override
     public void write(ByteArrayDataWriter writer, PlayerTeleport teleport)
     {
-        writer.write(teleport.getPlayersUniqueId().toString());
         writer.write(teleport.getTargetServer());
+        writer.write(Util.toStringFormat(teleport.getPlayerUUIDs()));
     }
 
 }

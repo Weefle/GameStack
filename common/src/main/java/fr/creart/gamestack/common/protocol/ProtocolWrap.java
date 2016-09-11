@@ -7,6 +7,7 @@
 package fr.creart.gamestack.common.protocol;
 
 import fr.creart.gamestack.common.log.CommonLogger;
+import fr.creart.gamestack.common.protocol.packet.EnqueuePacket;
 import fr.creart.gamestack.common.protocol.packet.HostUpdatePacket;
 import fr.creart.gamestack.common.protocol.packet.MetricPacket;
 import fr.creart.gamestack.common.protocol.packet.MinecraftServerStatusPacket;
@@ -36,6 +37,7 @@ public final class ProtocolWrap {
             protocol.declarePacket(new MinecraftServerStatusPacket(0x02));
             protocol.declarePacket(new MetricPacket(0x03));
             protocol.declarePacket(new PlayerTeleportPacket(0x04));
+            protocol.declarePacket(new EnqueuePacket(0x05));
         } catch (Exception e) {
             CommonLogger.error("Could not declare a packet.", e);
         }
@@ -43,7 +45,7 @@ public final class ProtocolWrap {
 
     private ProtocolWrap()
     {
-
+        // no instance
     }
 
     /**

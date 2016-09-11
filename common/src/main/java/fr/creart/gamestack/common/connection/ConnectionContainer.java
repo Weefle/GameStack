@@ -13,6 +13,8 @@ import fr.creart.gamestack.common.misc.Destroyable;
 import fr.creart.gamestack.common.thread.ThreadsUtil;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.apache.log4j.Logger;
 
 /**
@@ -29,7 +31,8 @@ public abstract class ConnectionContainer<T, D extends ConnectionData>
 
     private static final byte MAX_THREADS = 10;
 
-    protected final Logger logger = Logger.getLogger(getClass().getSimpleName());
+    private Lock taskLock = new ReentrantLock();
+    protected final Logger logger = Logger.getLogger(getServiceName());
     protected T connection; // contained connection
     protected final Wrapper<ConnectionState> connectionState = new AtomicWrapper<>(ConnectionState.CLOSED);
     private final ConnectionTasksManager<T> taskHandler;
@@ -106,8 +109,11 @@ public abstract class ConnectionContainer<T, D extends ConnectionData>
         if (!connectionState.get().isUsable())
             return;
 
-        synchronized (taskHandler) {
+        taskLock.lock();
+        try {
             taskHandler.enqueueTask(callback);
+        } finally {
+            taskLock.unlock();
         }
     }
 

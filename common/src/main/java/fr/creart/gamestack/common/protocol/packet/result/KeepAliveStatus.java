@@ -17,7 +17,7 @@ public enum KeepAliveStatus {
     UPDATE((byte) 1),
     DELETE((byte) 2);
 
-    private byte id;
+    private final byte id;
 
     KeepAliveStatus(byte id)
     {

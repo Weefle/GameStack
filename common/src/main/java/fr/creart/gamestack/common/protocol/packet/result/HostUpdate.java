@@ -22,8 +22,8 @@ import fr.creart.gamestack.common.protocol.packet.HostUpdatePacket;
  */
 public class HostUpdate extends HostedData {
 
-    private float capacity;
-    private float usedCapacity;
+    private final float capacity;
+    private final float usedCapacity;
 
     /**
      * @param address      server's address

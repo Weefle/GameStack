@@ -25,6 +25,7 @@ import fr.creart.gamestack.server.command.StopCommand;
 import fr.creart.gamestack.server.conf.ConfigurationConstants;
 import fr.creart.gamestack.server.listener.HostUpdateListener;
 import fr.creart.gamestack.server.listener.MinecraftUpdateListener;
+import fr.creart.gamestack.server.queue.QueuesManager;
 import fr.creart.gamestack.server.server.HostServer;
 import fr.creart.gamestack.server.server.MinecraftServer;
 import java.util.Collection;
@@ -39,7 +40,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class StackServer implements Initialisable {
 
-    private static StackServer instance;
+    private static StackServer instance = new StackServer();
 
     private Configuration networkConfiguration;
     private ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -48,6 +49,8 @@ public class StackServer implements Initialisable {
 
     private Map<String, HostServer> servers = new HashMap<>();
     private Pipeline<Collection<MinecraftServer>> minecraftServersPipeline = new SimplePipeline<>();
+
+    private QueuesManager queuesManager = new QueuesManager();
 
     private StackServer()
     {
@@ -236,14 +239,22 @@ public class StackServer implements Initialisable {
     }
 
     /**
+     * Returns the queues manager
+     *
+     * @return the queues manager
+     */
+    public QueuesManager getQueuesManager()
+    {
+        return queuesManager;
+    }
+
+    /**
      * Returns the single instance of the StackServer class
      *
      * @return the single instance of the StackServer class
      */
     public static StackServer getInstance()
     {
-        if (instance == null)
-            instance = new StackServer();
         return instance;
     }
 

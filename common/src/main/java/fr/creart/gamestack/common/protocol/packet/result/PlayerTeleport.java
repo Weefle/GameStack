@@ -6,30 +6,19 @@
 
 package fr.creart.gamestack.common.protocol.packet.result;
 
-import java.util.UUID;
-
 /**
+ * {@link fr.creart.gamestack.common.protocol.packet.PlayerTeleportPacket}'s result.
+ *
  * @author Creart
  */
-public class PlayerTeleport {
+public class PlayerTeleport extends MultiPlayerData {
 
-    private UUID playersUniqueId;
-    private String targetServer;
+    private final String targetServer;
 
-    public PlayerTeleport(UUID playersUniqueId, String targetServer)
+    public PlayerTeleport(String targetServer, String... playerUUIDs)
     {
-        this.playersUniqueId = playersUniqueId;
+        super(playerUUIDs);
         this.targetServer = targetServer;
-    }
-
-    /**
-     * Returns player's unique id
-     *
-     * @return player's unique id
-     */
-    public UUID getPlayersUniqueId()
-    {
-        return playersUniqueId;
     }
 
     /**

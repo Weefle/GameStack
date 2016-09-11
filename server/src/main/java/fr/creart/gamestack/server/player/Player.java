@@ -10,8 +10,8 @@ import com.google.common.base.Strings;
 import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.protocol.ProtocolWrap;
+import fr.creart.gamestack.common.protocol.packet.PlayerTeleportPacket;
 import fr.creart.gamestack.common.protocol.packet.result.PlayerTeleport;
-import java.util.UUID;
 
 /**
  * Represents a player connected to the network
@@ -20,12 +20,11 @@ import java.util.UUID;
  */
 public class Player implements Queueable {
 
-    private final UUID uuid;
+    private static final PlayerTeleportPacket TELEPORT_PACKET = ProtocolWrap.getPacketById(0x04);
 
-    /**
-     * @param uuid player's uuid
-     */
-    public Player(UUID uuid)
+    private final String uuid;
+
+    public Player(String uuid)
     {
         this.uuid = uuid;
     }
@@ -35,7 +34,7 @@ public class Player implements Queueable {
      *
      * @return player's uuid
      */
-    public UUID getUniqueId()
+    public String getUniqueId()
     {
         return uuid;
     }
@@ -54,7 +53,7 @@ public class Player implements Queueable {
             return;
         }
 
-        Commons.getInstance().getMessageBroker().publish(ProtocolWrap.getPacketById(0x04), new PlayerTeleport(uuid, serverName));
+        Commons.getInstance().getMessageBroker().publish(TELEPORT_PACKET, new PlayerTeleport(serverName, uuid));
     }
 
     @Override

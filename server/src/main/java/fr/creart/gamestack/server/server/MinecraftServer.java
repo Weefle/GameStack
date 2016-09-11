@@ -85,6 +85,11 @@ public class MinecraftServer extends KeptAlive {
         return gameStatus;
     }
 
+    public boolean isJoinable()
+    {
+        return maxPlayers > onlinePlayers && gameStatus == GameStatus.LOBBY;
+    }
+
     /**
      * Called when the {@link fr.creart.gamestack.common.protocol.packet.MinecraftServerStatusPacket} is called
      *

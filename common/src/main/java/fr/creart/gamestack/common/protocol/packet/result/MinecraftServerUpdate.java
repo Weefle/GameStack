@@ -21,9 +21,9 @@ import fr.creart.gamestack.common.game.GameStatus;
  */
 public class MinecraftServerUpdate extends SocketHostData {
 
-    private KeepAliveStatus status;
-    private GameStatus gameStatus;
-    private String gameName;
+    private final KeepAliveStatus status;
+    private final GameStatus gameStatus;
+    private final String gameName;
     private short onlinePlayers;
     private short maxPlayers;
 

@@ -19,18 +19,22 @@ import fr.creart.gamestack.common.misc.DependsManager;
 import fr.creart.gamestack.common.misc.Initialisable;
 import fr.creart.gamestack.common.pipeline.Pipeline;
 import fr.creart.gamestack.common.pipeline.SimplePipeline;
+import fr.creart.gamestack.common.protocol.ProtocolWrap;
 import fr.creart.gamestack.common.protocol.packet.result.HostUpdate;
 import fr.creart.gamestack.server.command.CommandsManager;
 import fr.creart.gamestack.server.command.StopCommand;
 import fr.creart.gamestack.server.conf.ConfigurationConstants;
+import fr.creart.gamestack.server.listener.EnqueueListener;
 import fr.creart.gamestack.server.listener.HostUpdateListener;
 import fr.creart.gamestack.server.listener.MinecraftUpdateListener;
+import fr.creart.gamestack.server.listener.PullQueueListener;
 import fr.creart.gamestack.server.queue.QueuesManager;
 import fr.creart.gamestack.server.server.HostServer;
 import fr.creart.gamestack.server.server.MinecraftServer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -93,8 +97,10 @@ public class StackServer implements Initialisable {
         CommandsManager.getInstance().registerCommand(new StopCommand());
 
         // registering packet listeners
-        commons.getMessageBroker().registerListener(0x01, new HostUpdateListener());
-        commons.getMessageBroker().registerListener(0x02, new MinecraftUpdateListener());
+        commons.getMessageBroker().registerListener(ProtocolWrap.HOST_UPDATE_PACKET_ID, new HostUpdateListener());
+        commons.getMessageBroker().registerListener(ProtocolWrap.MINECRAFT_SERVER_STATUS_PACKET_ID, new MinecraftUpdateListener());
+        commons.getMessageBroker().registerListener(ProtocolWrap.PULL_QUEUE_PACKET_ID, new PullQueueListener());
+        commons.getMessageBroker().registerListener(ProtocolWrap.ENQUEUE_PACKET_ID, new EnqueueListener());
 
         // finally
         running = true;
@@ -229,7 +235,7 @@ public class StackServer implements Initialisable {
 
         lock.readLock().lock();
         try {
-            TreeSet<MinecraftServer> mcServers = new TreeSet<>((first, second) -> first.getAvailableSlots() < second.getAvailableSlots()
+            SortedSet<MinecraftServer> mcServers = new TreeSet<>((first, second) -> first.getAvailableSlots() < second.getAvailableSlots()
                     && first.getAvailableSlots() > 0 ? 1 : -1); // the almost full servers first
             minecraftServersPipeline.call(mcServers);
             return mcServers.first();

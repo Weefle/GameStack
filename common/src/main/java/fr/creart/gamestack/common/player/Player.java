@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package fr.creart.gamestack.server.player;
+package fr.creart.gamestack.common.player;
 
 import com.google.common.base.Strings;
 import fr.creart.gamestack.common.Commons;
@@ -20,13 +20,15 @@ import fr.creart.gamestack.common.protocol.packet.result.PlayerTeleport;
  */
 public class Player implements Queueable {
 
-    private static final PlayerTeleportPacket TELEPORT_PACKET = ProtocolWrap.getPacketById(0x04);
+    private static final PlayerTeleportPacket TELEPORT_PACKET = ProtocolWrap.getPacketById(ProtocolWrap.PLAYER_TELEPORT_PACKET_ID);
 
     private final String uuid;
+    private final byte priority;
 
-    public Player(String uuid)
+    public Player(String uuid, byte priority)
     {
         this.uuid = uuid;
+        this.priority = priority;
     }
 
     /**
@@ -37,6 +39,12 @@ public class Player implements Queueable {
     public String getUniqueId()
     {
         return uuid;
+    }
+
+    @Override
+    public byte getPriority()
+    {
+        return priority;
     }
 
     @Override
@@ -54,6 +62,11 @@ public class Player implements Queueable {
         }
 
         Commons.getInstance().getMessageBroker().publish(TELEPORT_PACKET, new PlayerTeleport(serverName, uuid));
+    }
+
+    @Override
+    public void sendMessage(String messagePath, MessageType type)
+    {
     }
 
     @Override

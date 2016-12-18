@@ -6,6 +6,10 @@
 
 package fr.creart.gamestack.bungee;
 
+import fr.creart.gamestack.bungee.listener.MessagePacketListener;
+import fr.creart.gamestack.bungee.listener.PlayerTeleportRequestListener;
+import fr.creart.gamestack.common.Commons;
+import fr.creart.gamestack.common.protocol.ProtocolWrap;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -25,7 +29,8 @@ public class BungeeStack extends Plugin {
     @Override
     public void onEnable()
     {
-
+        Commons.getInstance().getMessageBroker().registerListener(ProtocolWrap.CHAT_MESSAGE_PACKET_ID, new MessagePacketListener());
+        Commons.getInstance().getMessageBroker().registerListener(ProtocolWrap.PLAYER_TELEPORT_PACKET_ID, new PlayerTeleportRequestListener());
     }
 
     @Override

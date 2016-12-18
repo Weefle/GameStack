@@ -7,8 +7,7 @@
 package fr.creart.gamestack.server.queue;
 
 import fr.creart.gamestack.common.game.GameMap;
-import fr.creart.gamestack.server.player.Player;
-import fr.creart.gamestack.server.player.Queueable;
+import fr.creart.gamestack.common.player.Queueable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -25,7 +24,7 @@ public class PlayerQueue {
 
     private GameMap gameMap;
     private Lock queueLock = new ReentrantLock();
-    private Map<Integer, Queue<Queueable>> queues = new TreeMap<>();
+    private Map<Byte, Queue<Queueable>> queues = new TreeMap<>();
 
     public PlayerQueue(GameMap gameMap)
     {
@@ -35,26 +34,26 @@ public class PlayerQueue {
     /**
      * Returns <tt>true</tt> if the player is in the current queue
      *
-     * @param player the player
+     * @param queueable the queueable item
      * @return <tt>true</tt> if the player is in the current queue
      */
-    public boolean hasPlayer(Player player)
+    public boolean hasQueueable(Queueable queueable)
     {
-        return getCurrentQueue(player) != null;
+        return getCurrentQueue(queueable) != null;
     }
 
     /**
      * Returns player's current queue for this current map (<tt>null if not found</tt>).
      *
-     * @param player the player
+     * @param queueable the queueable item
      * @return player's current queue for this current map.
      */
-    public Queue getCurrentQueue(Player player)
+    public Queue getCurrentQueue(Queueable queueable)
     {
         queueLock.lock();
         try {
             for (Queue<Queueable> queue : queues.values())
-                if (queue.contains(player))
+                if (queue.contains(queueable))
                     return queue;
         } finally {
             queueLock.unlock();
@@ -66,23 +65,22 @@ public class PlayerQueue {
      * Removes the player from his current queue — if he has one — and
      * adds him to the queue of the given priority
      *
-     * @param player   the player to add
-     * @param priority player's priority
+     * @param queueable     the player to add
      */
-    public void addPlayer(Player player, int priority)
+    public void addQueueable(Queueable queueable)
     {
-        removePlayer(player);
+        removeQueueable(queueable);
 
         queueLock.lock();
         try {
-            Queue<Queueable> put = queues.get(priority);
+            Queue<Queueable> put = queues.get(queueable.getPriority());
 
             if (put == null) {
                 put = new LinkedList<>();
-                queues.put(priority, put);
+                queues.put(queueable.getPriority(), put);
             }
 
-            put.add(player);
+            put.add(queueable);
         } finally {
             queueLock.unlock();
         }
@@ -91,19 +89,24 @@ public class PlayerQueue {
     /**
      * Removes the given player from his queue
      *
-     * @param player the player
+     * @param queueable the queueable
+     * @return <code>true</code> if the player has been removed from a queue
      */
-    public void removePlayer(Player player)
+    public boolean removeQueueable(Queueable queueable)
     {
-        removePlayer(player, getCurrentQueue(player));
+        return removeQueueable(queueable, getCurrentQueue(queueable));
     }
 
-    private void removePlayer(Player player, Queue queue)
+    private boolean removeQueueable(Queueable queueable, Queue queue)
     {
         queueLock.lock();
         try {
-            if (player != null && queue != null)
-                queue.remove(player);
+            if (queueable != null && queue != null) {
+                queue.remove(queueable);
+                return true;
+            }
+
+            return false;
         } finally {
             queueLock.unlock();
         }
@@ -122,6 +125,7 @@ public class PlayerQueue {
         queueLock.lock();
         try {
             while (ret.size() < slots) {
+
                 // lookup
             }
         } finally {

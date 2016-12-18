@@ -44,7 +44,7 @@ public abstract class Application implements UnsafeRunnable {
         chrono.markEnd(TimeUnit.MILLISECONDS);
         CommonLogger.info("Done (~" + Decimals.firstDecimals((double) chrono.differenceAs(TimeUnit.MILLISECONDS, TimeUnit.MILLISECONDS) / 1000, 1) + "s.)");
 
-        byte code = 0; // lol bytecode
+        byte code = 0; // lol bytecode (it's a joke, of course...)
 
         try {
             run();
@@ -56,6 +56,7 @@ public abstract class Application implements UnsafeRunnable {
         }
 
         CommonLogger.info("Thank you for using GameStack. Good-bye!");
+        CommonLogger.close();
         System.exit(code);
     }
 

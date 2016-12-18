@@ -16,10 +16,10 @@ import fr.creart.gamestack.common.protocol.packet.EnqueuePacket;
  */
 public class EnqueueData extends MultiPlayerData {
 
-    private final short priority;
+    private final byte priority;
     private final GameMap map;
 
-    public EnqueueData(String[] playerUUIDs, short priority, GameMap map)
+    public EnqueueData(String[] playerUUIDs, byte priority, GameMap map)
     {
         super(playerUUIDs);
         this.priority = priority;
@@ -32,7 +32,7 @@ public class EnqueueData extends MultiPlayerData {
      *
      * @return the priority of the queueable item.
      */
-    public short getPriority()
+    public byte getPriority()
     {
         return priority;
     }

@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package fr.creart.gamestack.server.player;
+package fr.creart.gamestack.common.player;
 
 /**
  * Represents an object which can be connected to a given server

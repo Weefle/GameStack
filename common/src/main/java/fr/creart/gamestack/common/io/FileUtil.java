@@ -131,6 +131,7 @@ public final class FileUtil {
     public static void copyFolder(File source, File destination)
     {
         Preconditions.checkNotNull(source, "source can't be null");
+        Preconditions.checkArgument(source.exists(), "source has to exist");
         Preconditions.checkNotNull(destination, "destination can't be null");
 
         if (source.isFile())

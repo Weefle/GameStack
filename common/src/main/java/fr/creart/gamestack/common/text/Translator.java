@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
  */
 public class Translator {
 
-    private static final Logger LOGGER = Logger.getLogger("Translator");
+    private static final Logger LOGGER = Logger.getLogger(Translator.class);
 
     private String file;
     private boolean initialized;

@@ -13,7 +13,7 @@ import fr.creart.protocolt.bytestreams.ByteArrayPacket;
 
 /**
  * This packet is sent when a queueable item (composed of its players which are represented by their UUID)
- * should be enqueued to the given.
+ * should be enqueued to the given {@link fr.creart.gamestack.common.game.GameMap}.
  * <p>
  * The player UUIDs are written in a string and separated by a semi-colon.
  *
@@ -29,7 +29,7 @@ public class EnqueuePacket extends ByteArrayPacket<EnqueueData> {
     @Override
     public EnqueueData read(ByteArrayDataSource src)
     {
-        return new EnqueueData(Util.getUUIDs(src.readString()), src.readShort(), null);
+        return new EnqueueData(Util.getUUIDs(src.readString()), src.readByte(), null);
         /*TODO: Create a manager from which it will be possible to retrieve the demanded map*/
     }
 

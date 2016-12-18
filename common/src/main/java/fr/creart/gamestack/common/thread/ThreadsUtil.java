@@ -19,7 +19,7 @@ public class ThreadsUtil {
     }
 
     /**
-     * Sleeps the thread, if an {@link InterruptedException} is thrown it interrupts the thread.
+     * Sleeps the thread. If an {@link InterruptedException} is thrown it interrupts the thread.
      *
      * @param time Time to sleep
      */

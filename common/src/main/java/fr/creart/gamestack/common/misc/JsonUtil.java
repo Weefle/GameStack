@@ -10,7 +10,6 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 
 /**
  * Json utils
@@ -52,7 +51,7 @@ public final class JsonUtil {
      */
     public static <T> T fromJson(Class<T> clazz, String json)
     {
-        return GSON.fromJson(json, (Type) clazz);
+        return GSON.fromJson(json, clazz);
     }
 
 }

@@ -34,7 +34,7 @@ class HelpCommand extends Command {
         if (args.length == 0) {
             StringBuilder builder = new StringBuilder();
             builder.append(FIRST_LINE);
-            CommandsManager.getInstance().getCommands().stream().forEach(command ->
+            CommandsManager.getInstance().getCommands().forEach(command ->
                     builder.append("\t").append(command.getLabel()).append(": ").append(Strings.isNullOrEmpty(command.getHelp()) ?
                             "No help found for this command" :
                             command.getHelp()).append("\n"));

@@ -204,7 +204,6 @@ public final class Commons {
         if (broker != null)
             broker.close();
 
-        CommonLogger.close();
         initialized = false; // in order to avoid a second closure of the class, if the function is accidentally called twice.
     }
 

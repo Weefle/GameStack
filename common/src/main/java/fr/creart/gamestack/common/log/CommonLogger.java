@@ -30,10 +30,18 @@ public final class CommonLogger {
      */
     public static void createLogger(String softName)
     {
-        if (!hasLogger()) {
-            System.setProperty("gamestack.log_folder", "logs/" + softName.toLowerCase() + "/");
-            logger = Logger.getLogger(softName);
-        }
+        if (hasLogger())
+            return;
+
+        System.setProperty("gamestack.log_folder", "logs/" + softName.toLowerCase() + "/");
+        logger = Logger.getLogger(softName);
+
+        info("╔═══╗───────────╔╗──────╔╗");
+        info("║╔═╗║──────────╔╝╚╗─────║║");
+        info("║║─╚╬══╦╗╔╦══╦═╩╗╔╬══╦══╣║╔╗");
+        info("║║╔═╣╔╗║╚╝║║═╣══╣║║╔╗║╔═╣╚╝╝");
+        info("║╚╩═║╔╗║║║║║═╬══║╚╣╔╗║╚═╣╔╗╗");
+        info("╚═══╩╝╚╩╩╩╩══╩══╩═╩╝╚╩══╩╝╚╝");
     }
 
     /**

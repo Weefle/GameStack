@@ -80,6 +80,14 @@ public abstract class MetricProvider {
     public abstract Metric provide();
 
     /**
+     * Returns the class of the provided metric
+     *
+     * @param <T> metric's type
+     * @return the class of the provided metric
+     */
+    public abstract <T extends Metric> Class<T> getProvidedMetric();
+
+    /**
      * Returns the alternative output of the current provider. <tt>null</tt> if it has none
      *
      * @return the alternative output of the current provider

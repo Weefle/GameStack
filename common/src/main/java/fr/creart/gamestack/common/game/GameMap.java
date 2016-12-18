@@ -67,7 +67,7 @@ public class GameMap {
         if (!(obj instanceof GameMap))
             return false;
         GameMap other = (GameMap) obj;
-        return game.equals(other.game) && name.equals(other.name);
+        return game.equals(other.game) && obj.hashCode() == hashCode();
     }
 
 }

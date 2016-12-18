@@ -6,30 +6,34 @@
 
 package fr.creart.gamestack.common.protocol.packet;
 
-import fr.creart.gamestack.common.protocol.packet.result.ChatResult;
+import fr.creart.gamestack.common.player.MessageType;
+import fr.creart.gamestack.common.protocol.packet.result.MessageResult;
 import fr.creart.protocolt.bytestreams.ByteArrayDataSource;
 import fr.creart.protocolt.bytestreams.ByteArrayDataWriter;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
 
 /**
+ * Packet handled by the BungeeCord instances which allows to send a message to one or more players.
+ *
  * @author Creart
  */
-public class ChatMessagePacket extends ByteArrayPacket<ChatResult> {
+public class MessagePacket extends ByteArrayPacket<MessageResult> {
 
-    public ChatMessagePacket(int id)
+    public MessagePacket(int id)
     {
         super(id);
     }
 
     @Override
-    public ChatResult read(ByteArrayDataSource src)
+    public MessageResult read(ByteArrayDataSource src)
     {
-        return new ChatResult(Util.getUUIDs(src.readString()), src.readString());
+        return new MessageResult(MessageType.fromId(src.readByte()), Util.getUUIDs(src.readString()), src.readString());
     }
 
     @Override
-    public void write(ByteArrayDataWriter writer, ChatResult result)
+    public void write(ByteArrayDataWriter writer, MessageResult result)
     {
+        writer.write(result.getType().getId());
         writer.write(Util.toStringFormat(result.getPlayerUUIDs()));
         writer.write(result.getMessage());
     }

@@ -15,8 +15,6 @@ public interface UnsafeRunnable {
 
     /**
      * The unsafe operation
-     *
-     * @throws Exception
      */
     void run() throws Exception;
 

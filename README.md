@@ -42,18 +42,18 @@ and ```f(x)``` the quantity of RAM in kb (kilobytes).
 If you like, you can also activate a parameter in the configuration file called ```gameweight-resizer```, which has for value a boolean
 (true/false). If the value is "true", the sizes that you fixed to your games will be modified in order to stick perfectly to their needs in terms of resources.
 
-Français — Pour une bonne gestion des serveurs Minecraft à la demande, un système de "poids" de serveurs a été créé. Chaque serveur peut contenir un certain
-nombre de serveurs Minecraft et ce dernier fluctue, en fonction des types de serveurs lancés. Par exemple, un jeu volumineux comme un UHC avec 100 joueurs 
-prend plus de ressources qu'un petit Rush à 8 joueurs. C'est là qu'interviennent les "gamegrammes". Abrégé "gg", cette unité détermine le poids d'un 
+Français — Pour une bonne gestion des serveurs Minecraft à la demande, un système de « poids » de serveurs a été créé. Chaque serveur peut contenir un certain
+nombre de serveurs Minecraft, et ce dernier fluctue en fonction des types de serveurs lancés. Par exemple, un jeu volumineux comme un UHC avec 100 joueurs 
+prend plus de ressources qu'un petit Rush à 8 joueurs. C'est là qu'interviennent les « gamegrammes ». Abrégé « gg », cette unité détermine le poids d'un 
 type de serveur. C'est à vous de définir les poids des jeux depuis le pannel web ou directement dans la base de données choisie.
 
-(Attention :warning: : l'échelle est sujet à changement) L'unité a pour échelle : 
+(Attention :warning: : l'échelle est sujet à changement)
 
 La quantité de RAM en fonction de la quantité de gamegrams, est telle : ```f(x) = 102.400x```, où ```x``` est le nombre de gamegrams et
 ```f(x)``` la quantité de RAM en ko (kilooctets).
 
 Si vous le souhaitez, vous pouvez également activer dans la configuration un paramètre, appelé ```gameweight-resizer```, qui a pour valeur un booléen
-(true/false). Si la valeur est mise à vraie ("true"), les tailles des jeux que vous aurez fixées seront modifiées pour le mieux correspondre à leurs besoins
+(true/false). Si la valeur est mise à « vrai » (_true_), les tailles des jeux que vous aurez fixées seront modifiées pour le mieux correspondre à leurs besoins
 en ressources.
 
 Instances
@@ -101,9 +101,9 @@ Français — GameStack a besoin pour fonctionner d'une base de données **et** 
 de paquets — données — entre clients connectés.) Vous avez le choix parmi les logiciels suivants :
 
 * pour la base de données :
-    * MySQL (nom de référence : "mysql"),
-    * MariaDB (nom de référence : "mariadb"),
-    * PostgreSQL (nom de référence : "postgres") :heart:.
+    * MySQL (nom de référence : « mysql »),
+    * MariaDB (nom de référence : « mariadb »),
+    * PostgreSQL (nom de référence : « postgres ») :heart:.
 * pour le broker :
     * RabbitMQ (nom de référence : "rabbitmq"),
     * Redis (nom de référence : "redis"). (Bien que non recommandé, vu que sa fonction principale est de servir de cache.)

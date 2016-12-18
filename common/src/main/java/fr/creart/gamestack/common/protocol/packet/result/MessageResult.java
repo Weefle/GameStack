@@ -6,19 +6,29 @@
 
 package fr.creart.gamestack.common.protocol.packet.result;
 
+import fr.creart.gamestack.common.player.MessageType;
+import fr.creart.gamestack.common.protocol.packet.MessagePacket;
+
 /**
- * {@link fr.creart.gamestack.common.protocol.packet.ChatMessagePacket}'s result.
+ * {@link MessagePacket}'s result.
  *
  * @author Creart
  */
-public class ChatResult extends MultiPlayerData {
+public class MessageResult extends MultiPlayerData {
 
     private final String message;
+    private final MessageType type;
 
-    public ChatResult(String[] playerUUIDs, String message)
+    public MessageResult(MessageType type, String[] playerUUIDs, String message)
     {
         super(playerUUIDs);
+        this.type = type;
         this.message = message;
+    }
+
+    public MessageType getType()
+    {
+        return type;
     }
 
     public String getMessage()

@@ -24,7 +24,7 @@ public class SimplePipeline<T> implements Pipeline<T> {
     public void addAll(Collection<PipelineProvider<T>> add)
     {
         Validate.notEmpty(add, "add can't be null or empty");
-        add.stream().forEach(this::add);
+        add.forEach(this::add);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SimplePipeline<T> implements Pipeline<T> {
     @Override
     public void call(T object)
     {
-        providers.stream().forEach(provider -> provider.pipeline(object));
+        providers.forEach(provider -> provider.pipeline(object));
     }
 
 }

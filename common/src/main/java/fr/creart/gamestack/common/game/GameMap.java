@@ -7,58 +7,87 @@
 package fr.creart.gamestack.common.game;
 
 import com.google.common.base.Charsets;
+import fr.creart.gamestack.common.misc.FileDependingInstance;
 import fr.creart.protocolt.util.MoreArrays;
-import java.io.File;
 
 /**
  * @author Creart
  */
-public class GameMap {
+public class GameMap extends FileDependingInstance {
 
     private int id;
     private Game game;
     private String name;
-    private float gamegrams; // the weight of the game may depend on the map
-    private File[] worldFolders; // may be only the "world" file, + optional "world_nether", "world_nether_end"
+    // gamegrams
+    private float gg;
+    // additional gamegrams per player
+    private float ggpp;
 
-    public GameMap(int id, Game game, String name, float gamegrams, File[] worldFolders)
+    /**
+     * Default constructor
+     *
+     * @param id            map's id
+     * @param game          the game
+     * @param name          map's name
+     * @param gg            gamegrams
+     * @param ggpp          gamegrams added for each player
+     * @param requiredFiles the required files
+     */
+    public GameMap(int id, Game game, String name, float gg, float ggpp, String... requiredFiles)
     {
+        super(requiredFiles);
         this.id = id;
         this.game = game;
         this.name = name;
-        this.gamegrams = gamegrams;
-        this.worldFolders = worldFolders;
+        this.gg = gg;
+        this.ggpp = ggpp;
     }
 
+    /**
+     * Returns current map's id
+     *
+     * @return current map's id
+     */
     public int getId()
     {
         return id;
     }
 
+    /**
+     * Returns current map's game
+     *
+     * @return current map's game
+     */
     public Game getGame()
     {
         return game;
     }
 
+    /**
+     * Returns current map's name
+     *
+     * @return current map's name
+     */
     public String getName()
     {
         return name;
     }
 
-    public float getGamegrams()
+    /**
+     * Returns the needed amount of gamegrams for this game depending on the number of players
+     *
+     * @param players the number of players
+     * @return the needed amount of gamegrams for this game depending on the number of players
+     */
+    public float calculateGamegrams(short players)
     {
-        return gamegrams;
-    }
-
-    public File[] getWorldFolders()
-    {
-        return worldFolders;
+        return players * ggpp + gg;
     }
 
     @Override
     public int hashCode()
     {
-        return 31 * Float.floatToIntBits(gamegrams) * MoreArrays.sum(name.getBytes(Charsets.UTF_8));
+        return 31 * MoreArrays.sum(name.getBytes(Charsets.UTF_8));
     }
 
     @Override

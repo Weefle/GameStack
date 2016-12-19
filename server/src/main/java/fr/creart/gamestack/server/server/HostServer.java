@@ -6,6 +6,7 @@
 
 package fr.creart.gamestack.server.server;
 
+import fr.creart.gamestack.common.game.GameMap;
 import fr.creart.gamestack.common.misc.KeptAlive;
 import fr.creart.gamestack.common.pipeline.PipelineProvider;
 import fr.creart.gamestack.common.protocol.packet.result.MinecraftServerUpdate;
@@ -134,7 +135,17 @@ public class HostServer extends KeptAlive implements PipelineProvider<Collection
      */
     public boolean hasMinecraftServers()
     {
-        return minecraftServers != null && minecraftServers.size() > 0;
+        return minecraftServers != null && getMinecraftServersCount() > 0;
+    }
+
+    /**
+     * Returns the amount of Minecraft servers on the current server
+     *
+     * @return the amount of Minecraft servers on the current server
+     */
+    public int getMinecraftServersCount()
+    {
+        return getMinecraftServers().size();
     }
 
     /**
@@ -148,6 +159,17 @@ public class HostServer extends KeptAlive implements PipelineProvider<Collection
         this.capacity = capacity;
         this.usedCapacity = usedCapacity;
         keepAlive();
+    }
+
+    /**
+     * Returns <tt>true</tt> if the current instance can host a new Minecraft server with the given game and map
+     *
+     * @param gameMap the {@link GameMap} to host
+     * @return <tt>true</tt> if the current instance can host a new Minecraft server with the given game and map
+     */
+    public boolean canHost(GameMap gameMap, short players)
+    {
+        return usedCapacity + gameMap.calculateGamegrams(players) < capacity;
     }
 
     @Override

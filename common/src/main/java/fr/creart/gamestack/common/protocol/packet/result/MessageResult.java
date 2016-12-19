@@ -19,7 +19,7 @@ public class MessageResult extends MultiPlayerData {
     private final String message;
     private final MessageType type;
 
-    public MessageResult(MessageType type, String[] playerUUIDs, String message)
+    public MessageResult(MessageType type, String message, String... playerUUIDs)
     {
         super(playerUUIDs);
         this.type = type;

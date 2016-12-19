@@ -7,6 +7,7 @@
 package fr.creart.gamestack.server.queue;
 
 import fr.creart.gamestack.common.game.GameMap;
+import fr.creart.gamestack.common.pipeline.PipelineProvider;
 import fr.creart.gamestack.common.player.Queueable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,7 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author Creart
  */
-public class PlayerQueue {
+public class PlayerQueue implements PipelineProvider<Collection<PlayerQueue>> {
 
     private GameMap gameMap;
     private Lock queueLock = new ReentrantLock();
@@ -133,6 +134,31 @@ public class PlayerQueue {
         }
 
         return ret;
+    }
+
+    /**
+     * Returns the handled {@link GameMap}
+     *
+     * @return the handled {@link GameMap}
+     */
+    public GameMap getGameMap()
+    {
+        return gameMap;
+    }
+
+    /**
+     * Adds itself to the pipeline if some players are still in the current queue.
+     *
+     * @param filledQueues all of the queues that are not empty
+     */
+    @Override
+    public void pipeline(Collection<PlayerQueue> filledQueues)
+    {
+        for (Queue<Queueable> q : queues.values())
+            if (!q.isEmpty()) {
+                filledQueues.add(this);
+                break;
+            }
     }
 
     @Override

@@ -33,6 +33,8 @@ public class EnqueueListener implements PacketListener<EnqueueData> {
 
         if (instance.getQueuesManager().enqueueObject(queueable, result.getMap()))
             queueable.sendMessage("#enqueue-success", MessageType.CHAT_MESSAGE);
+        else
+            queueable.sendMessage("enqueue-fail", MessageType.CHAT_MESSAGE);
     }
 
 }

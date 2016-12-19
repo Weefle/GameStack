@@ -6,17 +6,19 @@
 
 package fr.creart.gamestack.common.alerting;
 
+import fr.creart.gamestack.common.alerting.AlertingManager.Priority;
+
 /**
+ * Alerting module for Slack
+ *
  * @author Creart
  */
-public abstract class AlertingManager {
+public class SlackAlertingModule extends AlertingModule {
 
-    //TODO
+    @Override
+    public void alert(Priority priority, String message)
+    {
 
-    public enum Priority {
-        INFO,
-        WARNING,
-        FATAL
     }
 
 }

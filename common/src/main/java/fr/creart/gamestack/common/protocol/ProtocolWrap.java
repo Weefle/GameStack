@@ -30,7 +30,7 @@ public final class ProtocolWrap {
     public static final short METRIC_PACKET_ID = 0x03;
     public static final short PLAYER_TELEPORT_PACKET_ID = 0x04;
     public static final short ENQUEUE_PACKET_ID = 0x05;
-    public static final short CHAT_MESSAGE_PACKET_ID = 0x06;
+    public static final short MESSAGE_PACKET_ID = 0x06;
     public static final short PULL_QUEUE_PACKET_ID = 0x07;
 
     private static Protocol protocol;
@@ -48,7 +48,7 @@ public final class ProtocolWrap {
             protocol.declarePacket(new MetricPacket(METRIC_PACKET_ID));
             protocol.declarePacket(new PlayerTeleportPacket(PLAYER_TELEPORT_PACKET_ID));
             protocol.declarePacket(new EnqueuePacket(ENQUEUE_PACKET_ID));
-            protocol.declarePacket(new MessagePacket(CHAT_MESSAGE_PACKET_ID));
+            protocol.declarePacket(new MessagePacket(MESSAGE_PACKET_ID));
             protocol.declarePacket(new PullQueuePacket(PULL_QUEUE_PACKET_ID));
         } catch (Exception e) {
             CommonLogger.error("Could not declare a packet.", e);

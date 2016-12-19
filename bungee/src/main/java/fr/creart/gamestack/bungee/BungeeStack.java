@@ -29,7 +29,7 @@ public class BungeeStack extends Plugin {
     @Override
     public void onEnable()
     {
-        Commons.getInstance().getMessageBroker().registerListener(ProtocolWrap.CHAT_MESSAGE_PACKET_ID, new MessagePacketListener());
+        Commons.getInstance().getMessageBroker().registerListener(ProtocolWrap.MESSAGE_PACKET_ID, new MessagePacketListener());
         Commons.getInstance().getMessageBroker().registerListener(ProtocolWrap.PLAYER_TELEPORT_PACKET_ID, new PlayerTeleportRequestListener());
     }
 

@@ -18,7 +18,7 @@ import fr.creart.protocolt.bytestreams.ByteArrayPacket;
 public class Party implements Queueable {
 
     private static final ByteArrayPacket<PlayerTeleport> TELEPORT_PACKET = ProtocolWrap.getPacketById(ProtocolWrap.PLAYER_TELEPORT_PACKET_ID);
-    private static final ByteArrayPacket<MessageResult> MESSAGE_PACKET = ProtocolWrap.getPacketById(ProtocolWrap.CHAT_MESSAGE_PACKET_ID);
+    private static final ByteArrayPacket<MessageResult> MESSAGE_PACKET = ProtocolWrap.getPacketById(ProtocolWrap.MESSAGE_PACKET_ID);
 
     private final Player leader;
     private Player[] players;
@@ -38,7 +38,7 @@ public class Party implements Queueable {
     @Override
     public void sendMessage(String path, MessageType type)
     {
-        Commons.getInstance().getMessageBroker().publish(MESSAGE_PACKET, new MessageResult(type, getAllUUIDs(), path));
+        Commons.getInstance().getMessageBroker().publish(MESSAGE_PACKET, new MessageResult(type, path, getAllUUIDs()));
     }
 
     @Override

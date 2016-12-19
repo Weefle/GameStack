@@ -18,7 +18,7 @@ public final class MoreArrays {
 
     private MoreArrays()
     {
-
+        // no instance
     }
 
     /**
@@ -64,20 +64,6 @@ public final class MoreArrays {
             if (!predicate.test(obj))
                 return false;
         return true;
-    }
-
-    /**
-     * Returns the sum of the given byte array
-     *
-     * @param bytes byte array
-     * @return the sum of the given byte array
-     */
-    public static int getSum(byte[] bytes)
-    {
-        int ret = 0;
-        for (byte b : bytes)
-            ret += b;
-        return ret;
     }
 
 }

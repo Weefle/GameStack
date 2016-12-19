@@ -10,7 +10,9 @@ import com.google.common.base.Strings;
 import fr.creart.gamestack.common.Commons;
 import fr.creart.gamestack.common.log.CommonLogger;
 import fr.creart.gamestack.common.protocol.ProtocolWrap;
+import fr.creart.gamestack.common.protocol.packet.MessagePacket;
 import fr.creart.gamestack.common.protocol.packet.PlayerTeleportPacket;
+import fr.creart.gamestack.common.protocol.packet.result.MessageResult;
 import fr.creart.gamestack.common.protocol.packet.result.PlayerTeleport;
 
 /**
@@ -21,6 +23,7 @@ import fr.creart.gamestack.common.protocol.packet.result.PlayerTeleport;
 public class Player implements Queueable {
 
     private static final PlayerTeleportPacket TELEPORT_PACKET = ProtocolWrap.getPacketById(ProtocolWrap.PLAYER_TELEPORT_PACKET_ID);
+    private static final MessagePacket MESSAGE_PACKET = ProtocolWrap.getPacketById(ProtocolWrap.MESSAGE_PACKET_ID);
 
     private final String uuid;
     private final byte priority;
@@ -67,6 +70,7 @@ public class Player implements Queueable {
     @Override
     public void sendMessage(String messagePath, MessageType type)
     {
+        Commons.getInstance().getMessageBroker().publish(MESSAGE_PACKET, new MessageResult(type, messagePath, getUniqueId()));
     }
 
     @Override

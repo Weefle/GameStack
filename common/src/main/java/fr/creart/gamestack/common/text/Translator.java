@@ -44,7 +44,7 @@ public class Translator {
         try {
             initialize(false);
         } catch (Exception e) {
-            LOGGER.error(String.format("Could not load %s file. Trying again...", file), e);
+            LOGGER.error(String.format("Could not load %s file. Trying again with another way...", file));
             try {
                 initialize(true);
             } catch (Exception e1) {

@@ -15,12 +15,8 @@ import fr.creart.protocolt.bytestreams.ByteArrayDataWriter;
 import fr.creart.protocolt.bytestreams.ByteArrayPacket;
 
 /**
- * Packet sent every seconds which have for purpose either:
- * <ul>
- * <li>add a new Minecraft Server;</li>
- * <li>or update an existing Minecraft Server;</li>
- * <li>or delete an existing Minecraft Server.</li>
- * </ul>
+ * Packet sent every seconds which can be sent for adding a Minecraft server,
+ * updating a Minecraft server or removing a Minecraft server.
  *
  * @author Creart
  */
@@ -43,7 +39,7 @@ public class MinecraftServerStatusPacket extends ByteArrayPacket<MinecraftServer
         }
 
         MinecraftServerUpdate update =
-                new MinecraftServerUpdate(source.readString(), source.readString(), source.readInt(), status, GameStatus.getById(source.readByte()));
+                new MinecraftServerUpdate(source.readString(), source.readInt(), source.readInt(), status, GameStatus.getById(source.readByte()));
 
         if (status == KeepAliveStatus.ADD || status == KeepAliveStatus.UPDATE) {
             update.setOnlinePlayers(source.readShort());
@@ -58,7 +54,7 @@ public class MinecraftServerStatusPacket extends ByteArrayPacket<MinecraftServer
     {
         writer.write(data.getStatus().getId());
         writer.write(data.getAddress());
-        writer.write(data.getGameName());
+        writer.write(data.getGameId());
         writer.write(data.getPort());
         writer.write(data.getGameStatus().getId());
         if (data.getStatus() == KeepAliveStatus.ADD || data.getStatus() == KeepAliveStatus.UPDATE) {

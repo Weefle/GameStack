@@ -108,7 +108,7 @@ public class HostServer extends KeptAlive implements PipelineProvider<Collection
                     this,
                     update.getPort(),
                     update.getAddress(),
-                    update.getGameName(),
+                    update.getGameId(),
                     update.getOnlinePlayers(),
                     update.getMaxPlayers());
             minecraftServers.put(server.getPort(), server);

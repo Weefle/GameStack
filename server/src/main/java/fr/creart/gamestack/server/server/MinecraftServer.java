@@ -14,7 +14,7 @@ import fr.creart.gamestack.common.misc.KeptAlive;
  *
  * @author Creart
  */
-public class MinecraftServer extends KeptAlive {
+public class MinecraftServer extends KeptAlive implements Comparable<MinecraftServer> {
 
     private static final short TIMEOUT_TIME = 15_000;
 
@@ -22,7 +22,7 @@ public class MinecraftServer extends KeptAlive {
     private HostServer host;
     private int port;
     private String name;
-    private String gameName;
+    private int gameId;
     private short onlinePlayers;
     private short maxPlayers;
 
@@ -30,61 +30,106 @@ public class MinecraftServer extends KeptAlive {
      * @param host          the hosting server
      * @param port          server's port
      * @param name          server's name
-     * @param gameName      hosted game's name
+     * @param gameId      hosted game's name
      * @param onlinePlayers players currently connected to the server
      * @param maxPlayers    the maximal amount of players
      */
-    public MinecraftServer(GameStatus status, HostServer host, int port, String name, String gameName, short onlinePlayers, short maxPlayers)
+    public MinecraftServer(GameStatus status, HostServer host, int port, String name, int gameId, short onlinePlayers, short maxPlayers)
     {
         this.gameStatus = status;
         this.host = host;
         this.port = port;
         this.name = name;
-        this.gameName = gameName;
+        this.gameId = gameId;
         this.onlinePlayers = onlinePlayers;
         this.maxPlayers = maxPlayers;
     }
 
+    /**
+     * Returns current Minecraft server's host
+     *
+     * @return current Minecraft server's host
+     */
     public HostServer getHost()
     {
         return host;
     }
 
+    /**
+     * Returns server's used port
+     *
+     * @return server's used port
+     */
     public int getPort()
     {
         return port;
     }
 
+    /**
+     * Returns server's name
+     *
+     * @return server's name
+     */
     public String getName()
     {
         return name;
     }
 
-    public String getGameName()
+    /**
+     * Returns game's id
+     *
+     * @return game's id
+     */
+    public int getGameId()
     {
-        return gameName;
+        return gameId;
     }
 
+    /**
+     * Returns the current amount of players on the server
+     *
+     * @return the current amount of players on the server
+     */
     public short getOnlinePlayers()
     {
         return onlinePlayers;
     }
 
+    /**
+     * Returns the maximal amount of players that the server can host
+     *
+     * @return the maximal amount of players that the server can host
+     */
     public short getMaxPlayers()
     {
         return maxPlayers;
     }
 
+    /**
+     * Returns the amount of available slots
+     *
+     * @return the amount of available slots
+     */
     public int getAvailableSlots()
     {
         return maxPlayers - onlinePlayers;
     }
 
+    /**
+     * Returns current game's status
+     *
+     * @return current game's status
+     */
     public GameStatus getGameStatus()
     {
         return gameStatus;
     }
 
+    /**
+     * Returns <tt>true</tt> if players can join this server and play
+     *
+     * @return <tt>true</tt> if players can join this server and play
+     */
     public boolean isJoinable()
     {
         return maxPlayers > onlinePlayers && gameStatus == GameStatus.LOBBY;
@@ -110,11 +155,25 @@ public class MinecraftServer extends KeptAlive {
         return TIMEOUT_TIME;
     }
 
+    /**
+     * Minecraft servers with more slots are higher
+     */
+    @Override
+    public int compareTo(MinecraftServer other)
+    {
+        /*
+        comparator old way
+        (first, second) -> first.getAvailableSlots() < second.getAvailableSlots()
+                    && first.getAvailableSlots() > 0 ? 1 : -1
+         */
+        return getAvailableSlots() < other.getAvailableSlots() && getAvailableSlots() > 0 ? 1 : -1;
+    }
+
     @Override
     public int hashCode()
     {
         int ret = 31 * name.hashCode();
-        ret += 31 * gameName.hashCode();
+        ret += 31 * gameId;
         ret += host.getAddress().hashCode();
         ret += port;
         return ret;

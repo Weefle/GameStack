@@ -235,10 +235,9 @@ public class StackServer implements Initialisable {
 
         lock.readLock().lock();
         try {
-            SortedSet<MinecraftServer> mcServers = new TreeSet<>((first, second) -> first.getAvailableSlots() < second.getAvailableSlots()
-                    && first.getAvailableSlots() > 0 ? 1 : -1); // the almost full servers first
+            SortedSet<MinecraftServer> mcServers = new TreeSet<>(); // the almost full servers first
             minecraftServersPipeline.call(mcServers);
-            return mcServers.first();
+            return mcServers.last(); // TODO: 19/12/2016 check if it should be last() or first()
         } finally {
             lock.readLock().unlock();
         }

@@ -16,18 +16,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.util.Arrays;
+import org.apache.commons.lang3.Validate;
 
 /**
  * File utils
@@ -206,6 +210,49 @@ public final class FileUtil {
                 dest.write(buffer);
         } catch (Exception e) {
             CommonLogger.error("Could not copy channels.", e);
+        }
+    }
+
+    /**
+     * Downloads the given file and saves it at the given destination.
+     * Returns the downloaded file.
+     *
+     * @param rawURL          file's raw URL
+     * @param destinationPath where the file should be saved
+     * @return the downloaded file.
+     * @throws IOException if an exception is encountered during file's save or creation
+     */
+    public static File downloadFile(String rawURL, String destinationPath) throws IOException
+    {
+        return downloadFile(new URL(rawURL), destinationPath);
+    }
+
+    /**
+     * Downloads the given file and saves it at the given destination.
+     * Returns the downloaded file.
+     *
+     * @param url             file's URL
+     * @param destinationPath where the file should be saved
+     * @return the downloaded file.
+     * @throws IOException If an exception is encountered during file's save or creation
+     */
+    public static File downloadFile(URL url, String destinationPath) throws IOException
+    {
+        Validate.notNull(url, "url cannot be null");
+        Validate.notEmpty(destinationPath, "destination path cannot be null or empty");
+
+        try {
+            File file = new File(destinationPath);
+
+            if (!file.createNewFile())
+                throw new IOException("Could not create new file for path: " + destinationPath);
+
+            FileChannel fChannel = new RandomAccessFile(destinationPath, "rw").getChannel();
+            ReadableByteChannel channel = Channels.newChannel(url.openStream());
+            fChannel.transferFrom(channel, 0, Long.MAX_VALUE);
+            return file;
+        } catch (Exception e) {
+            throw new IOException(e);
         }
     }
 

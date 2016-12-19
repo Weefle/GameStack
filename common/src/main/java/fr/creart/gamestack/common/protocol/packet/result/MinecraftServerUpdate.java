@@ -4,12 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 package fr.creart.gamestack.common.protocol.packet.result;
 
 import fr.creart.gamestack.common.game.GameStatus;
@@ -23,7 +17,7 @@ public class MinecraftServerUpdate extends SocketHostData {
 
     private final KeepAliveStatus status;
     private final GameStatus gameStatus;
-    private final String gameName;
+    private final int gameId;
     private short onlinePlayers;
     private short maxPlayers;
 
@@ -32,10 +26,10 @@ public class MinecraftServerUpdate extends SocketHostData {
      * @param port    server's port
      * @param status  server's status
      */
-    public MinecraftServerUpdate(String address, String gameName, int port, KeepAliveStatus status, GameStatus gameStatus)
+    public MinecraftServerUpdate(String address, int gameId, int port, KeepAliveStatus status, GameStatus gameStatus)
     {
         super(address, port);
-        this.gameName = gameName;
+        this.gameId = gameId;
         this.status = status;
         this.gameStatus = gameStatus;
     }
@@ -50,9 +44,9 @@ public class MinecraftServerUpdate extends SocketHostData {
         this.maxPlayers = maxPlayers;
     }
 
-    public String getGameName()
+    public int getGameId()
     {
-        return gameName;
+        return gameId;
     }
 
     public KeepAliveStatus getStatus()

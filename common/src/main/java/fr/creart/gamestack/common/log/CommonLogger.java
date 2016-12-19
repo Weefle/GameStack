@@ -20,7 +20,7 @@ public final class CommonLogger {
 
     private CommonLogger()
     {
-
+        // no instance
     }
 
     /**

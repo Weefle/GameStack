@@ -27,7 +27,7 @@ public class MessagePacket extends ByteArrayPacket<MessageResult> {
     @Override
     public MessageResult read(ByteArrayDataSource src)
     {
-        return new MessageResult(MessageType.fromId(src.readByte()), Util.getUUIDs(src.readString()), src.readString());
+        return new MessageResult(MessageType.fromId(src.readByte()), src.readString(), Util.getUUIDs(src.readString()));
     }
 
     @Override

@@ -37,7 +37,7 @@ public abstract class Application implements UnsafeRunnable {
             load();
         } catch (Exception e) {
             CommonLogger.fatal("Encountered an unhandled exception during the startup.", e);
-            CommonLogger.info("Exiting...");
+            CommonLogger.fatal("Exiting...");
             System.exit(1);
         }
 

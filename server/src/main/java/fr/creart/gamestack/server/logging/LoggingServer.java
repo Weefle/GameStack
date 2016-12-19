@@ -15,7 +15,6 @@ public class LoggingServer {
 
     public void initialize()
     {
-        // Netty?
     }
 
 }

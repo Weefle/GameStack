@@ -15,7 +15,7 @@ import fr.creart.protocolt.bytestreams.ByteArrayPacket;
  * This packet is sent when a queueable item (composed of its players which are represented by their UUID)
  * should be enqueued to the given {@link fr.creart.gamestack.common.game.GameMap}.
  * <p>
- * The player UUIDs are written in a string and separated by a semi-colon.
+ * The player UUIDs are written in a String and separated by a semi-colon.
  *
  * @author Creart
  */

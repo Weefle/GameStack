@@ -118,9 +118,9 @@ public abstract class ConnectionContainer<T, D extends ConnectionData>
     }
 
     /**
-     * Returns {@code true} if the connection has been established
+     * Returns <tt>true</tt> if the connection has been established
      *
-     * @return {@code true} if the connection has been established
+     * @return <tt>true</tt> if the connection has been established
      */
     public boolean isConnectionEstablished()
     {

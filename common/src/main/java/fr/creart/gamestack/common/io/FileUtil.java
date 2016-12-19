@@ -73,7 +73,7 @@ public final class FileUtil {
      *
      * @param file       File name to copy
      * @param outputPath Output
-     * @param replace    If {@code true}, replaces the existing file.
+     * @param replace    If <tt>true</tt>, replaces the existing file.
      * @return the created file.
      */
     public static Validation<Exception, File> saveResource(String file, String outputPath, boolean replace)

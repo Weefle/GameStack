@@ -45,9 +45,9 @@ public final class CommonLogger {
     }
 
     /**
-     * Returns {@code true} if the logger has been created.
+     * Returns <tt>true</tt> if the logger has been created.
      *
-     * @return {@code true} if the logger has been created.
+     * @return <tt>true</tt> if the logger has been created.
      */
     public static boolean hasLogger()
     {

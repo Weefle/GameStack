@@ -15,7 +15,8 @@ import java.util.Optional;
  * The way you can use it is when your method does not guarantee to return a correct value (an exception)
  * you set the return type to {@link Validation}:
  * <pre>
- *     {@code
+ *     <tt>
+ *
  *     public static class Validation<Exception, Integer> toInt(String s) {
  *         try {
  *             return new Validation.Success<>(Integer.valueOf(s));
@@ -23,7 +24,7 @@ import java.util.Optional;
  *             return new Validation.Failure<>(e);
  *         }
  *     }
- *     }
+ *     </tt>
  * </pre>
  * <p>
  * Then, the caller of the function can get to know if the operation is a success by calling the {@link #isSuccess()}
@@ -41,9 +42,9 @@ public abstract class Validation<E, T> {
     }
 
     /**
-     * Returns {@code true} if the operation is a success
+     * Returns <tt>true</tt> if the operation is a success
      *
-     * @return {@code true} if the operation is a success
+     * @return <tt>true</tt> if the operation is a success
      */
     public final boolean isSuccess()
     {

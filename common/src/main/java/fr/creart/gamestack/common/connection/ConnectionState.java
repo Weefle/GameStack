@@ -26,8 +26,8 @@ public enum ConnectionState {
     }
 
     /**
-     * Returns {@code true} if at this connection state, the connection is usable
-     * @return {@code true} if at this connection state, the connection is usable
+     * Returns <tt>true</tt> if at this connection state, the connection is usable
+     * @return <tt>true</tt> if at this connection state, the connection is usable
      */
     public boolean isUsable()
     {

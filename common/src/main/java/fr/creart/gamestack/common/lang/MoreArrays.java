@@ -37,7 +37,7 @@ public final class MoreArrays {
      * Concatenates the whole String array
      *
      * @param strings String array
-     * @return the concatenation of all the strings in the array
+     * @return the concatenation of all the Strings in the array
      */
     public static String concat(String[] strings)
     {

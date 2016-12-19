@@ -73,10 +73,10 @@ public final class ProtocolWrap {
     }
 
     /**
-     * Returns {@code true} if the packet has been declared
+     * Returns <tt>true</tt> if the packet has been declared
      *
      * @param packetId packet's id
-     * @return {@code true} if the packet has been declared
+     * @return <tt>true</tt> if the packet has been declared
      */
     public static boolean hasPacket(int packetId)
     {

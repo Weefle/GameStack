@@ -19,7 +19,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
 
 /**
  * Server which listens for logs from distant servers, usually sent before they are closed.
@@ -65,7 +64,6 @@ public class LoggingServer implements Initialisable, AutoCloseable {
                         {
                             channel.pipeline().addLast(
                                     new SimplePacketDecoder(),
-                                    new LineBasedFrameDecoder(8192),
                                     new SimplePacketEncoder()
                             );
                             channel.pipeline().addLast("auth", new AuthenticationHandler());

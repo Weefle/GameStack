@@ -7,6 +7,7 @@
 package fr.creart.gamestack.common.text;
 
 import fr.creart.gamestack.common.io.FileUtil;
+import fr.creart.gamestack.common.misc.Initialisable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -20,12 +21,12 @@ import org.apache.log4j.Logger;
  *
  * @author Creart
  */
-public class Translator {
+public class Translator implements Initialisable {
 
     private static final Logger LOGGER = Logger.getLogger(Translator.class);
 
     private String file;
-    private boolean initialized;
+    private boolean initialised;
     private ResourceBundle resourceBundle;
 
     public Translator(String file)
@@ -34,19 +35,20 @@ public class Translator {
     }
 
     /**
-     * Initializes the translator.
+     * Initialises the translator.
      */
-    public void initialize()
+    @Override
+    public void initialise()
     {
-        if (initialized)
+        if (initialised)
             return;
 
         try {
-            initialize(false);
+            initialise(false);
         } catch (Exception e) {
             LOGGER.error(String.format("Could not load %s file. Trying again with another way...", file));
             try {
-                initialize(true);
+                initialise(true);
             } catch (Exception e1) {
                 LOGGER.error(String.format("Could not load %s file!", file), e1);
                 return;
@@ -54,7 +56,7 @@ public class Translator {
         }
 
         LOGGER.info("Successfully loaded messages.properties file.");
-        initialized = true;
+        initialised = true;
     }
 
     /**
@@ -78,7 +80,7 @@ public class Translator {
         return ret;
     }
 
-    private void initialize(boolean retry) throws IOException
+    private void initialise(boolean retry) throws IOException
     {
         if (retry && !FileUtil.saveResource(file, file, true).isSuccess())
             throw new IOException("Could not create messages.properties file.");

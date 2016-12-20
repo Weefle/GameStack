@@ -7,7 +7,7 @@
 package fr.creart.gamestack.common.misc;
 
 /**
- * Represents an object which can be initialized
+ * Represents an object which can be initialised
  *
  * @author Creart
  */
@@ -15,8 +15,8 @@ package fr.creart.gamestack.common.misc;
 public interface Initialisable {
 
     /**
-     * Initializes the object.
+     * Initialises the object.
      */
-    void initialize();
+    void initialise();
 
 }

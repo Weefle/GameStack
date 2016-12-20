@@ -20,7 +20,7 @@ public final class ThreadsManager implements Destroyable, AutoCloseable {
     private static final ThreadGroup PARENT_GROUP = new ThreadGroup("GameStack");
 
     private final ThreadGroup currentGroup;
-    private boolean initialized;
+    private boolean initialised;
 
     /**
      * @param softName current software's name
@@ -39,13 +39,13 @@ public final class ThreadsManager implements Destroyable, AutoCloseable {
     @Override
     public void destroy()
     {
-        if (!initialized)
+        if (!initialised)
             return;
 
         currentGroup.destroy();
         PARENT_GROUP.destroy();
 
-        initialized = false;
+        initialised = false;
     }
 
     /**

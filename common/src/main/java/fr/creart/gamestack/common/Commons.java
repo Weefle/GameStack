@@ -11,7 +11,6 @@ import fr.creart.gamestack.common.broking.AbstractBrokerManager;
 import fr.creart.gamestack.common.broking.BrokerManager;
 import fr.creart.gamestack.common.connection.ConnectionData;
 import fr.creart.gamestack.common.connection.database.AbstractDatabase;
-import fr.creart.gamestack.common.connection.database.AbstractRequest;
 import fr.creart.gamestack.common.connection.database.Database;
 import fr.creart.gamestack.common.connection.database.DatabaseConnectionData;
 import fr.creart.gamestack.common.connection.database.sql.SQLRequest;
@@ -23,7 +22,7 @@ import fr.creart.gamestack.common.thread.ThreadsManager;
 
 /**
  * Centralizes the common library for GameStack software.
- * You just have to create the logger on your own.
+ * Only the logger is not created here.
  *
  * @author Creart
  */
@@ -31,7 +30,7 @@ public final class Commons {
 
     private static Commons instance;
 
-    private boolean initialized;
+    private boolean initialised;
 
     private String softwareName;
     private ThreadsManager threadsManager;
@@ -49,16 +48,16 @@ public final class Commons {
     }
 
     /**
-     * Initializes more basic stuff of commons
+     * Initialises more basic stuff of commons
      *
      * @param soft Soft's name
      */
-    public void initialize(String soft)
+    public void initialise(String soft)
     {
         this.softwareName = soft;
         threadsManager = new ThreadsManager(soft);
         translator = new Translator("messages.properties");
-        translator.initialize();
+        translator.initialise();
     }
 
     /**
@@ -74,14 +73,14 @@ public final class Commons {
     void connect(V brokerConnection, AbstractBrokerManager<T, V> broker,
                  S databaseConnection, AbstractDatabase<?, SQLRequest, S> database, byte metricsThreads)
     {
-        if (initialized)
+        if (initialised)
             return;
 
         connectMessageBroker(brokerConnection, broker);
         connectDatabase(databaseConnection, database);
-        initializeMetricsManager(metricsThreads);
+        initialiseMetricsManager(metricsThreads);
 
-        initialized = true;
+        initialised = true;
     }
 
     /**
@@ -156,7 +155,7 @@ public final class Commons {
         Preconditions.checkNotNull(broker, "broker can't be null");
         Preconditions.checkArgument(!broker.isConnectionEstablished(), "connection already established");
 
-        broker.initialize(data);
+        broker.initialise(data);
         this.broker = broker;
     }
 
@@ -166,22 +165,22 @@ public final class Commons {
      * @param data     Connection data
      * @param database Database
      */
-    private <DATA extends DatabaseConnectionData, T, Q extends AbstractRequest<?>> void connectDatabase(DATA data, AbstractDatabase<T, SQLRequest, DATA> database)
+    private <DATA extends DatabaseConnectionData, T> void connectDatabase(DATA data, AbstractDatabase<T, SQLRequest, DATA> database)
     {
         Preconditions.checkNotNull(data, "connection data can't be null");
         Preconditions.checkNotNull(database, "database can't be null");
         Preconditions.checkArgument(!database.isConnectionEstablished(), "connection already established");
 
-        database.initialize(data);
+        database.initialise(data);
         this.database = database;
     }
 
     /**
-     * Initializes the metrics manager
+     * Initialises the metrics manager
      *
      * @param threads number of threads
      */
-    private void initializeMetricsManager(byte threads)
+    private void initialiseMetricsManager(byte threads)
     {
         metricsManager = new MetricsManager(new BrokerMetricOutput(broker), threads);
     }
@@ -192,7 +191,7 @@ public final class Commons {
      */
     public void close()
     {
-        if (!initialized)
+        if (!initialised)
             return;
 
         try {
@@ -204,7 +203,7 @@ public final class Commons {
         if (broker != null)
             broker.close();
 
-        initialized = false; // in order to avoid a second closure of the class, if the function is accidentally called twice.
+        initialised = false; // in order to avoid a second closure of the class, if the function is accidentally called twice.
     }
 
     /**

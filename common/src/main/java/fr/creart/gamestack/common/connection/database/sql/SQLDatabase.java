@@ -118,9 +118,7 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
                             result = statement.executeQuery();
                             request.getCallback().call(result);
                             break;
-                        case INSERT:
-                        case UPDATE:
-                        case DELETE:
+                        default: // since switch does not handle null cases
                             statement.executeUpdate();
                             break;
                     }
@@ -137,7 +135,7 @@ public abstract class SQLDatabase extends AbstractDatabase<Connection, SQLReques
     }
 
     @Override
-    protected final void initializeDriver()
+    protected final void initialiseDriver()
     {
         ClassUtil.loadClass(driver);
     }

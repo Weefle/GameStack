@@ -45,12 +45,12 @@ public class Main extends Application {
         if (networkConf == null)
             throw new ConfigurationLoadException("Could not configuration file (" + NETWORK_CONFIGURATION_FILE + ")!");
 
-        configuration.initialize();
-        networkConf.initialize();
+        configuration.initialise();
+        networkConf.initialise();
 
         StackServer server = StackServer.getInstance();
         server.setNetworkConfiguration(networkConf);
-        server.initialize();
+        server.initialise();
     }
 
     @Override

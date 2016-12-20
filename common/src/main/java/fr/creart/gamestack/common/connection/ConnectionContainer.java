@@ -47,18 +47,18 @@ public abstract class ConnectionContainer<T, D extends ConnectionData>
     }
 
     /**
-     * Initializes the connection if it is closed.
+     * Initialises the connection if it is closed.
      *
      * @param connectionData data required in order to establish the connection (host, port... + credentials)
      */
-    public final void initialize(D connectionData)
+    public final void initialise(D connectionData)
     {
         if (connectionState.get() == ConnectionState.CLOSING
                 || connectionState.get() == ConnectionState.OPENING
                 || connectionState.get().isUsable()) // cannot open the connection
             return;
 
-        initializeDriver();
+        initialiseDriver();
 
         connectionState.set(ConnectionState.OPENING);
 
@@ -158,9 +158,9 @@ public abstract class ConnectionContainer<T, D extends ConnectionData>
     protected abstract void end();
 
     /**
-     * Initializes the driver required that may be required by the container.
+     * Initialises the driver required that may be required by the container.
      */
-    protected void initializeDriver()
+    protected void initialiseDriver()
     {
     }
 

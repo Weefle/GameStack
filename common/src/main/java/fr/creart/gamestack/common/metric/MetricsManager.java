@@ -36,7 +36,7 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     private ThreadGroup metricsGroup;
     private byte threads;
     private ScheduledExecutorService scheduler;
-    private volatile boolean initialized;
+    private volatile boolean initialised;
     private MetricOutput defaultOutput;
     private Set<MetricProvider> providers = Sets.newConcurrentHashSet();
     private ScheduledFuture<?> metricTask;
@@ -69,7 +69,7 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
      */
     public void registerProvider(MetricProvider provider)
     {
-        checkInitializedState();
+        checkInitialisedState();
         Preconditions.checkNotNull(provider, "provider can't be null");
 
         synchronized (this) {
@@ -78,9 +78,9 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     }
 
     @Override
-    public void initialize()
+    public void initialise()
     {
-        if (initialized)
+        if (initialised)
             return;
 
         metricsGroup = Commons.getInstance().getThreadsManager().newThreadGroup("Metrics");
@@ -92,7 +92,7 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
         metricTask = scheduler.scheduleAtFixedRate(new MetricTask(this), 2000L, 500L, TimeUnit.MILLISECONDS);
 
         // finally
-        initialized = true;
+        initialised = true;
     }
 
     @Override
@@ -156,11 +156,11 @@ public class MetricsManager implements Initialisable, Configurable, AutoCloseabl
     }
 
     /**
-     * Throws an {@link IllegalStateException} if the metrics manager hasn't been initialized
+     * Throws an {@link IllegalStateException} if the metrics manager hasn't been initialised
      */
-    private void checkInitializedState()
+    private void checkInitialisedState()
     {
-        Preconditions.checkState(initialized, "not initialized");
+        Preconditions.checkState(initialised, "not initialised");
     }
 
 }

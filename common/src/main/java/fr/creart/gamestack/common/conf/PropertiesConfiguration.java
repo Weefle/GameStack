@@ -55,7 +55,7 @@ public class PropertiesConfiguration extends Configuration {
     }
 
     @Override
-    public void initialize()
+    public void initialise()
     {
         try {
             properties = new Properties();

@@ -28,6 +28,7 @@ import fr.creart.gamestack.server.listener.EnqueueListener;
 import fr.creart.gamestack.server.listener.HostUpdateListener;
 import fr.creart.gamestack.server.listener.MinecraftUpdateListener;
 import fr.creart.gamestack.server.listener.PullQueueListener;
+import fr.creart.gamestack.server.logging.LoggingServer;
 import fr.creart.gamestack.server.queue.QueuesManager;
 import fr.creart.gamestack.server.server.HostServer;
 import fr.creart.gamestack.server.server.MinecraftServer;
@@ -47,6 +48,7 @@ public class StackServer implements Initialisable {
     private static StackServer instance = new StackServer();
 
     private Configuration networkConfiguration;
+
     private ReadWriteLock lock = new ReentrantReadWriteLock();
     private volatile boolean running;
     private ThreadGroup softGroup;
@@ -55,6 +57,8 @@ public class StackServer implements Initialisable {
     private Pipeline<Collection<MinecraftServer>> minecraftServersPipeline = new SimplePipeline<>();
 
     private QueuesManager queuesManager = new QueuesManager();
+
+    private LoggingServer loggingServer;
 
     private StackServer()
     {
@@ -68,13 +72,18 @@ public class StackServer implements Initialisable {
     }
 
     @Override
-    public void initialize()
+    public void initialise()
     {
         Commons commons = Commons.getInstance();
-        commons.initialize("Server");
+        commons.initialise("Server");
         softGroup = commons.getThreadsManager().newThreadGroup("Server");
         String brokerSystem = networkConfiguration.getString(ConfigurationConstants.BROKER_SYSTEM, "rabbitmq");
         String databaseSystem = networkConfiguration.getString(ConfigurationConstants.DATABASE_SYSTEM, "mysql");
+
+        // logging server, centralises logs
+        loggingServer = new LoggingServer(softGroup);
+        loggingServer.initialise();
+
         DependsManager dependsManager = new DependsManager();
         dependsManager.createAssociations();
 

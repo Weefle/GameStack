@@ -51,6 +51,7 @@
         <module>client</module>
         <module>common</module>
         <module>server</module>
+        <module>netty-util</module>
     </modules>
 
 </project>
